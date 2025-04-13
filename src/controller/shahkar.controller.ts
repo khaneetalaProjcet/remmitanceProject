@@ -80,9 +80,10 @@ export class ShahkarController {
           newUser.identityTraceCode=userInfo.user.identityTraceCode
           newUser.liveStatus=userInfo.user.liveStatus
           newUser.nationalCode=userInfo.user.nationalCode
+          newUser.verificationStatus=1
           
   
-          const newWallet=await this.walletRepository.create({
+          const newWallet= this.walletRepository.create({
             balance:0,
             goldWeight:0,
             user:newUser

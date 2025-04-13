@@ -13,7 +13,7 @@ export class UserController{
             const userId=req.user.id
           const user=await this.userRepository.findOne({where:{id:userId}})
           if(!user){
-            return  next(new responseModel(req, res,"کاربر وجود ندارد",'profile', 200,"کاربر وجود ندارد",user))
+            return  next(new responseModel(req, res,"کاربر وجود ندارد",'profile', 402,"کاربر وجود ندارد",user))
           }
           return  next(new responseModel(req, res,null,'profile', 200,null,user))
         }catch(err){

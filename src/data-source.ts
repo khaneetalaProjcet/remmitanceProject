@@ -10,6 +10,7 @@ import {Otp} from "./entity/Otp"
 import {Wallet} from "./entity/Wallet"
 import {WalletTransaction} from "./entity/WalletTransaction"
 import {accessPoint} from "./entity/accessPoint"
+import { GoldPrice } from "./entity/GoldPrice"
 
 import {config} from "dotenv"
 
@@ -24,7 +25,7 @@ export const AppDataSource = new DataSource({
     database: process.env.DB_NAME ,
     synchronize: true,
     logging: false,
-    entities: [Admin,BankAccount,Invoice,InvoiceType,PaymentInfo,User,Otp,Wallet,WalletTransaction,accessPoint],
+    entities: [Admin,BankAccount,Invoice,InvoiceType,PaymentInfo,User,Otp,Wallet,WalletTransaction,accessPoint,GoldPrice],
     migrations: [],
     subscribers: [],
 })

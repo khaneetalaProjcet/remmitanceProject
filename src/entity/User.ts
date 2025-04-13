@@ -35,7 +35,7 @@ export class User {
     @Column({
         type: "enum",
         enum: VerificationStatus,
-        default: VerificationStatus.FAILED
+        default: VerificationStatus.PENDING
     })    
     verificationStatus : VerificationStatus
 

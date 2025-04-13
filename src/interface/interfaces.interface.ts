@@ -8,7 +8,11 @@ export interface jwtGeneratorInterfaceAdmin {
    
     phoneNumber:string
 
-    role:string
+    firstName:string,
+
+    lastName:string
+
+    role:number
 
     isBlocked : boolean
 
@@ -17,7 +21,7 @@ export interface jwtGeneratorInterfaceAdmin {
 
 export interface jwtGeneratorInterfaceUser {
     id: number;
-   
+    
     phoneNumber:string
 
     isBlocked : boolean

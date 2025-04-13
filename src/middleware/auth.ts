@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import { JwtPayload } from 'jsonwebtoken';
+import * as jwt from "jsonwebtoken"
 import {jwtGeneratorInterfaceUser,jwtGeneratorInterfaceAdmin} from "../interface/interfaces.interface"
 import {responseModel} from "../utills/response.model"
 
@@ -54,7 +55,7 @@ export const authMiddlewareAdmin = async (req: Request, res: Response, next: Nex
     try {
         const secretKey = process.env.JWT_SECRET_KEY_Admin; 
         const decoded = jwt.verify(token, secretKey) as JwtPayload;
-        req.admin = { id: decoded.id , phoneNumber:decoded.phoneNumber,role:decoded.role , isBlocked:decoded.isBlocked };
+        req.admin = { id: decoded.id ,firstName:decoded.firstName,lastName:decoded.lastName ,phoneNumber:decoded.phoneNumber,role:decoded.role , isBlocked:decoded.isBlocked };
         console.log(decoded);
         next(); 
 

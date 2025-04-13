@@ -1,5 +1,5 @@
 export enum VerificationStatus{
-    SUCCESS ,
     FAILED,
-    PENDING
+    SUCCESS ,
+    PENDING,
 }

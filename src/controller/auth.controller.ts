@@ -70,17 +70,41 @@ export class AuthController {
         const newUser=this.userRepository.create({phoneNumber:phone})
         await this.userRepository.save(newUser) 
         const token=await this.jwtGenerator.tokenizeUserToken({id:user.id,phoneNumber:user.phoneNumber,isBlocked:false})
-        return next(new responseModel(req, res,'','login',200,'',token))
+        const refreshToken=await this.jwtGenerator.tokenizeUserRefreshToken({id:user.id,phoneNumber:user.phoneNumber,isBlocked:false})
+        await this.userRepository.save(user)
+        return next(new responseModel(req, res,'','login',200,'',{token,refreshToken}))
 
         }else{ //? user exist 
             console.log(user);
-            
             const token=await this.jwtGenerator.tokenizeUserToken({id:user.id,phoneNumber:user.phoneNumber,isBlocked:false})
-            return next(new responseModel(req, res,'','login',200,'',token))
+            const refreshToken=await this.jwtGenerator.tokenizeUserRefreshToken({id:user.id,phoneNumber:user.phoneNumber,isBlocked:false})
+            return next(new responseModel(req, res,'','login',200,'',{token,refreshToken}))
         }
         }catch(err){
             return next(new responseModel(req, res,"خطای داخلی سیستم",'send otp', 500,"خطای داخلی سیستم",null))
         }
+    }
+
+
+    async refreshTokenCheck(req: Request, res: Response, next: NextFunction){
+        console.log("userrrrrrrrr",req.user);
+        const user = await this.userRepository.findOne({where:{id:req.user.id}})
+        if(!user){
+            return next(new responseModel(req, res,"کاربر پیدا نشد",'refresh token', 403,"کاربر پیدا نشد",null))
+        }
+        const token=await this.jwtGenerator.tokenizeUserToken({id:user.id,phoneNumber:user.phoneNumber,isBlocked:false})
+        return next(new responseModel(req, res,'','refresh token',200,'',token))
+    }
+
+
+    async logout (req: Request, res: Response, next: NextFunction){
+        const {refreshToken}=req.body
+        const user = await this.userRepository.findOne({where:{refreshToken}})
+        if(!user){
+            return next(new responseModel(req, res,"کاربر پیدا نشد",'refresh token', 403,"کاربر پیدا نشد",null))
+        }
+        user.refreshToken=null
+        return next(new responseModel(req, res,'','refresh token',200,'',null))
     }
 
 

@@ -1,13 +1,15 @@
 import { AdminController } from "./controller/admin.controller"
-import {getOtp,login} from "./DTO/auth.dto"
-import {setGoldPrice} from "./DTO/goldPrice.dto"
+import {getOtp,login,logout} from "./DTO/auth.dto"
+import {setGoldPrice,setGoldPriceFee} from "./DTO/goldPrice.dto"
 import {phoneAndNationalAndBirthDate} from "./DTO/shahkar.dto"
 import {registerNewAdmin,loginAdmin} from "./DTO/admin.dto"
 import { AuthController } from "./controller/auth.controller"
 import {ShahkarController} from "./controller/shahkar.controller"
 import { GoldPriceController } from "./controller/goldPrice.controller" 
 import { UserController } from "./controller/user.controller"
-import { authMiddlewareAdmin, authMiddlewareUser } from "./middleware/auth"
+import { InvoiceController } from "./controller/invoice.controller"
+import {invoiceBody} from "./DTO/invoice.dto"
+import { authMiddlewareAdmin, authMiddlewareUser,authMiddlewareUserRefreshToken } from "./middleware/auth"
 
 
 
@@ -29,6 +31,20 @@ export const Routes = [
     controller: AuthController,
     action: "loginUser",
     middlware:[login]
+},
+, {
+    method: "get",
+    route: "/auth/refresh",
+    controller: AuthController,
+    action: "refreshTokenCheck",
+    middlware:[authMiddlewareUserRefreshToken]
+},
+, {
+    method: "post",
+    route: "/auth/logout",
+    controller: AuthController,
+    action: "logout",
+    middlware:[logout]
 },
 
 /**
@@ -70,6 +86,14 @@ export const Routes = [
     middlware:[authMiddlewareAdmin,setGoldPrice]
 },
 
+{
+    method: "post",
+    route: "/fee/gold",
+    controller: GoldPriceController,
+    action: "setFee",
+    middlware:[authMiddlewareAdmin,setGoldPriceFee]
+},
+
 
 
 /**
@@ -90,6 +114,24 @@ export const Routes = [
     action: "loginAdmin",
     middlware:[loginAdmin]
 },
-          
+
+
+/**
+ * ?? Invoice Routes
+ */
+{
+    method: "post",
+    route: "/invoice/create",
+    controller: InvoiceController,
+    action: "createInvoice",
+    middlware:[authMiddlewareUser,invoiceBody]
+},
+{
+    method: "get",
+    route: "/invoice/user",
+    controller: InvoiceController,
+    action: "getAllInvoiceForUser",
+    middlware:[authMiddlewareUser]
+}, 
 
 ]

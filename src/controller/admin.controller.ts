@@ -3,6 +3,8 @@ import { Request, Response,NextFunction } from "express";
 import {jwtGeneratorInterfaceAdmin} from "../interface/interfaces.interface"
 import {JwtGenerator} from  "../services/jwt.service"
 import { Admin } from "../entity/Admin";
+import { Invoice } from "../entity/Invoice";
+import {User} from "../entity/User"
 import {accessPoint} from "../entity/accessPoint"
 import { responseModel } from "../utills/response.model";
 import bcrypt from 'bcrypt'
@@ -71,6 +73,33 @@ export class AdminController{
         console.log('ttoken' , token)
         return next(new responseModel(req, res,null, 'login admin', 200, null, responseData))
     }
+    
+    async getAllInvoice(req: Request, res: Response, next: NextFunction){
+
+    }
+    async getSellInvoicesWithStatus(req: Request, res: Response, next: NextFunction){
+
+    }
+    async getBuyInvoicesWithStatus(req: Request, res: Response, next: NextFunction){
+        
+    }
+
+    async getAllSellInvoice(req: Request, res: Response, next: NextFunction){
+
+    }
+    
+    async getAllBuyInvoice(req: Request, res: Response, next: NextFunction){
+
+    }
    
+    async approveSellInvoice(){}
+
+    async rejectSellInvoice(){}
+
+    async approveBuyInvoice(){}
+
+    async rejectBuyInvoice(){}
+
+
 
 }

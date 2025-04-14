@@ -11,5 +11,13 @@ export const getOtp=[
     body('phone').notEmpty().isString().withMessage('شماره تلفن نا معتبر'),
 ]
 
+export const refreshTokenCheck=[
+    body('refreshToken').notEmpty().isString().withMessage('  توکن نا معتبر'),
+]
+
+export const logout=[
+    body('refreshToken').notEmpty().isString().withMessage('  توکن نا معتبر'),
+]
+
 
 

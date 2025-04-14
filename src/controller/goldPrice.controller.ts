@@ -3,13 +3,15 @@ import { Request, Response,NextFunction } from "express";
 import { GoldPrice } from "../entity/GoldPrice";
 import { responseModel } from "../utills/response.model";
 import cacher from "../services/cacher"
-import { error } from "console";
+import {Fee} from "../entity/Fee"
+import { authMiddlewareAdmin } from "../middleware/auth";
 
 
 
 export class GoldPriceController{
     
     private goldPriceRepository = AppDataSource.getRepository(GoldPrice);
+    private feeRepository=AppDataSource.getRepository(Fee)
 
     async setGoldPrice(req: Request, res: Response, next: NextFunction){
       try{
@@ -46,21 +48,77 @@ export class GoldPriceController{
                 let lastPrice = (+lastGoldPrice[lastIndex].Geram18)
                 let firstChange = ((price - lastPrice)/lastPrice)*100
                 change = (firstChange < 0.1) ? 0 : (firstChange).toFixed(1)
-                return next(new responseModel(req, res,null,'goldprice', 200,null,{price}))
+                const fee= await this.getFee()
+                const sellPrice=this.estimateFeeInPrice(price,fee.sell)
+                const buyPrice=this.estimateFeeInPrice(price,fee.buy)
+                 
+                return next(new responseModel(req, res,null,'goldprice', 200,null,{price,sellPrice,buyPrice,sellFee:fee.sell,buyFee:fee.buy}))
             } catch (error) {
                 let lastIndex = lastGoldPrice.length-1
                 let price = (+lastGoldPrice[lastIndex].Geram18)
-                
+                const fee= await this.getFee()
+                const sellPrice=this.estimateFeeInPrice(price,fee.sell)
+                const buyPrice=this.estimateFeeInPrice(price,fee.buy)
                 // console.log("error in get gold price", error);
-                return next(new responseModel(req, res,null,'goldprice', 200,null,{price}))
+                return next(new responseModel(req, res,null,'goldprice', 200,null,{price,sellPrice,buyPrice,sellFee:fee.sell,buyFee:fee.buy}))
             }
         }else{
             // return {price : lastGoldPrice[0].Geram18 , change : 1000}
-            return next(new responseModel(req, res,null,'goldprice', 200,null,{price:lastGoldPrice[0].Geram18} ))
+            const price=lastGoldPrice[0].Geram18
+            const fee= await this.getFee()
+            const sellPrice=this.estimateFeeInPrice(price,fee.sell)
+            const buyPrice=this.estimateFeeInPrice(price,fee.buy)
+            return next(new responseModel(req, res,null,'goldprice', 200,null,{price,sellPrice,buyPrice,sellFee:fee.sell,buyFee:fee.buy} ))
         }
        }catch(err){
         return next(new responseModel(req, res,"خطای داخلی سیستم",'send otp', 500,"خطای داخلی سیستم",null))
        }
+    }
+    async setFee(req: Request, res: Response, next: NextFunction){
+      const {sellFee,buyFee}=req.body
+      const fee=await this.feeRepository.find()
+      if(fee.length==0){
+        const mainFee=this.feeRepository.create({sell:1,buy:0})
+        await this.feeRepository.save(mainFee)
+        return next(new responseModel(req, res,null,'set fee', 200,null,mainFee))
+      }
+      const mainFee=fee[0]
+      mainFee.buy=buyFee
+      mainFee.sell=sellFee
+      
+      await this.feeRepository.save(mainFee)
+      return next(new responseModel(req, res,null,'set fee', 200,null,mainFee))
+      
+    }
+    async getFeeAPI(req: Request, res: Response, next: NextFunction){
+     const fee= await this.feeRepository.find()
+     if(fee.length==0){
+      const mainFee=await this.createDefaultFee()
+      return next(new responseModel(req, res,null,'get fee', 200,null,mainFee))
+     }
+     const mainFee=fee[0] 
+     return next(new responseModel(req, res,null,'get fee', 200,null,mainFee))
+    } 
+    private async createDefaultFee(){
+      const fee= this.feeRepository.create({
+        sell:1,
+        buy:0
+      })
+      return await this.feeRepository.save(fee)
+    }
+    private async getFee(){
+      const fee= await this.feeRepository.find()
+     if(fee.length==0){
+      const mainFee=await this.createDefaultFee()
+      return mainFee
+     }
+     const mainFee=fee[0] 
+     return mainFee
+    }
+    private  estimateFeeInPrice(price:any , fee: number){
+      const feePrice=+price*fee/100
+      const finalPrice=+price+feePrice
+      return finalPrice 
     }
 
 }

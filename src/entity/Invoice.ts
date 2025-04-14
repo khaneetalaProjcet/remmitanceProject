@@ -1,7 +1,8 @@
 import { Column, CreateDateColumn, DeleteDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
 import { User } from "./User"
-import { InvoiceType } from "./InvoiceType"
+import { InvoiceType } from "./enums/InvoiceType"
 import {TradeType} from "./enums/TradeType"
+import {InvoiceStatus} from "./enums/InvoiceStatus"
 
 @Entity()
 export class Invoice {
@@ -29,8 +30,12 @@ export class Invoice {
     @Column({nullable : true})
     invoiceId : string
 
-    @Column({nullable : true})
-    status : string 
+    @Column({
+        type: "enum",
+        enum: InvoiceStatus,
+        default: InvoiceStatus.INIT
+    })
+    status : InvoiceStatus 
 
     @Column()
     date : string
@@ -38,18 +43,12 @@ export class Invoice {
     @Column()
     time : string
 
-    @ManyToOne(()=> InvoiceType , (invoiceType)=> invoiceType.invoices)
+    @Column({
+        type: "enum",
+        enum: InvoiceType,    
+    })
     type : InvoiceType
      
-    @Column({nullable:true,default:false , type : 'bool'})
-    fromPhone : boolean
-
-    @Column({type : 'bool' , default : false , nullable : true})
-    inPerson : boolean
-
-    @Column({type : 'bool' , default : false , nullable : true})
-    fromGateway : boolean
-
     @Column({nullable:true,default:""})
     adminId:string
 

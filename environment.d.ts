@@ -7,8 +7,9 @@ declare global {
         DB_PASSWORD:string
         DB_NAME:string
         PORT:string,
-        JWT_SECRET_KEY_Admin: string
-        JWT_SECRET_KEY_User: string ,
+        JWT_SECRET_KEY_ADMIN: string
+        JWT_SECRET_KEY_USER: string ,
+        JWT_SECRET_KEY_USER_REFRESH: string ,
         KAVENEGAR_API_KEY:string,
         SHAHKAR_BASE_URL:string,
         IDENTITY_INFO_URL:string,

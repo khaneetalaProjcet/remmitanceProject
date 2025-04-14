@@ -32,6 +32,9 @@ export class User {
     @Column({nullable : true})
     password : string
 
+    @Column({nullable:true,type:"varchar"})
+    refreshToken:string
+
     @Column({
         type: "enum",
         enum: VerificationStatus,

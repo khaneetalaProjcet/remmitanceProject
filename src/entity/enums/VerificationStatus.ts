@@ -1,5 +1,7 @@
 export enum VerificationStatus{
-    FAILED,
+    INIT,
+    PENDINGFORAPPROVE,
     SUCCESS ,
-    PENDING,
+    FAILED,
+    JOINTOTELEGRAMBOT
 }

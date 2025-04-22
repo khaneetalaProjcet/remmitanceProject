@@ -1,5 +1,5 @@
 import { AdminController } from "./controller/admin.controller"
-import {getOtp,login,logout} from "./DTO/auth.dto"
+import {approve, getOtp,login,logout} from "./DTO/auth.dto"
 import {setGoldPrice,setGoldPriceFee} from "./DTO/goldPrice.dto"
 import {phoneAndNationalAndBirthDate} from "./DTO/shahkar.dto"
 import {registerNewAdmin,loginAdmin} from "./DTO/admin.dto"
@@ -9,7 +9,10 @@ import { GoldPriceController } from "./controller/goldPrice.controller"
 import { UserController } from "./controller/user.controller"
 import { InvoiceController } from "./controller/invoice.controller"
 import {invoiceBody} from "./DTO/invoice.dto"
+import {SettingController} from "./controller/setting.controller" 
+import {CreateAppBankAccount,CreateBankAccount} from "./DTO/bankAccount.dto"
 import { authMiddlewareAdmin, authMiddlewareUser,authMiddlewareUserRefreshToken } from "./middleware/auth"
+import { bankAccountController } from "./controller/bankAccount.controller"
 
 
 
@@ -47,6 +50,14 @@ export const Routes = [
     middlware:[logout]
 },
 
+{
+    method: "post",
+    route: "/auth/approve",
+    controller: AuthController,
+    action: "approveRequest",
+    middlware:[authMiddlewareUser,approve]
+},
+
 /**
  * ?? User Routes
  */
@@ -64,6 +75,13 @@ export const Routes = [
     controller: UserController,
     action: "profile",
     middlware:[authMiddlewareUser]
+},
+{
+    method: "post",
+    route: "/user/message",
+    controller: UserController,
+    action: "sendMessageToUserInTelegram",
+    middlware:[]  
 },
 
 /**
@@ -83,7 +101,7 @@ export const Routes = [
     route: "/price/gold",
     controller: GoldPriceController,
     action: "setGoldPrice",
-    middlware:[authMiddlewareAdmin,setGoldPrice]
+    middlware:[authMiddlewareAdmin]
 },
 
 {
@@ -114,6 +132,42 @@ export const Routes = [
     action: "loginAdmin",
     middlware:[loginAdmin]
 },
+{
+    method: "get",
+    route: "/admin/authrequest",
+    controller: AdminController,
+    action: "getApproveRequest",
+    middlware:[authMiddlewareAdmin] 
+},
+{
+    method: "get",
+    route: "/admin/users",
+    controller: AdminController,
+    action: "getAllUser",
+    middlware:[authMiddlewareAdmin] 
+},
+{
+    method: "get",
+    route: "/admin/approve/:id",
+    controller: AdminController,
+    action: "approveUser",
+    middlware:[authMiddlewareAdmin] 
+},
+{
+    method: "get",
+    route: "/admin/reject/:id",
+    controller: AdminController,
+    action: "rejectUser",
+    middlware:[authMiddlewareAdmin] 
+},
+{
+    method: "get",
+    route: "/admin/admins",
+    controller: AdminController,
+    action: "getAllAdmins",
+    middlware:[authMiddlewareAdmin] 
+},
+
 
 
 /**
@@ -132,6 +186,73 @@ export const Routes = [
     controller: InvoiceController,
     action: "getAllInvoiceForUser",
     middlware:[authMiddlewareUser]
-}, 
+}, {
+    method: "get",
+    route: "/invoice/user/:id",
+    controller: InvoiceController,
+    action: "getOneInvoice",
+    middlware:[authMiddlewareUser]
+},
+{
+    method: "post",
+    route: "/invoice/filter",
+    controller: InvoiceController,
+    action: "getAllInvoiceForUserFilter",
+    middlware:[authMiddlewareUser]
+},
+
+/**
+ * ?? Setting Routes
+ */
+{
+    method: "post",
+    route: "/setting/change",
+    controller: SettingController,
+    action: "updateSetting",
+    middlware:[authMiddlewareAdmin]
+},
+{
+    method: "get",
+    route: "/setting",
+    controller: SettingController,
+    action: "getSetting",
+    middlware:[]
+},
+/**
+ * ?? Bank Account Routes
+ */
+
+{
+    method: "post",
+    route: "/bank/create",
+    controller: bankAccountController,
+    action: "createBankAccount",
+    middlware:[authMiddlewareUser,CreateBankAccount]
+},{
+    method: "post",
+    route: "/appbank/create",
+    controller: bankAccountController,
+    action: "createAppBankAccount",
+    middlware:[authMiddlewareAdmin,CreateAppBankAccount]
+},
+,{
+    method: "get",
+    route: "/bank/active/:id",
+    controller: bankAccountController,
+    action: "activeBankAccount",
+    middlware:[authMiddlewareUser]
+},
+,{
+    method: "get",
+    route: "/bank/delete/:id",
+    controller: bankAccountController,
+    action: "deleteBankAccount",
+    middlware:[authMiddlewareUser]
+},
+
+
+
+
+
 
 ]

@@ -13,7 +13,8 @@ declare global {
         KAVENEGAR_API_KEY:string,
         SHAHKAR_BASE_URL:string,
         IDENTITY_INFO_URL:string,
-        AUTH_URL:string
+        AUTH_URL:string,
+        TELEGRAM_BOT_TOKEN:string
       }
     }
   }

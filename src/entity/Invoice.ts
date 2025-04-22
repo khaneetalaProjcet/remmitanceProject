@@ -1,8 +1,12 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
 import { User } from "./User"
 import { InvoiceType } from "./enums/InvoiceType"
 import {TradeType} from "./enums/TradeType"
 import {InvoiceStatus} from "./enums/InvoiceStatus"
+import { Admin } from "./Admin"
+import { BankAccount } from "./BankAccount"
+import { AppBankAccount } from "./AppBankAccount"
+
 
 @Entity()
 export class Invoice {
@@ -33,7 +37,7 @@ export class Invoice {
     @Column({
         type: "enum",
         enum: InvoiceStatus,
-        default: InvoiceStatus.INIT
+        default: InvoiceStatus.PENDING
     })
     status : InvoiceStatus 
 
@@ -49,20 +53,16 @@ export class Invoice {
     })
     type : InvoiceType
      
-    @Column({nullable:true,default:""})
-    adminId:string
+    @ManyToMany(() => Admin)
+    @JoinTable()
+    admins:Admin[]
 
-    @Column({nullable:true,default:""})
-    accounterId:string
+    @ManyToOne(() => BankAccount)
+    bankAccount: BankAccount;
 
-    // @Column({nullable:true,default:null})
-    // paymentMethod :  number           //0 : gateway   1 :transport   2 :inperson   3 : cash   4 : phisicalGold         
-
-    @Column({  default: "", type: "varchar" })
-    originCardPan: string
-
-    @Column({  default: "", type: "varchar" })
-    destCardPan: string
+    @ManyToOne(() => AppBankAccount)
+    appBankAccount: AppBankAccount;
+    
 
     @Column({nullable:true,default:"",type:"varchar"})
     description:string
@@ -75,6 +75,9 @@ export class Invoice {
           default: TradeType.ONLINE
     })
     tradeType:TradeType
+
+    @Column({nullable:true})
+    fee:Number
 
     @CreateDateColumn()
     createdAt: Date

@@ -98,15 +98,38 @@ export class AuthController {
 
 
     async logout (req: Request, res: Response, next: NextFunction){
-        const {refreshToken}=req.body
-        const user = await this.userRepository.findOne({where:{refreshToken}})
-        if(!user){
-            return next(new responseModel(req, res,"کاربر پیدا نشد",'refresh token', 403,"کاربر پیدا نشد",null))
-        }
-        user.refreshToken=null
+    //     const {refreshToken}=req.body
+    //     const user = await this.userRepository.findOne({where:{refreshToken}})
+    //     if(!user){
+    //         return next(new responseModel(req, res,"کاربر پیدا نشد",'refresh token', 403,"کاربر پیدا نشد",null))
+    //     }
+        
         return next(new responseModel(req, res,'','refresh token',200,'',null))
     }
 
+
+
+    async approveRequest(req: Request, res: Response, next: NextFunction){
+        const {firstName,lastName}=req.body
+        const newUser=await this.userRepository.findOne({where:{phoneNumber:req.user.phoneNumber}})
+        
+        if(newUser&&newUser.verificationStatus==2){
+            return next(new responseModel(req, res,"کاربر احراز شده است",'refresh token', 403,"کاربر احراز شده است",null))
+        }
+        if(newUser&&newUser.verificationStatus==1){
+            return next(new responseModel(req, res,"کاربر درخواست تایید داده است",'refresh token', 403,"کاربر درخواست تایید داده است",null))
+        }
+
+        newUser.verificationStatus=1
+        newUser.firstName=firstName
+        newUser.lastName=lastName
+
+        await this.userRepository.save(newUser)
+        
+
+        return next(new responseModel(req, res,'','approveRequest',200,'',newUser))
+
+    }
 
     
 

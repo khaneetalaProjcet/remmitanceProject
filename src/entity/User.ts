@@ -3,6 +3,7 @@ import { VerificationStatus } from "./enums/VerificationStatus"
 import { Invoice } from "./Invoice"
 import { Wallet } from "./Wallet";
 import { BankAccount } from "./BankAccount";
+import { TelegramUser } from "./TelegramUser";
 
 
 @Entity()
@@ -11,60 +12,21 @@ export class User {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column({nullable : true})
-    birthDate: string
-
     @Column({nullable:true,type:"varchar"})
     firstName: string
 
-    @Column({nullable:true})
-    lastName: string
-
-    @Column({nullable : true})
-    age: number 
-
-    @Column({nullable : true})
-    fatherName : string
-
-    @Column({nullable : true})
-    email : string
-
-    @Column({nullable : true})
-    password : string
-
     @Column({nullable:true,type:"varchar"})
-    refreshToken:string
+    lastName: string
 
     @Column({
         type: "enum",
         enum: VerificationStatus,
-        default: VerificationStatus.PENDING
+        default: VerificationStatus.INIT
     })    
     verificationStatus : VerificationStatus
 
-    @Column({nullable : true})
-    gender : boolean
-
-    @Column({nullable : true})
-    identityNumber : string
-
-    @Column({nullable : true})
-    identitySerial : string
-
-    @Column({nullable : true})
-    identitySeri : string
-
-    @Column({nullable : true})
-    officeName : string
-    
-    @Column({nullable : true})
-    liveStatus : boolean
-   
-    @Column()
+    @Column({type:"varchar"})
     phoneNumber : string
-
-    @Column({nullable : true})
-    nationalCode : string
     
     @OneToMany(() => Invoice , (invoice)=> invoice.seller, {nullable : true})
     sells : Invoice[]
@@ -74,15 +36,12 @@ export class User {
 
     @OneToOne(() => Wallet, (wallet) => wallet.user, { cascade: true })
     wallet: Wallet;
+
+    @OneToOne(() => TelegramUser, (telegram) => telegram.user, { cascade: true })
+    telegram: TelegramUser;
     
     @OneToMany(() => BankAccount , (bankAccount)=> bankAccount.owner , {nullable : true,cascade: true})
     bankAccounts : BankAccount[]
-
-    @Column({nullable : true , default : '' , type : 'varchar'})
-    identityTraceCode : string;
-
-    @Column({ default: false })
-    isSystemUser : boolean
 
     @Column({ default: false })
     isHaveBank : boolean
@@ -92,7 +51,7 @@ export class User {
 
     @Column({type:"varchar",nullable:true})
     time:string
-
+    
     @CreateDateColumn()
     createdAt: Date
 
@@ -101,7 +60,6 @@ export class User {
         
     @DeleteDateColumn()
     deletedAt : Date
-    
     
 }
 

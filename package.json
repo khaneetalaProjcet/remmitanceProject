@@ -28,6 +28,7 @@
       "jsonwebtoken": "^9.0.2",
       "kavenegar": "^1.1.4",
       "node-cache": "^5.1.2",
+      "node-telegram-bot-api": "^0.66.0",
       "nodemon": "^3.1.9",
       "pg": "^8.4.0",
       "reflect-metadata": "^0.1.13",

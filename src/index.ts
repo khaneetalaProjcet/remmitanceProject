@@ -11,6 +11,8 @@ import expressWinston from 'express-winston'
 import helmet from 'helmet'
 import hpp from 'hpp'
 import cors from 'cors'
+import "./services/telegramBot/bot"
+
 
 AppDataSource.initialize().then(async () => {
     

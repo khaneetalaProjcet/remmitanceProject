@@ -1,8 +1,10 @@
 export enum InvoiceStatus{
-    INIT ,
+    PENDING ,
     APPROVE,
     REJECT,
     PENDING_FOR_PAY,
+    PENDING_FOR_APPROVE_PAY,
     APPROVE_FOR_PAY,
     REJECT_FOR_PAY
 }
+

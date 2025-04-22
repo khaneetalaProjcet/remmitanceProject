@@ -1,9 +1,8 @@
-import { body } from 'express-validator';
+import { body ,} from 'express-validator';
 
 const InvoiceType = {
     SELL: 0,
     BUY: 1,
-   
 };
 
 export const invoiceBody = [
@@ -12,3 +11,8 @@ export const invoiceBody = [
     body('goldPrice').notEmpty().withMessage('ورودی نامعتبر است'),
     body('totalPrice').notEmpty().withMessage('ورودی نامعتبر است'),
 ]
+
+// export const filterInvoice=[
+//     body('type').withMessage('ورودی نامعتبر است'),
+//     body('status').withMessage('ورودی نامعتبر است'),
+// ]

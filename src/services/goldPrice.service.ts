@@ -1,5 +1,6 @@
 import { AppDataSource } from "../data-source";
 import { Request, Response,NextFunction } from "express";
+import axios from "axios";
 import { GoldPrice } from "../entity/GoldPrice";
 import { responseModel } from "../utills/response.model";
 import cacher from "../services/cacher"
@@ -58,6 +59,12 @@ export class goldPriceService{
         }catch(err){
           
         }
+     }
+
+     async getRealPrice(){
+        const response=await axios.get('https://khaneetala.ir/api/goldPrice')
+        const realGoldPrice=response.data.buyPrice
+        return realGoldPrice
      }
 
      private async createDefaultFee(){

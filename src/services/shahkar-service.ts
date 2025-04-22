@@ -161,6 +161,65 @@ export class ShahkarService {
         }
     }
 
+    async checkMatchPhoneNumberAndCartNumber(info){
+        try {
+            const username = 'khanetala_pigsb'; 
+            const password = 'Ttb@78f7hLR'; 
+            
+            const credentials = `${username}:${password}`;
+            const base64Credentials = Buffer.from(credentials).toString('base64');   
+            const authHeader = `Basic ${base64Credentials}`;
+            const url = 'https://op2.pgsb.ir/NoavaranSP4/CardBirthDate';
+            const headers = {
+                'Accept-Language': 'fa',
+                'CLIENT-DEVICE-ID': '',
+                'CLIENT-IP-ADDRESS': '',
+                'CLIENT-USER-AGENT': 'User Agent',
+                'CLIENT-USER-ID': '09120000000',
+                'CLIENT-PLATFORM-TYPE': 'WEB',
+                'Content-Type': 'application/json',
+                'Cookie': 'cookiesession1=678B2889F7A5EFE5780B165D4D6783F0;',
+                'Authorization': authHeader 
+            };
+            
+            const data = {
+                card_number: info.cardNumber,
+                national_code: info.nationalCode,
+                birth_date: info.birthDate
+            };
+            let response = await axios.post(url, data, { headers }) 
+              if(response.status == 200){
+                if (response.data) {
+                    return response.data.match
+                }
+              }  else{
+                return false
+              }
+        } catch (error) {
+            console.log("error in checkMatchPhoneNumberAndCartNumber" , error);
+            return false
+        }
+    }
+    async convertCardToSheba(cardNumber){
+        try {
+            let body = {
+                cardNumber
+            }
+            let url = "https://drapi.ir/rest/api/main/convertCardToSheba/v1.0/convertcardtosheba"
+            let shahkarToken = await this.getToken()
+            let res = await axios.post(url,body, {headers : { 'Authorization' : shahkarToken }})
+            console.log("ressssssssss",res);
+            if(res.status == 200){
+                return res.data
+            }else{
+                return null
+            }
+        } catch (error) {
+            console.log('error in convert to sheba' , error.message);
+            return null
+        }
+    }
+
     private async getToken(){
         let authUrl = process.env.AUTH_URL
         try {

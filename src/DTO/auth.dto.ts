@@ -19,5 +19,10 @@ export const logout=[
     body('refreshToken').notEmpty().isString().withMessage('  توکن نا معتبر'),
 ]
 
+export const approve=[
+    body('userName').notEmpty().isString().withMessage(' نامعتبر است'),
+    body('lastName').notEmpty().isString().withMessage(' نامعتبر است'),
+]
+
 
 

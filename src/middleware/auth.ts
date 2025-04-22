@@ -17,12 +17,12 @@ declare global {
 
 export const authMiddlewareUser = async (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.header('Authorization');
-
+    console.log('token>>>')
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return res.status(401).json({ message: 'No token provided' });
     }
 
-    const token = authHeader.replace('Bearer ', '');
+    var token = req.headers.authorization.split(' ')[1];
 
     
 
@@ -51,7 +51,7 @@ export const authMiddlewareUserRefreshToken = async (req: Request, res: Response
         return res.status(401).json({ message: 'No token provided' });
     }
 
-    const token = authHeader.replace('Bearer ', '');
+    var token = req.headers.authorization.split(' ')[1];
 
     console.log("tt",token);
     
@@ -84,16 +84,16 @@ export const authMiddlewareAdmin = async (req: Request, res: Response, next: Nex
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return res.status(401).json({ message: 'No token provided' });
     }
+    console.log('token>>>>' , req.headers.authorization)
 
-    const token = authHeader.replace('Bearer ', '');
-
+    var token = req.headers.authorization.split(' ')[1];
+    console.log('token>>>>' , token)
     try {
         const secretKey = process.env.JWT_SECRET_KEY_ADMIN; 
         const decoded = jwt.verify(token, secretKey) as JwtPayload;
         req.admin = { id: decoded.id ,firstName:decoded.firstName,lastName:decoded.lastName ,phoneNumber:decoded.phoneNumber,role:decoded.role , isBlocked:decoded.isBlocked };
         console.log(decoded);
         next(); 
-
     } catch (error) {
         console.error(error);
         return next(new responseModel(req,res,"کاربر اجازه دسترسی ندارد","admin",401,"کاربر اجازه دسترسی ندارد",null))

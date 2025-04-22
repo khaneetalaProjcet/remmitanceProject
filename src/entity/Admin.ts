@@ -1,5 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, DeleteDateColumn, OneToMany, JoinColumn, JoinTable, ManyToMany } from "typeorm"
 import { accessPoint } from "./accessPoint";
+import {Invoice}  from "./Invoice";
+import { OfferInvoice } from "./OfferInvoice";
 
 
 
@@ -33,6 +35,12 @@ export class Admin {
     @ManyToMany(()=>accessPoint )
     @JoinTable()
     accessPoints : accessPoint[];
+
+
+    @ManyToMany(()=>Invoice )
+    @JoinTable()
+    invoices: Invoice[];
+
 
     @CreateDateColumn()
     createdAt : Date;

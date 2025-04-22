@@ -8,31 +8,55 @@ import {User} from "../entity/User"
 import {accessPoint} from "../entity/accessPoint"
 import { responseModel } from "../utills/response.model";
 import bcrypt from 'bcrypt'
+import { AppBankAccount } from "../entity/AppBankAccount";
+import {  validationResult } from "express-validator";
+import { TelegramUser } from "../entity/TelegramUser";
 
 
 export class AdminController{
     private adminRepository=AppDataSource.getRepository(Admin)
     private accessPointRepository=AppDataSource.getRepository(accessPoint)
+    private userRepository=AppDataSource.getRepository(User)
     private jwtService=new JwtGenerator()
+    private telegramUserRepository=AppDataSource.getRepository(TelegramUser)
+    private invoiceRepository=AppDataSource.getRepository(Invoice)
+    private appBankRepository=AppDataSource.getRepository(AppBankAccount)
+
+    /**
+     * manage admin section
+     * @param req 
+     * @param res 
+     * @param next 
+     * @returns 
+     */
     async registerAdmin(req: Request, res: Response, next: NextFunction){
-        const {
-            firstName,
-            lastName,
-            phoneNumber,
-            password,
-        } =req.body
+        const bodyError = validationResult(req)
+         if (!bodyError.isEmpty()) {
+           return next(new responseModel(req, res,bodyError['errors'][0].msg,'admin',400,bodyError['errors'][0].msg ,null))
+         }  
+            const {
+                firstName,
+                lastName,
+                phoneNumber,
+                password,
+            } =req.body
+        console.log("req",req.body);
+            
         const hashPass=await bcrypt.hash(password, 10)
         let newAdmin = this.adminRepository.create({
             firstName,
             lastName,
             phoneNumber,
-            password:hashPass
+            password:hashPass,
         })
         await this.adminRepository.save(newAdmin)
         return  next(new responseModel(req, res,"ادمین ایجاد شد",'admin', 200,"ادمین ایجاد شد",null))
     }
-
     async loginAdmin(req: Request, res: Response, next: NextFunction){
+        const bodyError = validationResult(req)
+        if (!bodyError.isEmpty()) {
+          return next(new responseModel(req, res,bodyError['errors'][0].msg,'admin',400,bodyError['errors'][0].msg ,null))
+        }  
         console.log('body' , req.body)
         let admin = await this.adminRepository.findOne({
             where: {
@@ -73,32 +97,203 @@ export class AdminController{
         console.log('ttoken' , token)
         return next(new responseModel(req, res,null, 'login admin', 200, null, responseData))
     }
-    
-    async getAllInvoice(req: Request, res: Response, next: NextFunction){
+    async getAllAdmins(req: Request, res: Response, next: NextFunction){
+        // await 
+        const admins=await this.adminRepository.find()
+        return next(new responseModel(req, res,null, 'admin', 200, null, admins))
+    }
+
+
+   /**
+    * user section
+    * @param req 
+    * @param res 
+    * @param next 
+    * @returns 
+    */
+
+
+    async getApproveRequest(req: Request, res: Response, next: NextFunction){
+        const users=await this.userRepository.find({where:{verificationStatus:1}})
+        return next(new responseModel(req, res,null, 'admin', 200, null, users))
 
     }
-    async getSellInvoicesWithStatus(req: Request, res: Response, next: NextFunction){
+    async approveUser(req: Request, res: Response, next: NextFunction){
+        const userId=req.params.id
 
+        const user=await this.userRepository.findOneBy({id:+userId})
+
+        if(!user){
+            return  next(new responseModel(req, res,"کاربر وجود ندارد",'profile', 402,"کاربر وجود ندارد",null))
+        }
+
+        user.verificationStatus=2
+
+        await this.userRepository.save(user)
+        return next(new responseModel(req, res,null, 'admin', 200, null, user))
+
+    }
+    async rejectUser(req: Request, res: Response, next: NextFunction){
+        const userId=req.params.id
+
+        const user=await this.userRepository.findOneBy({id:+userId})
+
+        if(!user){
+            return  next(new responseModel(req, res,"کاربر وجود ندارد",'profile', 402,"کاربر وجود ندارد",null))
+        }
+        const telUser=await this.telegramUserRepository.findOne({where:{user:{id:+userId}}})
+
+        if(telUser){
+            telUser.authState="rejected"
+        }
+
+        user.verificationStatus=3
+
+        await this.userRepository.save(user)
+        return next(new responseModel(req, res,null, 'admin', 200, null, user))
+    }
+    async getAllUser(req: Request, res: Response, next: NextFunction){
+        const users=await this.userRepository.find()
+        return next(new responseModel(req, res,null, 'admin', 200, null, users))
+    }
+
+ 
+
+    /**
+     * invoice section
+     * @param req 
+     * @param res 
+     * @param next 
+     * @returns 
+     */
+
+    async getSellInvoicesWithStatus(req: Request, res: Response, next: NextFunction){
+        const type=0
+        const status=+req.params.status
+        const invoices=await this.invoiceRepository.find({where:{status,type},relations:["seller","bankAccount","appBankAccount","admin","accounter"]})
+        return next(new responseModel(req, res,null, 'admin', 200, null, invoices))
     }
     async getBuyInvoicesWithStatus(req: Request, res: Response, next: NextFunction){
-        
+        const type=1
+        const status=+req.params.status
+        const invoices=await this.invoiceRepository.find({where:{status,type},relations:["buyer","bankAccount","appBankAccount","admin","accounter"]})
+        return next(new responseModel(req, res,null, 'admin', 200, null, invoices))
     }
 
     async getAllSellInvoice(req: Request, res: Response, next: NextFunction){
-
-    }
-    
+        const type=0
+        const invoices=await this.invoiceRepository.find({where:{type},relations:["seller","bankAccount","appBankAccount","admin","accounter"]})
+        return next(new responseModel(req, res,null, 'admin', 200, null, invoices))
+    }    
     async getAllBuyInvoice(req: Request, res: Response, next: NextFunction){
-
+        const type=1
+        const invoices=await this.invoiceRepository.find({where:{type},relations:["buyer","bankAccount","appBankAccount","admin","accounter"]})
+        return next(new responseModel(req, res,null, 'admin', 200, null, invoices))
     }
    
-    async approveSellInvoice(){}
+    async approveSellInvoice(req: Request, res: Response, next: NextFunction){
+         const invoiceId=+req.params.id
+         const description=req.body.description
+         const queryRunner = AppDataSource.createQueryRunner()
+         await queryRunner.connect()
+         await queryRunner.startTransaction()
+         try{
+            const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
+            const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId}})
+            invoice.status=1
+            invoice.admins=[admin]
+            invoice.description=description
+            await queryRunner.manager.save(invoice)
+            await queryRunner.commitTransaction()
+         }catch(err){
+            await queryRunner.rollbackTransaction()
+            console.log("error",err);
+            return next(new responseModel(req, res,"خطای داخلی سیستم",'invoice', 500,"خطای داخلی سیستم",null))
+         }finally{
+            console.log('transaction released')
+            await queryRunner.release()
+         }
+        
+    }
 
-    async rejectSellInvoice(){}
+    async rejectSellInvoice(req: Request, res: Response, next: NextFunction){
+        const invoiceId=+req.params.id
+         const description=req.body.description
+         const queryRunner = AppDataSource.createQueryRunner()
+         await queryRunner.connect()
+         await queryRunner.startTransaction()
+         try{
+            const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
+            const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId}})
+            invoice.status=2
+            invoice.admins=[admin]
+            invoice.description=description
+            await queryRunner.manager.save(invoice)
+            await queryRunner.commitTransaction()
+         }catch(err){
+            await queryRunner.rollbackTransaction()
+            console.log("error",err);
+            return next(new responseModel(req, res,"خطای داخلی سیستم",'invoice', 500,"خطای داخلی سیستم",null))
+         }finally{
+            console.log('transaction released')
+            await queryRunner.release()
+         }
 
-    async approveBuyInvoice(){}
+    }
 
-    async rejectBuyInvoice(){}
+    async approveBuyInvoice(req: Request, res: Response, next: NextFunction){
+        const invoiceId=+req.params.id
+        const description=req.body.description
+        const appBankAccountId=req.body.appBankAccountId
+        const queryRunner = AppDataSource.createQueryRunner()
+        await queryRunner.connect()
+        await queryRunner.startTransaction()
+        try{
+           const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
+           const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId}})
+           const appBank=await this.appBankRepository.findOne({where:{id:appBankAccountId}})
+           invoice.status=1
+           invoice.admins=[admin]
+           invoice.description=description
+           invoice.appBankAccount=appBank
+           await queryRunner.manager.save(invoice)
+           await queryRunner.commitTransaction()
+        }catch(err){
+           await queryRunner.rollbackTransaction()
+           console.log("error",err);
+           return next(new responseModel(req, res,"خطای داخلی سیستم",'invoice', 500,"خطای داخلی سیستم",null))
+        }finally{
+           console.log('transaction released')
+           await queryRunner.release()
+        }
+    }
+
+    async rejectBuyInvoice(req: Request, res: Response, next: NextFunction){
+        const invoiceId=+req.params.id
+        const description=req.body.description
+        const queryRunner = AppDataSource.createQueryRunner()
+        await queryRunner.connect()
+        await queryRunner.startTransaction()
+        try{
+           const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
+           const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId}})
+           invoice.status=2
+           invoice.admins=[admin]
+           invoice.description=description
+           await queryRunner.manager.save(invoice)
+           await queryRunner.commitTransaction()
+        }catch(err){
+           await queryRunner.rollbackTransaction()
+           console.log("error",err);
+           return next(new responseModel(req, res,"خطای داخلی سیستم",'invoice', 500,"خطای داخلی سیستم",null))
+        }finally{
+           console.log('transaction released')
+           await queryRunner.release()
+        }
+    }
+
+
+   
 
 
 

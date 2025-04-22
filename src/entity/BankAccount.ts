@@ -1,5 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, UpdateDateColumn, DeleteDateColumn } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, UpdateDateColumn, DeleteDateColumn, ManyToMany, JoinTable, OneToMany } from "typeorm"
 import { User } from "./User"
+import { Invoice } from "./Invoice"
+import { OfferInvoice } from "./OfferInvoice"
 
 @Entity()
 export class BankAccount {
@@ -22,7 +24,16 @@ export class BankAccount {
     @Column({default : false})
     isVerified : boolean
 
-   @CreateDateColumn()
+    @OneToMany(() => Invoice,(invoice)=>invoice.bankAccount, { onDelete: "CASCADE" })
+    invoices: Invoice[];
+
+    @OneToMany(()=>OfferInvoice,(invoice)=>invoice.bankAccount, { onDelete: "CASCADE" })
+    offerInvoices: OfferInvoice[];
+
+    @Column({default :false})
+    isActive : boolean
+
+    @CreateDateColumn()
     createdAt: Date
    
     @UpdateDateColumn()

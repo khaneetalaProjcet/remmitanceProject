@@ -12,8 +12,12 @@ import {WalletTransaction} from "./entity/WalletTransaction"
 import {accessPoint} from "./entity/accessPoint"
 import { GoldPrice } from "./entity/GoldPrice"
 import { Fee } from "./entity/Fee"
+import { Setting } from "./entity/Setting"
+import { AppBankAccount } from "./entity/AppBankAccount"
+import { OfferInvoice } from "./entity/OfferInvoice"
 
 import {config} from "dotenv"
+import { TelegramUser } from "./entity/TelegramUser"
 
 config()
 
@@ -26,7 +30,7 @@ export const AppDataSource = new DataSource({
     database: process.env.DB_NAME ,
     synchronize: true,
     logging: false,
-    entities: [Admin,BankAccount,Invoice,InvoiceType,PaymentInfo,User,Otp,Wallet,WalletTransaction,accessPoint,GoldPrice,Fee],
+    entities: [TelegramUser,OfferInvoice,AppBankAccount,Setting,Admin,BankAccount,Invoice,InvoiceType,PaymentInfo,User,Otp,Wallet,WalletTransaction,accessPoint,GoldPrice,Fee],
     migrations: [],
     subscribers: [],
 })

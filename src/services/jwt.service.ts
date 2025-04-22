@@ -6,7 +6,7 @@ import { jwtGeneratorInterfaceAdmin,jwtGeneratorInterfaceUser } from '../interfa
  export class JwtGenerator{
 
     async tokenizeAdminToken(data:jwtGeneratorInterfaceAdmin){
-        return jwt.sign(data , process.env.JWT_SECRET_KEY_ADMIN , {'expiresIn' : '1H'})
+        return jwt.sign(data , process.env.JWT_SECRET_KEY_ADMIN , {'expiresIn' : '1h'})
     }
 
     async tokenizeUserToken(data:jwtGeneratorInterfaceUser){
@@ -14,7 +14,7 @@ import { jwtGeneratorInterfaceAdmin,jwtGeneratorInterfaceUser } from '../interfa
     }
 
     async tokenizeUserRefreshToken(data:jwtGeneratorInterfaceUser){
-        return jwt.sign(data ,process.env.JWT_SECRET_KEY_USER_REFRESH, {'expiresIn' : '1H'})
+        return jwt.sign(data ,process.env.JWT_SECRET_KEY_USER_REFRESH, {'expiresIn' : '1h'})
     }
 
 }

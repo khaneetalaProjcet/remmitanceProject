@@ -132,10 +132,20 @@ export class AuthController {
     }
 
     
-
-
+    async getTelegramOtp (req: Request, res: Response, next: NextFunction){
+        
+         const user=await this.userRepository.findOne({where:{id:req.user.id},relations:["telegram"]})
+         
+         if(user.telegram){
+            return next(new responseModel(req, res,'','get telegram otp',200,'',user.telegram.otp))
+         }else{
+            return next(new responseModel(req, res,'not found','get telegram otp',403,'notfound',null))
+         }
+           
+    }
     
 
+     
 
 
 }   

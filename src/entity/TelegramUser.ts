@@ -12,7 +12,7 @@ export class TelegramUser {
     @JoinColumn()
     user: User;
 
-    @Column({type:"bigint"})
+    @Column({type:"bigint",nullable:true})
     chatId: number;
 
     @Column({ type: "varchar" , default:"awaiting_phone"})
@@ -20,6 +20,9 @@ export class TelegramUser {
 
     @Column({ type: "varchar" , nullable:true})
     state: string;
+   
+    @Column({nullable:true , type:"varchar"})
+    otp: string
     
     @CreateDateColumn()
     createdAt : Date;

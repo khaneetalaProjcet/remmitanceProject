@@ -18,13 +18,20 @@ export async function  handleAuth(bot, msg) {
     await clearMenu(bot,chatId,'خوش آمدید! لطفا شماره تلفن خود را وارد کنید:')
     return;
   }
+  if(text=='ویرایش شماره تلفن'){
+    telUser.authState='awaiting_phone' 
+    await telegramUserRepository.save(telUser)
+    await clearMenu(bot,chatId,' لطفا شماره تلفن خود را وارد کنید')
+    return ;
+  }
   
 
   if (!telUser) {
     // ایجاد پروفایل اولیه
     const newTelUser=telegramUserRepository.create({chatId})
-    telegramUserRepository.save(newTelUser)
+    await telegramUserRepository.save(newTelUser)
     // bot.sendMessage(chatId, ' لطفا شماره تلفن خود را وارد کنید');
+    
     await clearMenu(bot,chatId,' لطفا شماره تلفن خود را وارد کنید')
     return;
   }
@@ -37,9 +44,6 @@ export async function  handleAuth(bot, msg) {
         bot.sendMessage(chatId, 'فرمت شماره تلفن اشتباه است');
         break;
       }
-
-      
-
       const user=await userRepository.findOne({where:{phoneNumber:result.phone}})
       
       if(!user){
@@ -59,16 +63,33 @@ export async function  handleAuth(bot, msg) {
         break;
       }
 
-      
+      const otp=generateOTP(5)
+      // const otp="11111"
+      telUser.otp=otp
       telUser.user=user
-      telUser.authState='authenticated' 
-      telUser.state="in_main_menue"
+      telUser.authState='awating_otp' 
+      
       await telegramUserRepository.save(telUser)
       await userRepository.save(user)
-
-      await bot.sendMessage(chatId, 'احراز هویت با موفقیت انجام شد.');
-      showMainMenu(bot, chatId,'برات چه کاری انجام بدم');
+      bot.sendMessage(chatId,'وارد سایت شوید در قسمت پروفایل و کد احراز هویتی را ارسال کنید', {
+        reply_markup: {
+          keyboard: [ ['ویرایش شماره تلفن']],
+          resize_keyboard: true
+        }
+      });
       break;
+
+     case "awating_otp" :
+     if(telUser.otp!==text){
+      await bot.sendMessage(chatId,  "کد نا معتبر می باشد");
+      break ;
+     }
+     telUser.authState="authenticated"
+     telUser.state="in_main_menue"
+     await telegramUserRepository.save(telUser)
+     await bot.sendMessage(chatId, 'احراز هویت با موفقیت انجام شد.');
+     showMainMenu(bot, chatId,'برات چه کاری انجام بدم');
+     break;
 
     default:
       clearMenu(bot,chatId)
@@ -107,4 +128,13 @@ const convertPersianToEnglish = (dateStr : string) => {
 
   return dateStr.replace(/[۰-۹]/g, (char) => persianToEnglishMap[char]);
 };
+
+const  generateOTP=(limit)=>{          
+  var digits = '0123456789';
+  let OTP = '';
+  for (let i = 0; i < limit; i++ ) {
+      OTP += digits[Math.floor(Math.random() * 10)];
+  }
+  return OTP;
+}
 

@@ -20,7 +20,7 @@ export class InvoiceController{
     private bankAccountRepository=AppDataSource.getRepository(BankAccount)
     private goldPriceService=new goldPriceService()
     private settingService=new settingService()
-     private bot=new TelegramBot(token);
+    private bot=new TelegramBot(token);
 
     private  generateInvoice(){
         return (new Date().getTime()).toString()
@@ -81,7 +81,7 @@ export class InvoiceController{
                 return next(new responseModel(req, res,"کاربر پیدا نشد",'create Invoice', 400,"کاربر پیدا نشد",null))
             }
             if(!user.telegram){
-                return next(new responseModel(req, res,"کاربر در ربات پیدا نشد",'create Invoice', 400,"کاربر در ربات پیدا نشد",null))
+                return next(new responseModel(req, res,"کاربر در ربات تلگرام پیدا نشد",'create Invoice', 400,"کاربر در ربات تلگرام پیدا نشد",null))
             }
             // const userBankAccount : BankAccount=await this.bankAccountRepository.findOne({where:{isActive:true,owner:{id:req.user.id}}})
             // if(!userBankAccount){
@@ -127,18 +127,20 @@ export class InvoiceController{
                                            ${date + " "+ time}
                                  ثبت شد و در حال بررسی می باشد  
                 `
-            }else{
-                message=`کاربر گرامی درخواست حواله خرید شما
-                 به مقدار
-                ${goldWeight}
-        به مبلغه 
-        ${totalPrice}
-        به شماره فاکتور
-        ${invoiceId}
-        در تاریخ و ساعت 
-        ${date + " "+ time}
-        ثبت شد و در حال بررسی می باشد     
-`
+            }else{ 
+                 message=  `کاربر گرامی درخواست حواله خرید شما
+                                                      به مقدار
+                                                  ${goldWeight}
+                                                      به مبلغه 
+                                                 ${totalPrice}
+                                               به شماره فاکتور
+                                                  ${invoiceId}
+                                               در تاریخ و ساعت 
+                                           ${date + " "+ time}
+                                 ثبت شد و در حال بررسی می باشد  
+                `
+                
+
 
             }
             showMainMenu(this.bot,user.telegram.chatId,message)
@@ -157,6 +159,8 @@ export class InvoiceController{
 
 
     }
+
+
     async getAllInvoiceForUser(req: Request, res: Response, next: NextFunction){
         
         const all=await this.invoiceRepository.find({where:[
@@ -168,6 +172,8 @@ export class InvoiceController{
         return next(new responseModel(req, res,null,' user invoice', 200,null,all))
 
     }
+
+
     async getOneInvoice(req: Request, res: Response, next: NextFunction){
         const id=+req.params.id
         try{
@@ -184,6 +190,8 @@ export class InvoiceController{
         }
 
     }
+
+
     async getAllInvoiceForUserFilter(req: Request, res: Response, next: NextFunction){
        const {status , type} =req.body
        console.log("body",req.body);
@@ -221,7 +229,7 @@ export class InvoiceController{
     }
 
 
-
+   
 
 
 

@@ -57,6 +57,13 @@ export const Routes = [
     action: "approveRequest",
     middlware:[authMiddlewareUser,approve]
 },
+{
+    method: "get",
+    route: "/auth/telotp",
+    controller: AuthController,
+    action: "getTelegramOtp",
+    middlware:[authMiddlewareUser]
+},
 
 /**
  * ?? User Routes
@@ -75,6 +82,13 @@ export const Routes = [
     controller: UserController,
     action: "profile",
     middlware:[authMiddlewareUser]
+},
+{
+    method: "get",
+    route: "/user/remove/:phone",
+    controller: UserController,
+    action: "deleteUser",
+    middlware:[] 
 },
 {
     method: "post",
@@ -130,7 +144,7 @@ export const Routes = [
     route: "/admin/login",
     controller: AdminController,
     action: "loginAdmin",
-    middlware:[loginAdmin]
+    middlware:[]
 },
 {
     method: "get",
@@ -167,7 +181,42 @@ export const Routes = [
     action: "getAllAdmins",
     middlware:[authMiddlewareAdmin] 
 },
+{
+    method: "post",
+    route: "/admin/invoice/buyapprove/:id",
+    controller: AdminController,
+    action: "approveBuyInvoice",
+    middlware:[authMiddlewareAdmin] 
+},
+{
+    method: "post",
+    route: "/admin/invoice/sellapprove/:id",
+    controller: AdminController,
+    action: "approveSellInvoice",
+    middlware:[authMiddlewareAdmin] 
+},
+{
+    method: "post",
+    route: "/admin/invoice/sellreject/:id",
+    controller: AdminController,
+    action: "rejectSellInvoice",
+    middlware:[authMiddlewareAdmin] 
+},
+{
+    method: "post",
+    route: "/admin/invoice/buyreject/:id",
+    controller: AdminController,
+    action: "rejectBuyInvoice",
+    middlware:[authMiddlewareAdmin] 
+},
 
+{
+    method: "get",
+    route: "/admin/invoice/all",
+    controller: AdminController,
+    action: "getAllInvoice",
+    middlware:[authMiddlewareAdmin] 
+},
 
 
 /**
@@ -235,6 +284,14 @@ export const Routes = [
     action: "createAppBankAccount",
     middlware:[authMiddlewareAdmin,CreateAppBankAccount]
 },
+{
+    method: "get",
+    route: "/appbank/delete/:id",
+    controller: bankAccountController,
+    action: "deleteAppBankAccount",
+    middlware:[authMiddlewareAdmin]
+}
+
 ,{
     method: "get",
     route: "/bank/active/:id",
@@ -249,6 +306,15 @@ export const Routes = [
     action: "deleteBankAccount",
     middlware:[authMiddlewareUser]
 },
+{
+    method: "get",
+    route: "/appbank/all",
+    controller: bankAccountController,
+    action: "getAllBankAccount",
+    middlware:[authMiddlewareAdmin]
+},
+
+
 
 
 

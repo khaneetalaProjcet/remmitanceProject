@@ -128,6 +128,13 @@ export class bankAccountController {
        
 
     }
+    async deleteAppBankAccount(req: Request, res: Response, next: NextFunction){
+        const id=+req.params.id
+        const deleteBankAccount=await this.appBankAccount.findOne({where:{id}})
+        await this.appBankAccount.remove(deleteBankAccount)
+          return  next(new responseModel(req, res,null,'create bank',200,null,deleteBankAccount))  
+
+    }
     async activeBankAccount(req: Request, res: Response, next: NextFunction){
         const userId=req.user.id
         const newActiveBankAccountId=req.params.id
@@ -155,6 +162,11 @@ export class bankAccountController {
         }
         await this.bankAccountRepository.remove(bankaccount)
         return  next(new responseModel(req, res,null,'delete bank',200,null,null))  
+    }
+
+    async getAllBankAccount(req: Request, res: Response, next: NextFunction){
+        const all=await this.appBankAccount.find()
+        return  next(new responseModel(req, res,"all app Bank",'profile', 200,"all app Bank",all))
     }
 
 

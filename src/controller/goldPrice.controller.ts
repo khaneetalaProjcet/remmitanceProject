@@ -19,9 +19,10 @@ export class GoldPriceController{
 
     async setGoldPrice(req: Request, res: Response, next: NextFunction){
       try{
-        const {goldPrice,sellFee,buyFee} =req.body
+        const {price,sellFee,buyFee} =req.body
+        console.log("req",req.body);  
         const newgoldPrice= this.goldPriceRepository.create({
-          Geram18:goldPrice
+          Geram18:price
         })
         await this.goldPriceRepository.save(newgoldPrice)
         const fee=await this.feeRepository.find()
@@ -34,7 +35,7 @@ export class GoldPriceController{
         mainFee.buy=buyFee?buyFee:mainFee.buy
         mainFee.sell=sellFee?sellFee:mainFee.sell
         await this.feeRepository.save(mainFee)
-        await cacher.setter("price",goldPrice)
+        await cacher.setter("price",price)
         return next(new responseModel(req, res,null,'shahkar', 200,null,newgoldPrice))
       }catch(err){
         console.log("err",err);
@@ -66,8 +67,8 @@ export class GoldPriceController{
                 const sellPrice=this.estimateFeeInPrice(price,fee.sell)
                 const buyPrice=this.estimateFeeInPrice(price,fee.buy)
                 const setting=await this.settingService.getSetting()
-                // const realGoldPrice=await this.goldPriceService.getRealPrice()
-                return next(new responseModel(req, res,null,'goldprice', 200,null,{price,sellPrice,buyPrice,sellFee:fee.sell,buyFee:fee.buy,setting,realGoldPrice:6900000}))
+                const realGoldPrice=await this.goldPriceService.getRealPrice()
+                return next(new responseModel(req, res,null,'goldprice', 200,null,{price,sellPrice,buyPrice,sellFee:fee.sell,buyFee:fee.buy,setting,realGoldPrice}))
             } catch (error) {
                 let lastIndex = lastGoldPrice.length-1
                 let price = (+lastGoldPrice[lastIndex].Geram18)
@@ -76,8 +77,8 @@ export class GoldPriceController{
                 const buyPrice=this.estimateFeeInPrice(price,fee.buy)
                 // console.log("error in get gold price", error);
                 const setting=await this.settingService.getSetting()
-                // const realGoldPrice=await this.goldPriceService.getRealPrice()
-                return next(new responseModel(req, res,null,'goldprice', 200,null,{price,sellPrice,buyPrice,sellFee:fee.sell,buyFee:fee.buy,setting,realGoldPrice:6900000}))
+                const realGoldPrice=await this.goldPriceService.getRealPrice()
+                return next(new responseModel(req, res,null,'goldprice', 200,null,{price,sellPrice,buyPrice,sellFee:fee.sell,buyFee:fee.buy,setting,realGoldPrice}))
             }
         }else{
             // return {price : lastGoldPrice[0].Geram18 , change : 1000}
@@ -86,8 +87,8 @@ export class GoldPriceController{
             const sellPrice=this.estimateFeeInPrice(price,fee.sell)
             const buyPrice=this.estimateFeeInPrice(price,fee.buy)
             const setting=await this.settingService.getSetting()
-            // const realGoldPrice=await this.goldPriceService.getRealPrice()
-            return next(new responseModel(req, res,null,'goldprice', 200,null,{price,sellPrice,buyPrice,sellFee:fee.sell,buyFee:fee.buy,setting,realGoldPrice:6900000} ))
+            const realGoldPrice=await this.goldPriceService.getRealPrice()
+            return next(new responseModel(req, res,null,'goldprice', 200,null,{price,sellPrice,buyPrice,sellFee:fee.sell,buyFee:fee.buy,setting,realGoldPrice} ))
         }
        }catch(err){
         return next(new responseModel(req, res,"خطای داخلی سیستم",'send otp', 500,"خطای داخلی سیستم",null))
@@ -139,5 +140,8 @@ export class GoldPriceController{
       const finalPrice=+price+feePrice
       return finalPrice 
     }
+
+
+    
 
 }

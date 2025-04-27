@@ -24,6 +24,8 @@ bot.on('message', async (msg) => {
   if (!telUser||telUser.authState!=='authenticated') {
     console.log("here");
     console.log("salam");
+
+    
     
     return handleAuth(bot, msg);
   }

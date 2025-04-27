@@ -11,7 +11,9 @@ import bcrypt from 'bcrypt'
 import { AppBankAccount } from "../entity/AppBankAccount";
 import {  validationResult } from "express-validator";
 import { TelegramUser } from "../entity/TelegramUser";
-
+import TelegramBot from 'node-telegram-bot-api';
+import { showMainMenu } from "../services/telegramBot/menu";
+const token = process.env.TELEGRAM_BOT_TOKEN;
 
 export class AdminController{
     private adminRepository=AppDataSource.getRepository(Admin)
@@ -21,6 +23,7 @@ export class AdminController{
     private telegramUserRepository=AppDataSource.getRepository(TelegramUser)
     private invoiceRepository=AppDataSource.getRepository(Invoice)
     private appBankRepository=AppDataSource.getRepository(AppBankAccount)
+    private bot=new TelegramBot(token);
 
     /**
      * manage admin section
@@ -60,13 +63,13 @@ export class AdminController{
         console.log('body' , req.body)
         let admin = await this.adminRepository.findOne({
             where: {
-                phoneNumber: req.body.phoneNumber
-            },relations : ['accessPoints']
+                phoneNumber: req.body.phone
+            }
         })
-        let newAccessPoints = ['Dashboard']
-        for (let i of admin.accessPoints){
-            newAccessPoints.push(i.englishName)
-        }
+        console.log("log",req.body);
+        
+        console.log("fffffffffff",admin);
+        
         if (!admin) {
             console.log('its here')
             return next(new responseModel(req, res,'کاربر پیدا نشد','login admin', 403, 'کاربر پیدا نشد', null))
@@ -79,10 +82,10 @@ export class AdminController{
         if (!compare) {
             return next(new responseModel(req, res,'اطلاعات کاربری اشتباه است','login', 403,'اطلاعات کاربری اشتباه است', null))
         }
-        let accessPoints = await this.accessPointRepository.find({where : {
-            Admin : admin
-        }})
-        console.log(accessPoints)
+        
+
+        console.log("admin",admin);
+        
         let tokenData: jwtGeneratorInterfaceAdmin = {
             id: admin.id,
             firstName: admin.firstName,
@@ -91,11 +94,9 @@ export class AdminController{
             phoneNumber : admin.phoneNumber,
             role : admin.role
         }
-        console.log('token>>' , tokenData)
+        
         let token = await this.jwtService.tokenizeAdminToken(tokenData)
-        let responseData = { ...admin,accessPoints : newAccessPoints, token: token}
-        console.log('ttoken' , token)
-        return next(new responseModel(req, res,null, 'login admin', 200, null, responseData))
+        return next(new responseModel(req, res,null, 'login admin', 200, null, token))
     }
     async getAllAdmins(req: Request, res: Response, next: NextFunction){
         // await 
@@ -120,15 +121,16 @@ export class AdminController{
     }
     async approveUser(req: Request, res: Response, next: NextFunction){
         const userId=req.params.id
-
-        const user=await this.userRepository.findOneBy({id:+userId})
-
+        const user=await this.userRepository.findOne({where:{id:+userId},relations:["telegram"]})
         if(!user){
             return  next(new responseModel(req, res,"کاربر وجود ندارد",'profile', 402,"کاربر وجود ندارد",null))
         }
-
         user.verificationStatus=2
-
+        if(user.telegram){
+            user.telegram.authState="awaiting_phone"
+        await this.userRepository.save(user.telegram)
+            
+        }
         await this.userRepository.save(user)
         return next(new responseModel(req, res,null, 'admin', 200, null, user))
 
@@ -176,7 +178,12 @@ export class AdminController{
     async getBuyInvoicesWithStatus(req: Request, res: Response, next: NextFunction){
         const type=1
         const status=+req.params.status
-        const invoices=await this.invoiceRepository.find({where:{status,type},relations:["buyer","bankAccount","appBankAccount","admin","accounter"]})
+        const invoices=await this.invoiceRepository.find({where:{status,type},relations:["buyer","bankAccount","appBankAccount","admins"]})
+        return next(new responseModel(req, res,null, 'admin', 200, null, invoices))
+    }
+
+    async getAllInvoice(req: Request, res: Response, next: NextFunction){
+        const invoices=await this.invoiceRepository.find({relations:["buyer","bankAccount","appBankAccount","admins"]})
         return next(new responseModel(req, res,null, 'admin', 200, null, invoices))
     }
 
@@ -190,6 +197,8 @@ export class AdminController{
         const invoices=await this.invoiceRepository.find({where:{type},relations:["buyer","bankAccount","appBankAccount","admin","accounter"]})
         return next(new responseModel(req, res,null, 'admin', 200, null, invoices))
     }
+
+
    
     async approveSellInvoice(req: Request, res: Response, next: NextFunction){
          const invoiceId=+req.params.id
@@ -205,6 +214,7 @@ export class AdminController{
             invoice.description=description
             await queryRunner.manager.save(invoice)
             await queryRunner.commitTransaction()
+            return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
          }catch(err){
             await queryRunner.rollbackTransaction()
             console.log("error",err);
@@ -230,6 +240,7 @@ export class AdminController{
             invoice.description=description
             await queryRunner.manager.save(invoice)
             await queryRunner.commitTransaction()
+            return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
          }catch(err){
             await queryRunner.rollbackTransaction()
             console.log("error",err);
@@ -245,19 +256,62 @@ export class AdminController{
         const invoiceId=+req.params.id
         const description=req.body.description
         const appBankAccountId=req.body.appBankAccountId
+
+        console.log("invoceeId",invoiceId);
+        console.log("description",description);
+        console.log("appBanK",appBankAccountId);
+        
+        
+
         const queryRunner = AppDataSource.createQueryRunner()
         await queryRunner.connect()
         await queryRunner.startTransaction()
         try{
            const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
-           const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId}})
+           const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId},relations:["buyer"]})
+           console.log("invoice",invoice);
+           
+           const telegramUser=await this.telegramUserRepository.findOne({where:{user:{id:invoice.buyer.id}}})
            const appBank=await this.appBankRepository.findOne({where:{id:appBankAccountId}})
+           console.log("apppppp",appBank);
+           
            invoice.status=1
            invoice.admins=[admin]
            invoice.description=description
            invoice.appBankAccount=appBank
            await queryRunner.manager.save(invoice)
            await queryRunner.commitTransaction()
+           
+
+            const time= new Date().toLocaleString('fa-IR').split(',')[1]
+            const date= new Date().toLocaleString('fa-IR').split(',')[0]
+
+           
+            const message=  `کاربر گرامی درخواست حواله خرید شما
+                                                      به مقدار
+                                                  ${invoice.goldWeight}
+                                                      به مبلغه 
+                                                 ${invoice.totalPrice}
+                                               به شماره فاکتور
+                                                  ${invoice.invoiceId}
+                                               در تاریخ و ساعت 
+                                           ${date + " "+ time}
+                                                      تایید شد    
+    مبلغ حواله را به  این حساب واریز کرده و اطلاعت واریز را وارد نمایید    
+                                                                   شماره شبا   
+                                                                   ${appBank.shebaNumber}
+                                                                   شماره کارت 
+                                                                   ${appBank.cardNumber}
+                                                                   بانک
+                                                                   ${appBank.name}
+                                                                   به نام :
+                                                                    ${appBank.ownerName}
+
+                `       
+           showMainMenu(this.bot,telegramUser.chatId,message)      
+
+           return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
+
         }catch(err){
            await queryRunner.rollbackTransaction()
            console.log("error",err);
@@ -282,6 +336,7 @@ export class AdminController{
            invoice.description=description
            await queryRunner.manager.save(invoice)
            await queryRunner.commitTransaction()
+           return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
         }catch(err){
            await queryRunner.rollbackTransaction()
            console.log("error",err);
@@ -292,9 +347,16 @@ export class AdminController{
         }
     }
 
+    private  generateOTP(limit) {          
+        var digits = '0123456789';
+        let OTP = '';
+        for (let i = 0; i < limit; i++ ) {
+            OTP += digits[Math.floor(Math.random() * 10)];
+        }
+        return OTP;
+    }
 
-   
-
+    
 
 
 }

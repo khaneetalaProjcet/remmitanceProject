@@ -13,7 +13,7 @@ import {  validationResult } from "express-validator";
 import { TelegramUser } from "../entity/TelegramUser";
 import TelegramBot from 'node-telegram-bot-api';
 import { showMainMenu } from "../services/telegramBot/menu";
-const token = process.env.TELEGRAM_BOT_TOKEN;
+const token = process.env.TELEGRAM_BOT_TOKEN || "7622536105:AAFR0NDFR27rLDF270uuL5Ww_K0XZi61FCw";
 
 export class AdminController{
     private adminRepository=AppDataSource.getRepository(Admin)

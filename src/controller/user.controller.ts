@@ -8,7 +8,7 @@ import { TelegramUser } from "../entity/TelegramUser";
 import { responseModel } from "../utills/response.model";
 import TelegramBot from 'node-telegram-bot-api';
 import { runInThisContext } from "vm";
-const token = process.env.TELEGRAM_BOT_TOKEN;
+const token = process.env.TELEGRAM_BOT_TOKEN || "7622536105:AAFR0NDFR27rLDF270uuL5Ww_K0XZi61FCw";
 
 
 

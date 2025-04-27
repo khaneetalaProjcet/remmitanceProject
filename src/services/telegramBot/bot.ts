@@ -10,7 +10,7 @@ import {AppDataSource} from "./../../data-source"
 import { User } from "./../../entity/User";
 import { TelegramUser } from "./../../entity/TelegramUser";
 
-const token = process.env.TELEGRAM_BOT_TOKEN;
+const token = process.env.TELEGRAM_BOT_TOKEN || "7622536105:AAFR0NDFR27rLDF270uuL5Ww_K0XZi61FCw";
 const bot = new TelegramBot(token, { polling: true });
 
 // پیام‌های ورودی

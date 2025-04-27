@@ -10,7 +10,7 @@ import {settingService} from "../services/setting.service"
 import { BankAccount } from "../entity/BankAccount";
 import {showMainMenu} from "../services/telegramBot/menu"
 import TelegramBot from 'node-telegram-bot-api';
-const token = process.env.TELEGRAM_BOT_TOKEN;
+const token = process.env.TELEGRAM_BOT_TOKEN|| "7622536105:AAFR0NDFR27rLDF270uuL5Ww_K0XZi61FCw";
 
 
 export class InvoiceController{

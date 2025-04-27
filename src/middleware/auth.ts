@@ -28,7 +28,7 @@ export const authMiddlewareUser = async (req: Request, res: Response, next: Next
 
     try {
         
-        const secretKey = process.env.JWT_SECRET_KEY_USER ; 
+        const secretKey = process.env.JWT_SECRET_KEY_USER  || "69b9381954141365ff7be95516f16c252edcb37eb39c7a42eaaf6184d93bccb2cscavdfvsdvsdvcsacvdc"; 
         const decoded = jwt.verify(token, secretKey) as JwtPayload;
 
       
@@ -58,7 +58,7 @@ export const authMiddlewareUserRefreshToken = async (req: Request, res: Response
 
     try {
         
-        const secretKey = process.env.JWT_SECRET_KEY_USER_REFRESH ; 
+        const secretKey = process.env.JWT_SECRET_KEY_USER_REFRESH || "69b9381954141365ff7be95516f16c252edcb37eb39c7a42eaaf6184d93bccb2cscavdfvsdvsdvcsacvdcsacascsacv12432r" ; 
         console.log("secretKey");
         
         const decoded = jwt.verify(token, secretKey) as JwtPayload;
@@ -89,7 +89,7 @@ export const authMiddlewareAdmin = async (req: Request, res: Response, next: Nex
     var token = req.headers.authorization.split(' ')[1];
     console.log('token>>>>' , token)
     try {
-        const secretKey = process.env.JWT_SECRET_KEY_ADMIN; 
+        const secretKey = process.env.JWT_SECRET_KEY_ADMIN || "69b9381954141365ff7be95516f16c252edcb37eb39c7a42eaaf6184d93bccb2cscavdfvsdvsdv"; 
         const decoded = jwt.verify(token, secretKey) as JwtPayload;
         req.admin = { id: decoded.id ,firstName:decoded.firstName,lastName:decoded.lastName ,phoneNumber:decoded.phoneNumber,role:decoded.role , isBlocked:decoded.isBlocked };
         console.log(decoded);

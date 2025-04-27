@@ -1,7 +1,7 @@
 const  Kavenegar = require('kavenegar')
 
 export class SmsService{
-    private api = Kavenegar.KavenegarApi({apikey:process.env.KAVENEGAR_API_KEY});
+    private api = Kavenegar.KavenegarApi({apikey:process.env.KAVENEGAR_API_KEY || "7167656544666430374262632B61415374556A7A4A4D383170764A7843775142357A4B566B6E75493837633D"});
             sendOtpMessage(phoneNumber, otp) {
                 return new Promise((resolve, reject) => {
                     try {

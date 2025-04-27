@@ -5,7 +5,7 @@ import { User } from "../entity/User";
 
 
 
-const token = process.env.TELEGRAM_BOT_TOKEN;
+const token = process.env.TELEGRAM_BOT_TOKEN ;
 export class messageService{
    private telegramUserRepository=AppDataSource.getRepository(TelegramUser) 
    private userRepository=AppDataSource.getRepository(User) 

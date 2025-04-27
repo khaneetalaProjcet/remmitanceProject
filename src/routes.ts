@@ -137,7 +137,7 @@ export const Routes = [
     route: "/admin/register",
     controller: AdminController,
     action: "registerAdmin",
-    middlware:[registerNewAdmin]
+    middlware:[authMiddlewareAdmin,registerNewAdmin]
 },
 {
     method: "post",
@@ -258,7 +258,7 @@ export const Routes = [
     route: "/setting/change",
     controller: SettingController,
     action: "updateSetting",
-    middlware:[]
+    middlware:[authMiddlewareAdmin]
 },
 {
     method: "get",

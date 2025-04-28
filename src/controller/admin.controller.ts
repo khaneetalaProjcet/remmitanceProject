@@ -13,6 +13,7 @@ import {  validationResult } from "express-validator";
 import { TelegramUser } from "../entity/TelegramUser";
 import TelegramBot from 'node-telegram-bot-api';
 import { showMainMenu } from "../services/telegramBot/menu";
+import { Stream } from "stream";
 const token = process.env.TELEGRAM_BOT_TOKEN || "7622536105:AAFR0NDFR27rLDF270uuL5Ww_K0XZi61FCw";
 
 export class AdminController{
@@ -211,12 +212,30 @@ export class AdminController{
          await queryRunner.startTransaction()
          try{
             const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
-            const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId}})
+            const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId},relations:["seller"]})
+            const telegramUser=await this.telegramUserRepository.findOne({where:{user:{id:invoice.buyer.id}}})
             invoice.status=1
             invoice.admins=[admin]
             invoice.description=description
+            const time= new Date().toLocaleString('fa-IR').split(',')[1]
+            const date= new Date().toLocaleString('fa-IR').split(',')[0]
+             const message=  `کاربر گرامی درخواست حواله فروش شما
+                                                       به مقدار
+                                          ${invoice.goldWeight}
+                                                       به مبلغه 
+                                          ${invoice.totalPrice}
+                                                به شماره پیگیری
+                                           ${invoice.invoiceId}
+                                               در تاریخ و ساعت 
+                                            ${date + " "+ time}
+                                                      .تایید شد 
+                                                       توضیحات:   
+                                                 ${description}   
+                         ‍`
+
             await queryRunner.manager.save(invoice)
             await queryRunner.commitTransaction()
+            this.sendMessageWithInline(message,telegramUser.chatId,invoiceId)
             return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
          }catch(err){
             await queryRunner.rollbackTransaction()
@@ -237,13 +256,30 @@ export class AdminController{
          await queryRunner.startTransaction()
          try{
             const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
-            const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId}})
+            const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId},relations:["seller"]})
+            const telegramUser=await this.telegramUserRepository.findOne({where:{user:{id:invoice.buyer.id}}})
             invoice.status=2
             invoice.admins=[admin]
             invoice.description=description
+            const time= new Date().toLocaleString('fa-IR').split(',')[1]
+            const date= new Date().toLocaleString('fa-IR').split(',')[0]
 
             await queryRunner.manager.save(invoice)
             await queryRunner.commitTransaction()
+             const message=  `کاربر گرامی درخواست حواله فروش شما
+                                                       به مقدار
+                                          ${invoice.goldWeight}
+                                                       به مبلغه 
+                                          ${invoice.totalPrice}
+                                                به شماره پیگیری
+                                           ${invoice.invoiceId}
+                                               در تاریخ و ساعت 
+                                            ${date + " "+ time}
+                                                        . رد شد 
+                                                   دلیل رد شدن:   
+                                                ${description}   
+                         ‍`
+            showMainMenu(this.bot,telegramUser.chatId,message)              
             return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
          }catch(err){
             await queryRunner.rollbackTransaction()
@@ -255,12 +291,6 @@ export class AdminController{
          }
 
     }
-
-
-
-
-
-
 
     async approveBuyInvoice(req: Request, res: Response, next: NextFunction){
         const invoiceId=+req.params.id
@@ -375,7 +405,9 @@ export class AdminController{
 
 
 
-    
+   
+   
+   
 
     private  generateOTP(limit) {          
         var digits = '0123456789';
@@ -385,6 +417,23 @@ export class AdminController{
         }
         return OTP;
     }
+
+
+    sendMessageWithInline(message : string ,chatId : any ,invoiceId:any){
+       this.bot.sendMessage(chatId,message, {
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  { text: 'ارسال اطلاعات بانکی', callback_data: `pay-bank:${invoiceId}` },
+                  { text: 'هماهنگی تلفنی', callback_data: `pay-phone:${invoiceId}`},
+
+                ]
+              ]
+            }
+         });
+    }
+
+    
 
     
 

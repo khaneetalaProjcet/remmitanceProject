@@ -199,6 +199,9 @@ export class AdminController{
     }
 
 
+
+
+
    
     async approveSellInvoice(req: Request, res: Response, next: NextFunction){
          const invoiceId=+req.params.id
@@ -238,6 +241,7 @@ export class AdminController{
             invoice.status=2
             invoice.admins=[admin]
             invoice.description=description
+
             await queryRunner.manager.save(invoice)
             await queryRunner.commitTransaction()
             return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
@@ -251,6 +255,12 @@ export class AdminController{
          }
 
     }
+
+
+
+
+
+
 
     async approveBuyInvoice(req: Request, res: Response, next: NextFunction){
         const invoiceId=+req.params.id
@@ -287,27 +297,19 @@ export class AdminController{
             const date= new Date().toLocaleString('fa-IR').split(',')[0]
 
            
-            const message=  `کاربر گرامی درخواست حواله خرید شما
-                                                      به مقدار
-                                                  ${invoice.goldWeight}
-                                                      به مبلغه 
-                                                 ${invoice.totalPrice}
-                                               به شماره فاکتور
-                                                  ${invoice.invoiceId}
-                                               در تاریخ و ساعت 
-                                           ${date + " "+ time}
-                                                      تایید شد    
-    مبلغ حواله را به  این حساب واریز کرده و اطلاعت واریز را وارد نمایید    
-                                                                   شماره شبا   
-                                                                   ${appBank.shebaNumber}
-                                                                   شماره کارت 
-                                                                   ${appBank.cardNumber}
-                                                                   بانک
-                                                                   ${appBank.name}
-                                                                   به نام :
-                                                                    ${appBank.ownerName}
-
-                `       
+            const message= `کاربر گرامی،/n
+/n
+درخواست حواله خرید شما به مقدار **${invoice.goldWeight}**/n
+به مبلغ **${invoice.totalPrice}**/n
+به شماره پیگیری **${invoice.invoiceId}**/n
+در تاریخ و ساعت **${date} ${time}** تایید شد./n
+/n
+لطفا مبلغ حواله را به این حساب واریز کرده و اطلاعات واریز را وارد نمایید:/n
+/n
+- **شماره شبا:** ${appBank.shebaNumber}/n
+- **شماره کارت:** ${appBank.cardNumber}/n
+- **بانک:** ${appBank.name}/n
+            - **به نام:** ${appBank.ownerName}/n`
            showMainMenu(this.bot,telegramUser.chatId,message)      
 
            return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
@@ -329,13 +331,29 @@ export class AdminController{
         await queryRunner.connect()
         await queryRunner.startTransaction()
         try{
+           
            const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
            const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId}})
+           const telegramUser=await this.telegramUserRepository.findOne({where:{user:{id:invoice.buyer.id}}})
            invoice.status=2
            invoice.admins=[admin]
            invoice.description=description
+
+           const time= new Date().toLocaleString('fa-IR').split(',')[1]
+            const date= new Date().toLocaleString('fa-IR').split(',')[0]
            await queryRunner.manager.save(invoice)
            await queryRunner.commitTransaction()
+           const message= `کاربر گرامی،/n
+           /n
+           درخواست حواله خرید شما به مقدار **${invoice.goldWeight}**/n
+           به مبلغ **${invoice.totalPrice}**/n
+           به شماره پیگیری **${invoice.invoiceId}**/n
+           در تاریخ و ساعت **${date} ${time}** رد شد./n
+           /n
+           به دلیل /n
+           ${description}
+           `
+           showMainMenu(this.bot,telegramUser.chatId,message)  
            return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
         }catch(err){
            await queryRunner.rollbackTransaction()

@@ -333,7 +333,7 @@ export class AdminController{
         try{
            
            const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
-           const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId}})
+           const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId},relations:["buyer"]})
            const telegramUser=await this.telegramUserRepository.findOne({where:{user:{id:invoice.buyer.id}}})
            invoice.status=2
            invoice.admins=[admin]

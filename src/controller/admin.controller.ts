@@ -296,20 +296,24 @@ export class AdminController{
             const time= new Date().toLocaleString('fa-IR').split(',')[1]
             const date= new Date().toLocaleString('fa-IR').split(',')[0]
 
-           
-            const message= `کاربر گرامی،/n
-/n
-درخواست حواله خرید شما به مقدار **${invoice.goldWeight}**/n
-به مبلغ **${invoice.totalPrice}**/n
-به شماره پیگیری **${invoice.invoiceId}**/n
-در تاریخ و ساعت **${date} ${time}** تایید شد./n
-/n
-لطفا مبلغ حواله را به این حساب واریز کرده و اطلاعات واریز را وارد نمایید:/n
-/n
-- **شماره شبا:** ${appBank.shebaNumber}/n
-- **شماره کارت:** ${appBank.cardNumber}/n
-- **بانک:** ${appBank.name}/n
-            - **به نام:** ${appBank.ownerName}/n`
+            const message=  `کاربر گرامی درخواست حواله خرید شما
+                                                       به مقدار
+                                          ${invoice.goldWeight}
+                                                       به مبلغه 
+                                          ${invoice.totalPrice}
+                                                به شماره پیگیری
+                                           ${invoice.invoiceId}
+                                               در تاریخ و ساعت 
+                                           ${date + " "+ time}
+                                                     . تایید شد    
+                          مبلغ حواله را به  این حساب واریز کرده 
+                           و اطلاعت واریز را در سایت وارد نمایید      
+                                                      شماره شبا   
+                                         ${appBank.shebaNumber}
+                                                           بانک
+                                                ${appBank.name}
+                                                       به نام :
+                                           ${appBank.ownerName}‍‍‍‍‍`
            showMainMenu(this.bot,telegramUser.chatId,message)      
 
            return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
@@ -340,10 +344,22 @@ export class AdminController{
            invoice.description=description
 
            const time= new Date().toLocaleString('fa-IR').split(',')[1]
-            const date= new Date().toLocaleString('fa-IR').split(',')[0]
+           const date= new Date().toLocaleString('fa-IR').split(',')[0]
            await queryRunner.manager.save(invoice)
            await queryRunner.commitTransaction()
-           const message= ''
+            const message=  `کاربر گرامی درخواست حواله خرید شما
+                                                       به مقدار
+                                          ${invoice.goldWeight}
+                                                       به مبلغه 
+                                          ${invoice.totalPrice}
+                                                به شماره پیگیری
+                                           ${invoice.invoiceId}
+                                               در تاریخ و ساعت 
+                                            ${date + " "+ time}
+                                                        . رد شد 
+                                                   دلیل رد شدن:   
+                                                ${description}   
+                         ‍`
            
            showMainMenu(this.bot,telegramUser.chatId,message)  
            return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
@@ -356,6 +372,10 @@ export class AdminController{
            await queryRunner.release()
         }
     }
+
+
+
+    
 
     private  generateOTP(limit) {          
         var digits = '0123456789';

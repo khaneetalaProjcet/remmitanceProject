@@ -27,34 +27,32 @@ export class goldPriceService{
                  if (!price && !change) {
                      console.log('cache is empty for gold price ....')
                      let lastIndex = lastGoldPrice.length-1
-                     price = +lastGoldPrice[lastIndex].Geram18
+                     price = +lastGoldPrice[lastIndex]
                      change = 0
                  }
                  let lastIndex = lastGoldPrice.length-2
-                 let lastPrice = (+lastGoldPrice[lastIndex].Geram18)
-                 let firstChange = ((price - lastPrice)/lastPrice)*100
-                 change = (firstChange < 0.1) ? 0 : (firstChange).toFixed(1)
-                 const fee= await this.getFee()
-                 const sellPrice=this.estimateFeeInPrice(price,fee.sell)
-                 const buyPrice=this.estimateFeeInPrice(price,fee.buy)
+                 let lastPrice = (+lastGoldPrice[lastIndex])
+                 const sellPrice=price.sellPrice
+                 const buyPrice=price.buyPrice
+                
                   
-                 return {price,sellPrice,buyPrice,sellFee:fee.sell,buyFee:fee.buy}
+                 return {sellPrice,buyPrice}
              } catch (error) {
                  let lastIndex = lastGoldPrice.length-1
-                 let price = (+lastGoldPrice[lastIndex].Geram18)
-                 const fee= await this.getFee()
-                 const sellPrice=this.estimateFeeInPrice(price,fee.sell)
-                 const buyPrice=this.estimateFeeInPrice(price,fee.buy)
+                 let price = (lastGoldPrice[lastIndex])
+                 const sellPrice=price.sellPrice
+                 const buyPrice=price.buyPrice
+                
                  // console.log("error in get gold price", error);
-                 return {price,sellPrice,buyPrice,sellFee:fee.sell,buyFee:fee.buy}
+                 return {price,sellPrice,buyPrice}
              }
          }else{
              // return {price : lastGoldPrice[0].Geram18 , change : 1000}
-             const price=lastGoldPrice[0].Geram18
-             const fee= await this.getFee()
-             const sellPrice=this.estimateFeeInPrice(price,fee.sell)
-             const buyPrice=this.estimateFeeInPrice(price,fee.buy)
-             return {price,sellPrice,buyPrice,sellFee:fee.sell,buyFee:fee.buy}
+             const price=lastGoldPrice[0]
+             const sellPrice=price.sellPrice
+             const buyPrice=price.buyPrice
+
+             return {sellPrice,buyPrice}
          }
         }catch(err){
           
@@ -67,26 +65,7 @@ export class goldPriceService{
         return realGoldPrice
      }
 
-     private async createDefaultFee(){
-        const fee= this.feeRepository.create({
-          sell:1,
-          buy:0
-        })
-        return await this.feeRepository.save(fee)
-      }
-      private async getFee(){
-        const fee= await this.feeRepository.find()
-       if(fee.length==0){
-        const mainFee=await this.createDefaultFee()
-        return mainFee
-       }
-       const mainFee=fee[0] 
-       return mainFee
-      }
-      private  estimateFeeInPrice(price:any , fee: number){
-        const feePrice=+price*fee/100
-        const finalPrice=+price+feePrice
-        return finalPrice 
-      }
+    
+     
 
 }

@@ -47,7 +47,7 @@ export class InvoiceController{
 
             const prices=await this.goldPriceService.getGoldPrice()
             const realGoldprice=(type==0)?prices.sellPrice:prices.buyPrice
-            const fee=(type==0)?prices.sellFee:prices.buyFee
+            
             const realTotalrice=realGoldprice*(+goldWeight)
             if (realGoldprice - (+goldPrice) >= 10000){
                 console.log('condition1')
@@ -105,7 +105,6 @@ export class InvoiceController{
                 seller: type === 1 ? null : user,
                 buyer: type === 1 ? user :null,
                 type,
-                fee,
                 invoiceId,
                 // bankAccount:userBankAccount,
                 time,

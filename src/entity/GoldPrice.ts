@@ -9,27 +9,13 @@ export class GoldPrice {
     @Column({type : 'varchar'})
     Geram18: string
 
-    @Column({nullable : true , default : '' , type : 'varchar'})
-    Tamam: string
+    @Column({type : 'varchar'})
+    sellPrice: string
 
-    @Column({nullable : true , default : '' , type : 'varchar'})
-    Nim: string
+    @Column({type : 'varchar'})
+    buyPrice: string
 
-    @Column({nullable : true , default : '' , type : 'varchar'})
-    Rob: string
-
-    @Column({nullable : true , default : '' , type : 'varchar'})
-    YekGerami: string
-
-    @Column({nullable : true , default : '' , type : 'varchar'})
-    Ons: string
-
-    @Column({nullable : true , default : '' , type : 'varchar'})
-    Dolar: string
-
-    @Column({nullable : true , default : '' , type : 'varchar'})
-    euro: string
-
+    
     @Column({nullable : true , default : '' , type : 'varchar'})
     Date: string
 

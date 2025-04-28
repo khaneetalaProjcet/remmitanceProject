@@ -251,9 +251,16 @@ export const Routes = [
 },
 {
     method: "post",
-    route: "/invoice/pay",
+    route: "/invoice/pay/:id",
     controller: InvoiceController,
     action: "payBuyApproveRequest",
+    middlware:[authMiddlewareUser]
+},
+{
+    method: "get",
+    route: "/invoice/cancel/:id",
+    controller: InvoiceController,
+    action: "cancelBuyRequest",
     middlware:[authMiddlewareUser]
 },
 

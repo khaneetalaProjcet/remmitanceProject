@@ -265,6 +265,45 @@ export class InvoiceController{
     }
 
 
+    async cancelBuyRequest(req: Request, res: Response, next: NextFunction){
+        const invoiceId=+req.params.id
+        
+  
+        const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId},relations:["buyer"] })
+        const user=await this.userRepository.findOne({where:{id:req.user.id},relations:["telegram"]})
+  
+        
+        const time= new Date().toLocaleString('fa-IR').split(',')[1]
+        const date= new Date().toLocaleString('fa-IR').split(',')[0]
+
+
+        if(!invoice || invoice.status!==1){
+            return next(new responseModel(req, res,"درخواست نامعتبر",'create Invoice', 400,"درخواست نامعتبر",null))
+         }
+        
+        invoice.status=7
+
+
+        const  message=  `کاربر گرامی پرداخت حواله فروش شما
+                                                      به مقدار
+                                                  ${invoice.goldWeight}
+                                                      به مبلغه 
+                                                 ${invoice.totalPrice}
+                                               به شماره پیگیری
+                                                  ${invoiceId}
+                                               در تاریخ و ساعت                                     
+                                               ${date + " "+ time}
+                                               توسط شما لغو شد
+                                                             
+                `
+  
+
+                showMainMenu(this.bot,user.telegram.chatId,message)
+                return next(new responseModel(req, res,null,' user invoice', 200,null,invoice))
+
+    }
+
+
 
 
 

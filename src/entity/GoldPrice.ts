@@ -6,13 +6,13 @@ export class GoldPrice {
     @PrimaryGeneratedColumn()
     id : number;
 
-    @Column({type : 'varchar'})
+    @Column({type : 'varchar',nullable:true})
     Geram18: string
 
-    @Column({type : 'varchar'})
+    @Column({type : 'varchar',nullable:true})
     sellPrice: string
 
-    @Column({type : 'varchar'})
+    @Column({type : 'varchar',nullable:true})
     buyPrice: string
 
     

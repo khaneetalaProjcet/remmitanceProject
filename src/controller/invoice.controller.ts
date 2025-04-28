@@ -190,7 +190,6 @@ export class InvoiceController{
 
     }
 
-
     async getAllInvoiceForUserFilter(req: Request, res: Response, next: NextFunction){
        const {status , type} =req.body
        console.log("body",req.body);

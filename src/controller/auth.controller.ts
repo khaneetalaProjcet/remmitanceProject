@@ -119,6 +119,12 @@ export class AuthController {
         if(newUser&&newUser.verificationStatus==1){
             return next(new responseModel(req, res,"کاربر درخواست تایید داده است",'refresh token', 403,"کاربر درخواست تایید داده است",null))
         }
+        if(newUser&&newUser.verificationStatus==3){
+            newUser.verificationStatus=4
+            await this.userRepository.save(newUser)
+            return next(new responseModel(req, res,'','approveRequest',200,'',newUser))
+        }
+        
 
         newUser.verificationStatus=1
         newUser.firstName=firstName

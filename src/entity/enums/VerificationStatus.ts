@@ -3,5 +3,5 @@ export enum VerificationStatus{
     PENDINGFORAPPROVE,
     SUCCESS ,
     FAILED,
-    JOINTOTELEGRAMBOT
+    PENDINGFORCALL,
 }

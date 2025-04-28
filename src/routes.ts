@@ -249,6 +249,14 @@ export const Routes = [
     action: "getAllInvoiceForUserFilter",
     middlware:[authMiddlewareUser]
 },
+{
+    method: "post",
+    route: "/invoice/pay",
+    controller: InvoiceController,
+    action: "payBuyApproveRequest",
+    middlware:[authMiddlewareUser]
+},
+
 
 /**
  * ?? Setting Routes

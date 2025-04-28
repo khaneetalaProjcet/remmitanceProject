@@ -184,7 +184,7 @@ export class AdminController{
     }
 
     async getAllInvoice(req: Request, res: Response, next: NextFunction){
-        const invoices=await this.invoiceRepository.find({relations:["buyer","bankAccount","appBankAccount","admins"]})
+        const invoices=await this.invoiceRepository.find({relations:["buyer","bankAccount","appBankAccount","admins","seller"]})
         return next(new responseModel(req, res,null, 'admin', 200, null, invoices))
     }
 
@@ -213,7 +213,7 @@ export class AdminController{
          try{
             const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
             const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId},relations:["seller"]})
-            const telegramUser=await this.telegramUserRepository.findOne({where:{user:{id:invoice.buyer.id}}})
+            const telegramUser=await this.telegramUserRepository.findOne({where:{user:{id:invoice.seller.id}}})
             invoice.status=1
             invoice.admins=[admin]
             invoice.description=description

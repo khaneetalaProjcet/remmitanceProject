@@ -333,7 +333,7 @@ export class AdminController{
         try{
            
            const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
-           const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId},relations:["buyer"]})
+           const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId},relations:['buyer']})
            const telegramUser=await this.telegramUserRepository.findOne({where:{user:{id:invoice.buyer.id}}})
            invoice.status=2
            invoice.admins=[admin]
@@ -343,16 +343,8 @@ export class AdminController{
             const date= new Date().toLocaleString('fa-IR').split(',')[0]
            await queryRunner.manager.save(invoice)
            await queryRunner.commitTransaction()
-           const message= `کاربر گرامی،/n
-           /n
-           درخواست حواله خرید شما به مقدار **${invoice.goldWeight}**/n
-           به مبلغ **${invoice.totalPrice}**/n
-           به شماره پیگیری **${invoice.invoiceId}**/n
-           در تاریخ و ساعت **${date} ${time}** رد شد./n
-           /n
-           به دلیل /n
-           ${description}
-           `
+           const message= ''
+           
            showMainMenu(this.bot,telegramUser.chatId,message)  
            return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
         }catch(err){

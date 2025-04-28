@@ -240,12 +240,12 @@ export class InvoiceController{
             return next(new responseModel(req, res,"درخواست نامعتبر",'create Invoice', 400,"درخواست نامعتبر",null))
          }
          
-         invoice.status=4
+         invoice.status=3
          invoice.authority=authority
          await this.invoiceRepository.save(invoice)
          const time= new Date().toLocaleString('fa-IR').split(',')[1]
          const date= new Date().toLocaleString('fa-IR').split(',')[0]
-        const  message=  `کاربر گرامی پرداخت حواله فروش شما
+         const  message=  `کاربر گرامی پرداخت حواله فروش شما
                                                       به مقدار
                                                   ${invoice.goldWeight}
                                                       به مبلغه 
@@ -281,7 +281,7 @@ export class InvoiceController{
             return next(new responseModel(req, res,"درخواست نامعتبر",'create Invoice', 400,"درخواست نامعتبر",null))
          }
         
-        invoice.status=7
+        invoice.status=6
 
 
         const  message=  `کاربر گرامی پرداخت حواله فروش شما
@@ -302,6 +302,9 @@ export class InvoiceController{
                 return next(new responseModel(req, res,null,' user invoice', 200,null,invoice))
 
     }
+
+
+
 
 
 

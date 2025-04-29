@@ -19,7 +19,12 @@ export class Prices {
     @Column({type : 'varchar',nullable:true})
     buyPrice: string
 
+    @Column({type : 'boolean',nullable:true,default:true})
+    haveBuy: boolean
 
+    @Column({type : 'boolean',nullable:true,default:true})
+    haveSell: boolean
+    
     @Column({type : "varchar"})  //?0 meltGold -- 1 coin
     type: string
 

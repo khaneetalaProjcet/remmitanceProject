@@ -338,12 +338,20 @@ export const Routes = [
     middlware:[authMiddlewareAdmin]
 },
 {
+    method: "post",
+    route: "/prices/have",
+    controller: PricesController,
+    action: "updateHaveSellOrBuy",
+    middlware:[authMiddlewareAdmin]
+},
+{
     method: "get",
     route: "/prices/all",
     controller: PricesController,
     action: "getPrices",
     middlware:[]
 }
+
 
 
 

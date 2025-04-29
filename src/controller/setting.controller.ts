@@ -21,7 +21,8 @@ export class SettingController{
           maxTradeBuy,
           minTradeBuy,
           offerTolerance,
-          expireTime
+          expireTime,
+          tradeIsOpen
          } = req.body;
 
          
@@ -39,7 +40,8 @@ export class SettingController{
                 maxTradeBuy,
                 minTradeBuy,
                 offerTolerance,
-                expireTime
+                expireTime,
+                tradeIsOpen
               })
               await this.settingRepository.save(newSetting)
               await cacher.setter("setting",newSetting)
@@ -52,7 +54,8 @@ export class SettingController{
             setting.maxTradeBuy=maxTradeBuy?formatGoldWeight(maxTradeBuy):setting.maxTradeBuy
             setting.minTradeBuy=minTradeBuy?formatGoldWeight(minTradeBuy):setting.minTradeBuy
             setting.offerTolerance=offerTolerance?offerTolerance:setting.offerTolerance
-            setting.expireTime=expireTime?expireTime:setting.expireTime
+            setting.expireTime=expireTime?expireTime:setting.expireTime,
+            setting.tradeIsOpen=tradeIsOpen?tradeIsOpen:setting.tradeIsOpen
             await this.settingRepository.save(setting)
             await cacher.setter("setting",setting)
 
@@ -94,6 +97,10 @@ export class SettingController{
         }
       
     }
+
+    
+
+
    
 
 }

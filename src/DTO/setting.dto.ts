@@ -7,5 +7,6 @@ export const invoiceBody = [
     body('minTradeBuy').isNumeric().withMessage('ورودی نامعتبر است'),
     body('offerTolerance').isNumeric().withMessage('ورودی نامعتبر است'),
     body('expireTime').isNumeric().withMessage('ورودی نامعتبر است'),
+    body('tradeIsOpen').isBoolean().withMessage('ورودی نامعتبر است')
 
 ]

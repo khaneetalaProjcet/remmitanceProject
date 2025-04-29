@@ -1,44 +1,71 @@
-
-
+# Redirect main domain to HTTPS
 server {
     listen 80;
-    server_name asugold.com; # Main domain
-    return 301 https://$host$request_uri; # Redirect HTTP to HTTPS
+    server_name asugold.com;
+    return 301 https://$host$request_uri;
 }
 
+# Main domain with HTTPS
 server {
     listen 443 ssl;
     server_name asugold.com;
 
-    ssl_certificate /etc/nginx/ssl/asugold.com-191hYQtoqiBRWi__BnCj81NWvgveWqQplkD8ldsM1Io-cert.pem ;
-    ssl_certificate_key /etc/nginx/ssl/asugold.com-191hYQtoqiBRWi__BnCj81NWvgveWqQplkD8ldsM1Io-cert.pem ; 
-   
-     add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+    ssl_certificate /etc/nginx/ssl/asugold.com-191hYQtoqiBRWi__BnCj81NWvgveWqQplkD8ldsM1Io-cert.pem;
+    ssl_certificate_key /etc/nginx/ssl/asugold.com-191hYQtoqiBRWi__BnCj81NWvgveWqplkD8ldsM1Io-privateKey.pem;
 
+    # --- Security Headers ---
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "no-referrer-when-downgrade" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header Permissions-Policy "geolocation=(), microphone=()" always;
+    add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'" always;
+
+    # --- API Proxy ---
+    location /api/ {
+        proxy_pass http://127.0.0.1:7000/;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    # --- React SPA ---
     location / {
-        root /home/site/site/build; # Path to your React build folder
-        try_files $uri $uri/ /index.html; # Serve index.html for single-page app routing
+        root /var/www/site;
+        try_files $uri $uri/ /index.html;
     }
 }
 
+# Redirect subdomain to HTTPS
 server {
     listen 80;
-    server_name panel.asugold.com; # Subdomain
-    return 301 https://$host$request_uri; # Redirect HTTP to HTTPS
+    server_name panel.asugold.com;
+    return 301 https://$host$request_uri;
 }
 
+# Panel subdomain with HTTPS
 server {
     listen 443 ssl;
     server_name panel.asugold.com;
 
-    ssl_certificate /etc/nginx/ssl/asugold.com-191hYQtoqiBRWi__BnCj81NWvgveWqQplkD8ldsM1Io-cert.pem 
-    ssl_certificate_key /etc/nginx/ssl/asugold.com-191hYQtoqiBRWi__BnCj81NWvgveWqQplkD8ldsM1Io-cert.pem 
+    ssl_certificate /etc/nginx/ssl/asugold.com-191hYQtoqiBRWi__BnCj81NWvgveWqQplkD8ldsM1Io-cert.pem;
+    ssl_certificate_key /etc/nginx/ssl/asugold.com-191hYQtoqiBRWi__BnCj81NWvgveWqQplkD8ldsM1Io-privateKey.pem;
 
-
+    # --- Security Headers ---
     add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "no-referrer-when-downgrade" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header Permissions-Policy "geolocation=(), microphone=()" always;
+    add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'" always;
 
+    # --- Panel React SPA ---
     location / {
-        root /home/panel/panel/build; # Path to your subdomain React build folder
-        try_files $uri $uri/ /index.html; # Serve index.html for single-page app routing
+        root /var/www/panel;
+        try_files $uri $uri/ /index.html;
     }
 }

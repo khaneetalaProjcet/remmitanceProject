@@ -22,6 +22,9 @@ export class Setting {
     offerTolerance : number
     @Column({type:"numeric",default:0})
     expireTime:number
+     
+    @Column({type:"boolean",default:true})
+    tradeIsOpen:boolean
 
     @CreateDateColumn()
     createdAt: Date

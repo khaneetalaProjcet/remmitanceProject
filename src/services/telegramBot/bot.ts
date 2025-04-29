@@ -65,4 +65,22 @@ bot.on('message', async (msg) => {
     // هنوز احراز هویت نشده
     handleAuth(bot, msg);
   }
+
+
+  bot.on('callback_query', (query) => {
+    const chatId = query.message.chat.id;
+    const data = query.data;
+  
+    if (data.startsWith('user-yes:')) {
+      const id = parseFloat(data.split(':')[1]);
+      bot.sendMessage(chatId,`id:${id}`);
+    }
+  
+    if (data.startsWith('user-cancel:')) {
+      const id = data.split(':')[1];
+      bot.sendMessage(chatId,`id:${id}`);
+    }
+  });
+
+
 });

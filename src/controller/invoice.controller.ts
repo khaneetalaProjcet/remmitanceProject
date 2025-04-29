@@ -313,6 +313,9 @@ export class InvoiceController{
 
     async createNewInvoice(req: Request, res: Response, next: NextFunction){
         let { goldPrice, goldWeight, type, totalPrice,priceId,description} = req.body;
+
+        console.log("req.bodyyyyyyyy",req.body);
+        
         // const bodyError = validationResult(req)
         // if (!bodyError.isEmpty()) {
         //   return next(new responseModel(req, res,bodyError['errors'][0].msg,'invoice',400,bodyError['errors'][0].msg ,null))
@@ -333,7 +336,10 @@ export class InvoiceController{
             
 
            
-            const prices=await this.pricesRepository.findOne({where:{id:priceId}})
+            const prices=await this.pricesRepository.findOne({where:{id:+priceId}})
+
+            console.log("prices",prices);
+            
             const realGoldprice=(type==0)?+prices.sellPrice:+prices.buyPrice
             const isHave=(type==0)?prices.haveSell:prices.haveBuy
             

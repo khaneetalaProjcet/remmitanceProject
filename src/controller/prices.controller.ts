@@ -39,6 +39,8 @@ export class PricesController{
         if(prices.length==0){
                prices= await this.initPrices()
         }
+        console.log("prices",prices[0].id,prices[prices.length-1]);
+        
         return next(new responseModel(req, res,null,'get prices', 200,null,prices))
     }
     async updateHaveSellOrBuy(req: Request, res: Response, next: NextFunction){

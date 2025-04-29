@@ -13,6 +13,7 @@ import {SettingController} from "./controller/setting.controller"
 import {CreateAppBankAccount,CreateBankAccount} from "./DTO/bankAccount.dto"
 import { authMiddlewareAdmin, authMiddlewareUser,authMiddlewareUserRefreshToken } from "./middleware/auth"
 import { bankAccountController } from "./controller/bankAccount.controller"
+import { PricesController } from "./controller/prices.controller"
 
 
 
@@ -328,7 +329,21 @@ export const Routes = [
     action: "getAllBankAccount",
     middlware:[authMiddlewareAdmin]
 },
-
+// ? prices
+{
+    method: "post",
+    route: "/prices/set",
+    controller: PricesController,
+    action: "setGoldPrice",
+    middlware:[authMiddlewareAdmin]
+},
+{
+    method: "get",
+    route: "/prices/all",
+    controller: PricesController,
+    action: "getPrices",
+    middlware:[]
+}
 
 
 

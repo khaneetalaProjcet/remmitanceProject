@@ -205,7 +205,7 @@ export class InvoiceController{
        }
        if(type=="1"){
         queryBuilder.andWhere('buyer.id = :userId',{userId:req.user.id})
-       }
+       }    
        
 
 
@@ -218,7 +218,7 @@ export class InvoiceController{
       
 
    
-       
+
 
     
        const invoices = await queryBuilder

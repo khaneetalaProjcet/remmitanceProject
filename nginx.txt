@@ -10,8 +10,8 @@ server {
     listen 443 ssl;
     server_name asugold.com;
 
-    ssl_certificate /etc/nginx/ssl/asugold.com-191hYQtoqiBRWi__BnCj81NWvgveWqQplkD8ldsM1Io-cert.pem 
-    ssl_certificate_key /etc/nginx/ssl/asugold.com-191hYQtoqiBRWi__BnCj81NWvgveWqQplkD8ldsM1Io-cert.pem 
+    ssl_certificate /etc/nginx/ssl/asugold.com-191hYQtoqiBRWi__BnCj81NWvgveWqQplkD8ldsM1Io-cert.pem ;
+    ssl_certificate_key /etc/nginx/ssl/asugold.com-191hYQtoqiBRWi__BnCj81NWvgveWqQplkD8ldsM1Io-cert.pem ; 
    
      add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
 

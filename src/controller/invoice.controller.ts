@@ -4,6 +4,7 @@ import {Invoice} from "../entity/Invoice"
 import {goldPriceService} from "../services/goldPrice.service"
 import { responseModel } from "../utills/response.model";
 import { User } from "../entity/User";
+import {Prices}  from "../entity/Prices"
 import {formatGoldWeight} from "../utills/HelperFunctions"
 import { validationResult } from "express-validator";
 import {settingService} from "../services/setting.service"
@@ -18,6 +19,7 @@ export class InvoiceController{
     private invoiceRepository=AppDataSource.getRepository(Invoice)
     private userRepository=AppDataSource.getRepository(User)
     private bankAccountRepository=AppDataSource.getRepository(BankAccount)
+    private pricesRepository=AppDataSource.getRepository(Prices)
     private goldPriceService=new goldPriceService()
     private settingService=new settingService()
     private bot=new TelegramBot(token);
@@ -309,11 +311,167 @@ export class InvoiceController{
     }
 
 
+    async createNewInvoice(req: Request, res: Response, next: NextFunction){
+        let { goldPrice, goldWeight, type, totalPrice,priceId,description} = req.body;
+        // const bodyError = validationResult(req)
+        // if (!bodyError.isEmpty()) {
+        //   return next(new responseModel(req, res,bodyError['errors'][0].msg,'invoice',400,bodyError['errors'][0].msg ,null))
+        // }   
+        const queryRunner = AppDataSource.createQueryRunner()
+        await queryRunner.connect()
+        await queryRunner.startTransaction()
+        try{
+            // const setting=await this.settingService.getSetting()
+            // const max=(type==0)?setting.maxTradeSell:setting.maxTradeBuy
+            // const min=(type==0)?setting.minTradeSell:setting.minTradeBuy
+            
+            // const isTradeOpen=setting.tradeIsOpen
+
+            const isTradeOpen=true
+
+            // console.log(`min : ${min} max : ${max}` );
+            
+
+           
+            const prices=await this.pricesRepository.findOne({where:{id:priceId}})
+            const realGoldprice=(type==0)?+prices.sellPrice:+prices.buyPrice
+            const isHave=(type==0)?prices.haveSell:prices.haveBuy
+            
+            const realTotalrice=realGoldprice*(+goldWeight)
+
+            if (realGoldprice - (+goldPrice) >= 10000){
+                console.log('condition1')
+                goldPrice = realGoldprice
+                // return response.status(400).json({ msg: 'امکان ثبت معامله در این قیمت وجود ندارد' });
+            }
+            if ((realTotalrice - (+totalPrice)) >= (10*(+goldWeight))){
+                console.log('condition2')
+                totalPrice = realTotalrice
+                // return response.status(400).json({ msg: 'امکان ثبت معامله در این قیمت وجود ندارد' });
+            }   
+            console.log('weight>>>' , (realTotalrice) , totalPrice)
+            // console.log('total' , totalPrice , typeof(totalPrice))
+            if ((totalPrice.toString()).split('').length > 10){
+                // return response.status(400).json({ msg: 'مبلغ بیش از حد مجاز' });
+                return next(new responseModel(req, res,'مبلغ بیش از حد مجاز' ,'create Invoice', 400,'مبلغ بیش از حد مجاز' ,null))
+            }
+            if ( +goldWeight < 0.01){
+                // return response.status(400).json({ msg: 'میزان طلای درخاستی نمی تواند کمتر از 0.01 باشد' });
+                return next(new responseModel(req, res,'میزان طلای درخاستی نمی تواند کمتر از 0.01 باشد'  ,'create Invoice', 400,'میزان طلای درخاستی نمی تواند کمتر از 0.01 باشد'  ,null))
+            }
+            if (goldWeight == '0' || goldPrice == '0' || totalPrice == '0' ){
+                // return response.status(400).json({ msg: 'لطفا مقادیر درست را وارد کنید' });
+                return next(new responseModel(req, res,'لطفا مقادیر درست را وارد کنید' ,'create Invoice', 400,'لطفا مقادیر درست را وارد کنید' ,null))
+            }
+            if(!isHave){
+                return next(new responseModel(req, res,'در حال حاضر امکان انجام این معامله وجود ندارد' ,'create Invoice', 400,'در حال حاضر امکان انجام این معامله وجود ندارد' ,null))
+            }
+            if(!isTradeOpen){
+                return next(new responseModel(req, res,'در حال حاضر امکان انجام این معامله وجود ندارد' ,'create Invoice', 400,'در حال حاضر امکان انجام این معامله وجود ندارد' ,null))
+            }
+            
+
+
+            const user=await this.userRepository.findOne({where:{id:req.user.id},relations:["telegram"]})
+            if(!user){
+                return next(new responseModel(req, res,"کاربر پیدا نشد",'create Invoice', 400,"کاربر پیدا نشد",null))
+            }
+            if(!user.telegram){
+                return next(new responseModel(req, res,"کاربر در ربات تلگرام پیدا نشد",'create Invoice', 400,"کاربر در ربات تلگرام پیدا نشد",null))
+            }
+            // const userBankAccount : BankAccount=await this.bankAccountRepository.findOne({where:{isActive:true,owner:{id:req.user.id}}})
+            // if(!userBankAccount){
+            //     return next(new responseModel(req, res,"حساب بانکی یافت نشد",'create Invoice', 400,"حساب بانکی یافت نشد",null))
+            // }
+
+            // console.log("user log Bank",userBankAccount);
+            console.log('body>>>>>' , goldPrice, goldWeight, type, totalPrice )
+            goldWeight = formatGoldWeight(goldWeight)
+            const time= new Date().toLocaleString('fa-IR').split(',')[1]
+            const date= new Date().toLocaleString('fa-IR').split(',')[0]
+            // if(goldWeight<min||goldWeight>max){
+            //     return next(new responseModel(req, res,'لطفا مقدار وزن طلا را تغییر دهید','create Invoice', 400,'لطفا مقدار وزن طلا را تغییر دهید' ,null))
+            // }
+            console.log('start the transaction',goldWeight)
+            const invoiceId= this.generateInvoice()
+            let transaction = this.invoiceRepository.create({                                    // here is the making the transActions
+                goldPrice: parseFloat(goldPrice),
+                goldWeight: parseFloat(goldWeight),
+                totalPrice: Math.floor(+totalPrice),
+                seller: type === 1 ? null : user,
+                buyer: type === 1 ? user :null,
+                type,
+                invoiceId,
+                // bankAccount:userBankAccount,
+                time,
+                date,
+                description,
+                productName:prices.persianName
+            });
+
+            await queryRunner.manager.save(transaction)
+            await queryRunner.commitTransaction()
+            let message
+            if(type==0){
+                message=  `کاربر گرامی درخواست حواله فروش شما
+                                                      به مقدار
+                                                  ${goldWeight}
+                                                      به مبلغه 
+                                                 ${totalPrice}
+                                               به شماره فاکتور
+                                                  ${invoiceId}
+                                               در تاریخ و ساعت 
+                                           ${date + " "+ time}
+                                 ثبت شد و در حال بررسی می باشد  
+                `
+            }else{ 
+                 message=  `کاربر گرامی درخواست حواله خرید شما
+                                                      به مقدار
+                                                  ${goldWeight}
+                                                      به مبلغه 
+                                                 ${totalPrice}
+                                               به شماره فاکتور
+                                                  ${invoiceId}
+                                               در تاریخ و ساعت 
+                                           ${date + " "+ time}
+                                 ثبت شد و در حال بررسی می باشد  
+                `
+                
+
+
+            }
+
+            showMainMenu(this.bot,user.telegram.chatId,message)
+            this.sendMessageWithInline(message,user.telegram.chatId,transaction.id)
+            return next(new responseModel(req, res,null,'create Invoice', 200,null,transaction))
+            
+        }catch(err){
+            await queryRunner.rollbackTransaction()
+            console.log("error",err);
+            return next(new responseModel(req, res,"خطای داخلی سیستم",'invoice', 500,"خطای داخلی سیستم",null))
+
+        }finally{
+            console.log('transaction released')
+            await queryRunner.release()
+        }
+    }
 
 
 
 
-
+    sendMessageWithInline(message : string ,chatId : any ,invoiceId:any){
+        this.bot.sendMessage(chatId,message, {
+             reply_markup: {
+               inline_keyboard: [
+                 [
+                   { text: 'تایید', callback_data: `user-yes:${invoiceId}` },
+                   { text: 'لفو', callback_data: `user-cancel:${invoiceId}`},
+ 
+                 ]
+               ]
+             }
+          });
+     }
 
     
 

@@ -231,6 +231,13 @@ export const Routes = [
     middlware:[authMiddlewareUser,invoiceBody]
 },
 {
+    method: "post",
+    route: "/invoice/createnew",
+    controller: InvoiceController,
+    action: "createNewInvoice",
+    middlware:[authMiddlewareUser]
+},
+{
     method: "get",
     route: "/invoice/user",
     controller: InvoiceController,

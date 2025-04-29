@@ -62,7 +62,9 @@ export class Invoice {
 
     @ManyToOne(() => AppBankAccount)
     appBankAccount: AppBankAccount;
-    
+
+    @Column({nullable:true,type:"varchar"})
+    productName:string
 
     @Column({nullable:true,default:"",type:"varchar"})
     description:string

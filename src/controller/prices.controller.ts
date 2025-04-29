@@ -19,6 +19,9 @@ export class PricesController{
     async setGoldPrice(req: Request, res: Response, next: NextFunction){
       const {id,sellPrice,buyPrice}=req.body
 
+
+
+
       const price=await this.pricesRepository.findOne({where:{id}})
       if(!price){
         return next(new responseModel(req, res,"قیمت پیدا نشد",'get prices',400,"قیمت پیدا نشد",null))
@@ -32,7 +35,7 @@ export class PricesController{
       return next(new responseModel(req, res,null,'get prices', 200,null,price))
     }
     async getPrices(req: Request, res: Response, next: NextFunction){
-        let prices=await this.pricesRepository.find()
+        let prices=await this.pricesRepository.find({order:{createdAt:"DESC"}})
         if(prices.length==0){
                prices= await this.initPrices()
         }

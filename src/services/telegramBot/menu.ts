@@ -9,8 +9,10 @@ export function showMainMenu(bot:any, chatId :number,message :string) {
         ['ثبت معاملات'],
         ['پرداخت و دریافت', 'مقدار اعتبار'],
       ],
-      resize_keyboard: true
-    }
+      resize_keyboard: true,
+      
+    },
+    parse_mode:"HTML"
   };
   bot.sendMessage(chatId, message, options);
 }

@@ -223,20 +223,20 @@ export class AdminController{
             invoice.description=description
             const time= new Date().toLocaleString('fa-IR').split(',')[1]
             const date= new Date().toLocaleString('fa-IR').split(',')[0]
-             const message=  `کاربر گرامی درخواست حواله فروش شما
-                                                       به مقدار
-                                          ${invoice.goldWeight}
-                                                       به مبلغه 
-                                          ${invoice.totalPrice}
-                                                به شماره پیگیری
-                                           ${invoice.invoiceId}
-                                               در تاریخ و ساعت 
-                                            ${date + " "+ time}
-                                                      .تایید شد 
-                                                       توضیحات:   
-                                                 ${description}   
-                         ‍`
+            const message = `
+<b>کاربر گرامی</b>
 
+درخواست حواله فروش شما <b>تایید شد</b>:
+
+<b>مشخصات حواله:</b>
+* <b>مقدار:</b> ${invoice.goldWeight} گرم  
+* <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
+* <b>شماره پیگیری:</b> ${invoice.invoiceId}  
+* <b>تاریخ و ساعت:</b> ${date} ${time}
+
+<b>توضیحات:</b>
+${description}
+`;
             await queryRunner.manager.save(invoice)
             await queryRunner.commitTransaction()
             this.sendMessageWithInline(message,telegramUser.chatId,invoiceId)
@@ -270,19 +270,22 @@ export class AdminController{
 
             await queryRunner.manager.save(invoice)
             await queryRunner.commitTransaction()
-             const message=  `کاربر گرامی درخواست حواله فروش شما
-                                                       به مقدار
-                                          ${invoice.goldWeight}
-                                                       به مبلغه 
-                                          ${invoice.totalPrice}
-                                                به شماره پیگیری
-                                           ${invoice.invoiceId}
-                                               در تاریخ و ساعت 
-                                            ${date + " "+ time}
-                                                        . رد شد 
-                                                   دلیل رد شدن:   
-                                                ${description}   
-                         ‍`
+            const message = `
+<b>کاربر گرامی</b>
+
+درخواست حواله فروش شما <b>رد شد</b>:
+
+<b>مشخصات حواله:</b>
+* <b>مقدار:</b> ${invoice.goldWeight} گرم  
+* <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
+* <b>شماره پیگیری:</b> ${invoice.invoiceId}  
+* <b>تاریخ و ساعت:</b> ${date} ${time}
+
+<b>دلیل رد شدن:</b>
+${description}
+`;
+
+            
             showMainMenu(this.bot,telegramUser.chatId,message)              
             return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
          }catch(err){
@@ -379,19 +382,21 @@ export class AdminController{
            const date= new Date().toLocaleString('fa-IR').split(',')[0]
            await queryRunner.manager.save(invoice)
            await queryRunner.commitTransaction()
-            const message=  `کاربر گرامی درخواست حواله خرید شما
-                                                       به مقدار
-                                          ${invoice.goldWeight}
-                                                       به مبلغه 
-                                          ${invoice.totalPrice}
-                                                به شماره پیگیری
-                                           ${invoice.invoiceId}
-                                               در تاریخ و ساعت 
-                                            ${date + " "+ time}
-                                                        . رد شد 
-                                                   دلیل رد شدن:   
-                                                ${description}   
-                         ‍`
+           const message = `
+           <b>کاربر گرامی</b>
+           
+           درخواست حواله خرید شما <b>رد شد</b>:
+           
+           <b>مشخصات حواله:</b>
+           * <b>مقدار:</b> ${invoice.goldWeight} گرم  
+           * <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
+           * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
+           * <b>تاریخ و ساعت:</b> ${date} ${time}
+           
+           <b>دلیل رد شدن:</b>
+           ${description}
+           `;
+           
            
            showMainMenu(this.bot,telegramUser.chatId,message)  
            return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
@@ -408,15 +413,65 @@ export class AdminController{
 
 
     async approvePaymentBuy(req: Request, res: Response, next: NextFunction){
-        const id=req.params.id
+        const id=+req.params.id
+        const {description}  =req.body
+        const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
+
+        const invoice=await this.invoiceRepository.findOne({where:{id},relations:{buyer:{telegram:true,wallet:true}}})
+        if(!invoice){
+            return  next(new responseModel(req, res," وجود ندارد",'reject', 402," وجود ندارد",null))
+        }
+
+        invoice.status=6
+        invoice.accounterDescription=description
+        invoice.admins=[...invoice.admins,admin]
+
         
 
+
+    
 
 
     }
 
     async rejectPaymentBuy(req: Request, res: Response, next: NextFunction){
+        const id=+req.params.id
+        const {description}  =req.body
+        const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
 
+        const invoice=await this.invoiceRepository.findOne({where:{id},relations:{buyer:{telegram:true,wallet:true}}})
+        if(!invoice){
+            return  next(new responseModel(req, res," وجود ندارد",'reject', 402," وجود ندارد",null))
+        }
+
+        invoice.status=7
+        invoice.accounterDescription=description
+        invoice.admins=[...invoice.admins,admin]
+
+        await this.invoiceRepository.save(invoice)
+        
+        const time= new Date().toLocaleString('fa-IR').split(',')[1]
+        const date= new Date().toLocaleString('fa-IR').split(',')[0]
+
+        const message = `
+        <b>کاربر گرامی</b>
+        
+        پرداخت حواله خرید شما <b>رد شد</b>:
+        
+        <b>مشخصات حواله:</b>
+        * <b>مقدار:</b> ${invoice.goldWeight} گرم  
+        * <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
+        * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
+        * <b>تاریخ و ساعت:</b> ${date} ${time}
+        
+        <b>دلیل رد شدن:</b>
+        ${description}
+        `;
+
+        this.bot.sendMessage(invoice.seller.telegram.chatId,message,{parse_mode:"HTML"})
+        
+        return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
+        
     }
 
 
@@ -450,7 +505,8 @@ export class AdminController{
 
                 ]
               ]
-            }
+            },
+            parse_mode:"HTML"
          });
     }
 

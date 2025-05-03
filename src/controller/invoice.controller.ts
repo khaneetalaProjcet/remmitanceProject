@@ -438,32 +438,33 @@ export class InvoiceController{
             await queryRunner.commitTransaction()
             let message
             if(type==0){
-                message=  `کاربر گرامی درخواست حواله فروش شما
-                                                      به مقدار
-                                                  ${goldWeight}
-                                                      به مبلغه 
-                                                 ${totalPrice}
-                                               به شماره فاکتور
-                                                  ${invoiceId}
-                                               در تاریخ و ساعت 
-                                           ${date + " "+ time}
-                                 ثبت شد و در حال بررسی می باشد  
-                `
-            }else{ 
-                 message=  `کاربر گرامی درخواست حواله خرید شما
-                                                      به مقدار
-                                                  ${goldWeight}
-                                                      به مبلغه 
-                                                 ${totalPrice}
-                                               به شماره فاکتور
-                                                  ${invoiceId}
-                                               در تاریخ و ساعت 
-                                           ${date + " "+ time}
-                                 ثبت شد و در حال بررسی می باشد  
-                `
+                 message = `
+                <b>کاربر گرامی</b>
                 
+                درخواست حواله خرید شما <b>ثبت شد</b> و در حال بررسی می‌باشد:
+                
+                <b>مشخصات حواله:</b>
+                * <b>مقدار:</b> ${goldWeight} گرم  
+                * <b>مبلغ:</b> ${totalPrice.toLocaleString()} تومان  
+                * <b>شماره فاکتور:</b> ${invoiceId}  
+                * <b>تاریخ و ساعت:</b> ${date} ${time}
+                
+                با تشکر از صبر و شکیبایی شما.
+                `;
+            }else{ 
+                 message = `
+<b>کاربر گرامی</b>
 
+درخواست حواله خرید شما <b>ثبت شد</b> و در حال بررسی می‌باشد:
 
+<b>مشخصات حواله:</b>
+* <b>مقدار:</b> ${goldWeight} گرم  
+* <b>مبلغ:</b> ${totalPrice.toLocaleString()} تومان  
+* <b>شماره فاکتور:</b> ${invoiceId}  
+* <b>تاریخ و ساعت:</b> ${date} ${time}
+
+با تشکر از صبر و شکیبایی شما.
+`;
             }
 
             showMainMenu(this.bot,user.telegram.chatId,message)
@@ -497,7 +498,8 @@ export class InvoiceController{
  
                  ]
                ]
-             }
+             },
+             parse_mode:"HTML"
           });
      }
 

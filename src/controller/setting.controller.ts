@@ -57,7 +57,9 @@ export class SettingController{
             setting.minTradeBuy=minTradeBuy?formatGoldWeight(minTradeBuy):setting.minTradeBuy
             setting.offerTolerance=offerTolerance?offerTolerance:setting.offerTolerance
             setting.expireTime=expireTime?expireTime:setting.expireTime,
-            setting.tradeIsOpen=tradeIsOpen?tradeIsOpen:setting.tradeIsOpen
+            setting.tradeIsOpen=tradeIsOpen
+
+            
             await this.settingRepository.save(setting)
             await cacher.setter("setting",setting)
 

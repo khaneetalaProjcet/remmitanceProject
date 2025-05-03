@@ -132,7 +132,7 @@ export class AuthController {
             goldWeight:0,
             balance:0
         })
-        await this.walletRepository.save(wallet)
+        // await this.walletRepository.save(wallet)
 
         newUser.verificationStatus=1
         newUser.firstName=firstName

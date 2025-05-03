@@ -98,6 +98,13 @@ export const Routes = [
     action: "sendMessageToUserInTelegram",
     middlware:[]  
 },
+{
+    method: "get",
+    route: "/user/addwallet",
+    controller: UserController,
+    action: "addWallet",
+    middlware:[]  
+},
 
 /**
  * ?? GoldPrice Routes

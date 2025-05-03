@@ -8,6 +8,7 @@ import { TelegramUser } from "../entity/TelegramUser";
 import { responseModel } from "../utills/response.model";
 import TelegramBot from 'node-telegram-bot-api';
 import { runInThisContext } from "vm";
+import { Wallet } from "../entity/Wallet";
 const token = process.env.TELEGRAM_BOT_TOKEN || "7622536105:AAFR0NDFR27rLDF270uuL5Ww_K0XZi61FCw";
 
 
@@ -17,6 +18,7 @@ export class UserController{
     private invoioceRepository=AppDataSource.getRepository(Invoice)
     private bankRepository=AppDataSource.getRepository(BankAccount)
     private telegramRepository=AppDataSource.getRepository(TelegramUser)
+    private walletRepository=AppDataSource.getRepository(Wallet)
     private bot=new TelegramBot(token);
      
     async profile(req: Request, res: Response, next: NextFunction){
@@ -59,6 +61,16 @@ export class UserController{
 
     }
      
+    async addWallet(req: Request, res: Response, next: NextFunction){
+          const phone=req.params.phone
+          const newWalet=this.walletRepository.create({goldWeight:0,balance:0})
+          const user=await this.userRepository.findOne({where:{phoneNumber:phone}})
+          user.wallet=newWalet
+          await  this.userRepository.save(user)
+          return  next(new responseModel(req, res,null,'profile', 200,null,user))
+
+    }
+    
 
      
 

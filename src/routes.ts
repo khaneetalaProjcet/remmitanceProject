@@ -225,6 +225,13 @@ export const Routes = [
     action: "getAllInvoice",
     middlware:[authMiddlewareAdmin] 
 },
+{
+    method: "get",
+    route: "/admin/invoice/foradmin",
+    controller: AdminController,
+    action: "getAllInvoiceForAdmin",
+    middlware:[authMiddlewareAdmin] 
+},
 
 
 /**

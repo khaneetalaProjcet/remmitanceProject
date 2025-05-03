@@ -14,6 +14,7 @@ import { TelegramUser } from "../entity/TelegramUser";
 import TelegramBot from 'node-telegram-bot-api';
 import { showMainMenu } from "../services/telegramBot/menu";
 import { Stream } from "stream";
+import { Between, LessThan, MoreThan } from "typeorm";
 const token = process.env.TELEGRAM_BOT_TOKEN || "7622536105:AAFR0NDFR27rLDF270uuL5Ww_K0XZi61FCw";
 
 export class AdminController{
@@ -200,8 +201,11 @@ export class AdminController{
     }
 
 
-
-
+    async getAllInvoiceForAdmin(req: Request, res: Response, next: NextFunction){
+        const invoices=await this.invoiceRepository.find({where:{status:LessThan(5)},relations:["buyer","bankAccount","appBankAccount","admins","seller"]})
+        return next(new responseModel(req, res,null, 'admin', 200, null, invoices))
+    }
+    
 
    
     async approveSellInvoice(req: Request, res: Response, next: NextFunction){

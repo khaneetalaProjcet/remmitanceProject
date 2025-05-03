@@ -3,6 +3,7 @@ import TelegramBot from 'node-telegram-bot-api'
 const { showMainMenu , showPricingMenu , showAfterTradeMenu} = require('./menu');
 import { goldPriceService } from '../goldPrice.service';
 import { handleAuth }  from "./handelers/authHandeler" 
+import { Invoice } from '../../entity/Invoice';
 // const { handleBuyFlow } = require('./handlers/buyHandler');
 // const { handleSellFlow } = require('./handlers/sellHandler');
 // const { handleConfirm } = require('./handlers/confirmHandler');
@@ -71,7 +72,8 @@ bot.on('message', async (msg) => {
 
 
 });
-bot.on('callback_query', (query) => {
+bot.on('callback_query',async (query) => {
+  const invoiceRepository=AppDataSource.getRepository(Invoice)
   const chatId = query.message.chat.id;
   const data = query.data;
 
@@ -81,11 +83,47 @@ bot.on('callback_query', (query) => {
 
   if (data.startsWith('user-yes:')) {
     const id = parseFloat(data.split(':')[1]);
-    bot.sendMessage(chatId,`id:${id}`);
+    await bot.answerCallbackQuery(query.id);
+    const invoice=await invoiceRepository.findOne({where:{id}})
+    
+    if(invoice.status!=0){
+        const message="درخواست نامعتبر"
+        bot.sendMessage(chatId,message)
+        return ;
+    }
+
+
+   invoice.status=1
+
+   await invoiceRepository.save(invoice)
+
+   const message='درخواست شما تایید شد و پس در وضعیت بررسی ادمین قرار گرفت'
+
+   bot.sendMessage(chatId,message)
+
+   return ;
+
   }
 
   if (data.startsWith('user-cancel:')) {
     const id = data.split(':')[1];
-    bot.sendMessage(chatId,`id:${id}`);
+    const invoice=await invoiceRepository.findOne({where:{id}})
+    if(invoice.status!=0){
+      const message="درخواست نامعتبر"
+      bot.sendMessage(chatId,message)
+      return ;
   }
+
+   invoice.status=2
+
+   await invoiceRepository.save(invoice)
+
+   const message='درخواست شما لفو شد'
+
+   bot.sendMessage(chatId,message)
+
+   return ;
+
+  }
+
 });

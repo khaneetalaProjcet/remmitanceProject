@@ -26,6 +26,8 @@ export class SettingController{
          } = req.body;
 
          
+         console.log("reqqqBoddyyy",req.body);
+         
          
         try{
             const settings=await this.settingRepository.find()

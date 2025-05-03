@@ -70,6 +70,10 @@ bot.on('message', async (msg) => {
   bot.on('callback_query', (query) => {
     const chatId = query.message.chat.id;
     const data = query.data;
+
+    console.log("here");
+    console.log("data",data);
+    
   
     if (data.startsWith('user-yes:')) {
       const id = parseFloat(data.split(':')[1]);

@@ -24,7 +24,7 @@ export class UserController{
     async profile(req: Request, res: Response, next: NextFunction){
         try{
             const userId=req.user.id
-          const user=await this.userRepository.findOne({where:{id:userId},relations:["bankAccounts","telegram"]})
+          const user=await this.userRepository.findOne({where:{id:userId},relations:["bankAccounts","telegram","wallet"]})
           if(!user){
             return  next(new responseModel(req, res,"کاربر وجود ندارد",'profile', 402,"کاربر وجود ندارد",user))
           }

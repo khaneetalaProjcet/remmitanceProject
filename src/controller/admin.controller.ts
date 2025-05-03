@@ -330,24 +330,22 @@ export class AdminController{
             const time= new Date().toLocaleString('fa-IR').split(',')[1]
             const date= new Date().toLocaleString('fa-IR').split(',')[0]
 
-            const message=  `کاربر گرامی درخواست حواله خرید شما
-                                                       به مقدار
-                                          ${invoice.goldWeight}
-                                                       به مبلغه 
-                                          ${invoice.totalPrice}
-                                                به شماره پیگیری
-                                           ${invoice.invoiceId}
-                                               در تاریخ و ساعت 
-                                           ${date + " "+ time}
-                                                     . تایید شد    
-                          مبلغ حواله را به  این حساب واریز کرده 
-                           و اطلاعت واریز را در سایت وارد نمایید      
-                                                      شماره شبا   
-                                         ${appBank.shebaNumber}
-                                                           بانک
-                                                ${appBank.name}
-                                                       به نام :
-                                           ${appBank.ownerName}‍‍‍‍‍`
+            const message = `
+            <b>کاربر گرامی</b>
+            
+            درخواست حواله خرید شما با مشخصات زیر تایید شد:
+            
+            <b>مقدار:</b> ${invoice.goldWeight} گرم
+            <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان
+            <b>شماره پیگیری:</b> ${invoice.invoiceId}
+            <b>تاریخ و ساعت:</b> ${date} - ${time}
+            
+            لطفاً مبلغ را به حساب زیر واریز نمایید:
+            
+            <b>شبا:</b> ${appBank.shebaNumber}
+            <b>بانک:</b> ${appBank.name}
+            <b>به نام:</b> ${appBank.ownerName}
+            `
            showMainMenu(this.bot,telegramUser.chatId,message)      
 
            return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
@@ -406,6 +404,24 @@ export class AdminController{
            await queryRunner.release()
         }
     }
+
+
+
+    async approvePaymentBuy(req: Request, res: Response, next: NextFunction){
+        const id=req.params.id
+        
+
+
+
+    }
+
+    async rejectPaymentBuy(req: Request, res: Response, next: NextFunction){
+
+    }
+
+
+
+
 
 
 

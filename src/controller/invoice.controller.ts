@@ -254,7 +254,7 @@ export class InvoiceController{
             return next(new responseModel(req, res,"درخواست نامعتبر",'create Invoice', 400,"درخواست نامعتبر",null))
          }
          
-         invoice.status=3
+         invoice.status=5
          invoice.authority=authority
          await this.invoiceRepository.save(invoice)
          const time= new Date().toLocaleString('fa-IR').split(',')[1]

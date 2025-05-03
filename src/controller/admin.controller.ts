@@ -214,7 +214,7 @@ export class AdminController{
             const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
             const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId},relations:["seller"]})
             const telegramUser=await this.telegramUserRepository.findOne({where:{user:{id:invoice.seller.id}}})
-            invoice.status=1
+            invoice.status=3
             invoice.admins=[admin]
             invoice.description=description
             const time= new Date().toLocaleString('fa-IR').split(',')[1]
@@ -258,7 +258,7 @@ export class AdminController{
             const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
             const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId},relations:["seller"]})
             const telegramUser=await this.telegramUserRepository.findOne({where:{user:{id:invoice.buyer.id}}})
-            invoice.status=2
+            invoice.status=4
             invoice.admins=[admin]
             invoice.description=description
             const time= new Date().toLocaleString('fa-IR').split(',')[1]
@@ -315,7 +315,7 @@ export class AdminController{
            const appBank=await this.appBankRepository.findOne({where:{id:appBankAccountId}})
            console.log("apppppp",appBank);
            
-           invoice.status=1
+           invoice.status=3
            invoice.admins=[admin]
            invoice.description=description
            invoice.appBankAccount=appBank
@@ -369,7 +369,7 @@ export class AdminController{
            const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
            const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId},relations:['buyer']})
            const telegramUser=await this.telegramUserRepository.findOne({where:{user:{id:invoice.buyer.id}}})
-           invoice.status=2
+           invoice.status=4
            invoice.admins=[admin]
            invoice.description=description
 

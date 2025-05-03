@@ -1,6 +1,7 @@
 import { AppDataSource } from "../data-source";
 import { Request, Response,NextFunction } from "express";
 import { User } from "../entity/User";
+import { Wallet } from "../entity/Wallet";
 import { responseModel } from "../utills/response.model";
 import {OtpService} from "../services/otp.service"
 import {JwtGenerator} from "../services/jwt.service"
@@ -11,6 +12,7 @@ import { validationResult } from "express-validator";
 
 export class AuthController {
     private userRepository = AppDataSource.getRepository(User);
+    private walletRepository=AppDataSource.getRepository(Wallet)
     private otpService=new OtpService()
     private jwtGenerator=new JwtGenerator()
 
@@ -124,11 +126,19 @@ export class AuthController {
             await this.userRepository.save(newUser)
             return next(new responseModel(req, res,'','approveRequest',200,'',newUser))
         }
-        
+
+
+        const wallet=this.walletRepository.create({
+            goldWeight:0,
+            balance:0
+        })
+        await this.walletRepository.save(wallet)
 
         newUser.verificationStatus=1
         newUser.firstName=firstName
         newUser.lastName=lastName
+        newUser.wallet=wallet
+
 
         await this.userRepository.save(newUser)
         

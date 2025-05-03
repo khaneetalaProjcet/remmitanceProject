@@ -337,7 +337,18 @@ export class InvoiceController{
             
             // const isTradeOpen=setting.tradeIsOpen
 
-            const isTradeOpen=true
+            const setting=await this.settingService.getSetting()
+            const max=(type==0)?setting.maxTradeSell:setting.maxTradeBuy
+            const min=(type==0)?setting.minTradeSell:setting.minTradeBuy
+            
+
+            const isOpen=setting.tradeIsOpen
+            
+
+          
+            
+ 
+            console.log(max,min);
 
             // console.log(`min : ${min} max : ${max}` );
             
@@ -351,6 +362,9 @@ export class InvoiceController{
             const isHave=(type==0)?prices.haveSell:prices.haveBuy
             
             const realTotalrice=realGoldprice*(+goldWeight)
+            if(!isOpen){
+                return next(new responseModel(req, res,"معاملات تا اطلاع ثانوی بسته می باشد",'create Invoice', 400,"معاملات تا اطلاع ثانوی بسته می باشد",null))
+            }
 
             if (realGoldprice - (+goldPrice) >= 10000){
                 console.log('condition1')
@@ -379,9 +393,7 @@ export class InvoiceController{
             if(!isHave){
                 return next(new responseModel(req, res,'در حال حاضر امکان انجام این معامله وجود ندارد' ,'create Invoice', 400,'در حال حاضر امکان انجام این معامله وجود ندارد' ,null))
             }
-            if(!isTradeOpen){
-                return next(new responseModel(req, res,'در حال حاضر امکان انجام این معامله وجود ندارد' ,'create Invoice', 400,'در حال حاضر امکان انجام این معامله وجود ندارد' ,null))
-            }
+            
             
 
 
@@ -402,9 +414,9 @@ export class InvoiceController{
             goldWeight = formatGoldWeight(goldWeight)
             const time= new Date().toLocaleString('fa-IR').split(',')[1]
             const date= new Date().toLocaleString('fa-IR').split(',')[0]
-            // if(goldWeight<min||goldWeight>max){
-            //     return next(new responseModel(req, res,'لطفا مقدار وزن طلا را تغییر دهید','create Invoice', 400,'لطفا مقدار وزن طلا را تغییر دهید' ,null))
-            // }
+            if(goldWeight<min||goldWeight>max){
+                return next(new responseModel(req, res,'لطفا مقدار وزن طلا را تغییر دهید','create Invoice', 400,'لطفا مقدار وزن طلا را تغییر دهید' ,null))
+            }
             console.log('start the transaction',goldWeight)
             const invoiceId= this.generateInvoice()
             let transaction = this.invoiceRepository.create({                                    // here is the making the transActions

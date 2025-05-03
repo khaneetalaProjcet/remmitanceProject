@@ -16,8 +16,11 @@ export class SettingController{
 
     async updateSetting(req: Request, res: Response, next: NextFunction){
         let {
-          maxTrade,
-          minTrade,
+          maxTradeSell,
+          minTradeSell,
+          maxTradeBuy,
+          minTradeBuy,
+          offerTolerance,
           expireTime,
           tradeIsOpen
          } = req.body;
@@ -27,12 +30,16 @@ export class SettingController{
         try{
             const settings=await this.settingRepository.find()
             if(settings.length==0){
-                maxTrade=formatGoldWeight(maxTrade)
-                minTrade=formatGoldWeight(minTrade)
-             
+              maxTradeBuy=formatGoldWeight(maxTradeBuy)
+              maxTradeSell=formatGoldWeight(maxTradeSell)
+              minTradeBuy=formatGoldWeight(minTradeBuy)
+              minTradeSell=formatGoldWeight(minTradeSell)
               const newSetting=this.settingRepository.create({
-                maxTrade,
-                minTrade,
+                maxTradeSell,
+                minTradeSell,
+                maxTradeBuy,
+                minTradeBuy,
+                offerTolerance,
                 expireTime,
                 tradeIsOpen
               })
@@ -42,13 +49,18 @@ export class SettingController{
               return next(new responseModel(req, res,null,'setting', 200,null,newSetting))
             } 
             const setting=settings[0]
-            setting.maxTrade=maxTrade?formatGoldWeight(maxTrade):setting.maxTrade
-            setting.minTrade=minTrade?formatGoldWeight(minTrade):setting.minTrade
+            setting.maxTradeSell=maxTradeSell?formatGoldWeight(maxTradeSell):setting.maxTradeSell
+            setting.minTradeSell=minTradeSell?formatGoldWeight(minTradeSell):setting.minTradeSell
+            setting.maxTradeBuy=maxTradeBuy?formatGoldWeight(maxTradeBuy):setting.maxTradeBuy
+            setting.minTradeBuy=minTradeBuy?formatGoldWeight(minTradeBuy):setting.minTradeBuy
+            setting.offerTolerance=offerTolerance?offerTolerance:setting.offerTolerance
             setting.expireTime=expireTime?expireTime:setting.expireTime,
             setting.tradeIsOpen=tradeIsOpen?tradeIsOpen:setting.tradeIsOpen
             await this.settingRepository.save(setting)
             await cacher.setter("setting",setting)
 
+          
+            
             
             return next(new responseModel(req, res,null,'setting', 200,null,setting))
             

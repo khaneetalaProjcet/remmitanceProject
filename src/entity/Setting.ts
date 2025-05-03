@@ -7,14 +7,22 @@ export class Setting {
     id: string
     
     @Column({ type: "numeric", precision: 10, scale: 3, default: 0 })
-    maxTrade: number
+    maxTradeSell: number
 
     @Column({ type: "numeric", precision: 10, scale: 3, default: 0 })
-    minTrade : number
+    minTradeSell : number
 
+    @Column({ type: "numeric", precision: 10, scale: 3, default: 0 })
+    maxTradeBuy: number
+
+    @Column({ type: "numeric", precision: 10, scale: 3, default: 0 })
+    minTradeBuy : number
+
+    @Column({ type: "numeric",default:0})
+    offerTolerance : number
     @Column({type:"numeric",default:0})
     expireTime:number
-    
+     
     @Column({type:"boolean",default:true})
     tradeIsOpen:boolean
 
@@ -31,3 +39,4 @@ export class Setting {
 // curl --header "Content-Type: application/json" \
 //   --request POST \
 //   --data '{"maxTradeSell":300,"minTradeSell":1,"maxTradeBuy":300,"minTradeBuy":1,"offerTolerance":1000000,"expireTime":24}' \ http://localhost:7000/setting/update
+    

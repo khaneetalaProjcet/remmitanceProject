@@ -39,18 +39,25 @@ export class InvoiceController{
         await queryRunner.startTransaction()
         try{
             const setting=await this.settingService.getSetting()
-            // const max=(type==0)?setting.maxTradeSell:setting.maxTradeBuy
-            // const min=(type==0)?setting.minTradeSell:setting.minTradeBuy
+            const max=(type==0)?setting.maxTradeSell:setting.maxTradeBuy
+            const min=(type==0)?setting.minTradeSell:setting.minTradeBuy
             
 
-            // console.log(`min : ${min} max : ${max}` );
+            const isOpen=setting.tradeIsOpen
             
 
-
+          
+            
+ 
+            console.log(max,min);
+            
             const prices=await this.goldPriceService.getGoldPrice()
             const realGoldprice=(type==0)?prices.sellPrice:prices.buyPrice
             
             const realTotalrice=realGoldprice*(+goldWeight)
+            if(!isOpen){
+                return next(new responseModel(req, res,"معاملات تا اطلاع ثانوی بسته می باشد",'create Invoice', 400,"معاملات تا اطلاع ثانوی بسته می باشد",null))
+            }
             if (realGoldprice - (+goldPrice) >= 10000){
                 console.log('condition1')
                 goldPrice = realGoldprice
@@ -95,9 +102,9 @@ export class InvoiceController{
             goldWeight = formatGoldWeight(goldWeight)
             const time= new Date().toLocaleString('fa-IR').split(',')[1]
             const date= new Date().toLocaleString('fa-IR').split(',')[0]
-            // if(goldWeight<min||goldWeight>max){
-            //     return next(new responseModel(req, res,'لطفا مقدار وزن طلا را تغییر دهید','create Invoice', 400,'لطفا مقدار وزن طلا را تغییر دهید' ,null))
-            // }
+            if(goldWeight<min||goldWeight>max){
+                return next(new responseModel(req, res,'لطفا مقدار وزن طلا را تغییر دهید','create Invoice', 400,'لطفا مقدار وزن طلا را تغییر دهید' ,null))
+            }
             console.log('start the transaction',goldWeight)
             const invoiceId= this.generateInvoice()
             let transaction = this.invoiceRepository.create({                                    // here is the making the transActions

@@ -107,7 +107,9 @@ bot.on('callback_query',async (query) => {
 
   if (data.startsWith('user-cancel:')) {
     const id = data.split(':')[1];
+    await bot.answerCallbackQuery(query.id);
     const invoice=await invoiceRepository.findOne({where:{id}})
+
     if(invoice.status!=0){
       const message="درخواست نامعتبر"
       bot.sendMessage(chatId,message)

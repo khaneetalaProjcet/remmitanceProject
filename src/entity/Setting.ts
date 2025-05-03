@@ -7,22 +7,14 @@ export class Setting {
     id: string
     
     @Column({ type: "numeric", precision: 10, scale: 3, default: 0 })
-    maxTradeSell: number
+    maxTrade: number
 
     @Column({ type: "numeric", precision: 10, scale: 3, default: 0 })
-    minTradeSell : number
+    minTrade : number
 
-    @Column({ type: "numeric", precision: 10, scale: 3, default: 0 })
-    maxTradeBuy: number
-
-    @Column({ type: "numeric", precision: 10, scale: 3, default: 0 })
-    minTradeBuy : number
-
-    @Column({ type: "numeric",default:0})
-    offerTolerance : number
     @Column({type:"numeric",default:0})
     expireTime:number
-     
+    
     @Column({type:"boolean",default:true})
     tradeIsOpen:boolean
 

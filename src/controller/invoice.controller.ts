@@ -466,6 +466,9 @@ export class InvoiceController{
 
 
     sendMessageWithInline(message : string ,chatId : any ,invoiceId:any){
+        console.log(invoiceId);
+        console.log(`user-yes:${invoiceId}`);
+        
         this.bot.sendMessage(chatId,message, {
              reply_markup: {
                inline_keyboard: [
@@ -478,8 +481,6 @@ export class InvoiceController{
              }
           });
      }
-
-    
 
     
        

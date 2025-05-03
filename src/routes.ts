@@ -100,7 +100,7 @@ export const Routes = [
 },
 {
     method: "get",
-    route: "/user/addwallet",
+    route: "/user/addwallet/:phone",
     controller: UserController,
     action: "addWallet",
     middlware:[]  

@@ -250,10 +250,17 @@ export const Routes = [
     middlware:[authMiddlewareAdmin] 
 },
 {
-    method: "get",
-    route: "/admin/invoice/foraccounter",
+    method: "post",
+    route: "/admin/invoice/approvepay/:id",
     controller: AdminController,
-    action: "getAllInvoiceForAccounter",
+    action: "approvePaymentBuy",
+    middlware:[authMiddlewareAdmin] 
+},
+{
+    method: "post",
+    route: "/admin/invoice/rejectpay/:id",
+    controller: AdminController,
+    action: "rejectPaymentBuy",
     middlware:[authMiddlewareAdmin] 
 },
 // {

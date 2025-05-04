@@ -464,15 +464,26 @@ ${description}
     
             invoice.status=6
             invoice.accounterDescription=description
+             
 
+            console.log("addddf",invoice.admins);
+            console.log("aaaaa",admin);
+            
             const array=invoice.admins
+
+            array.push(admin)
+
+
+            console.log(array);
+            
 
 
             // const a=invoice,admins
-            invoice.admins.push(admin)
+            // invoice.admins.push(admin)
             // invoice.admins=[...invoice.admins,admin]
     
             walletTransaction.status="1"
+            invoice.admins=array
     
     
             const buyerGoldWeight = parseFloat(invoice.buyer.wallet.goldWeight.toString());

@@ -193,7 +193,6 @@ export class AdminController{
         const invoices=await this.invoiceRepository.find({relations:["buyer","bankAccount","appBankAccount","admins","seller"]})
         return next(new responseModel(req, res,null, 'admin', 200, null, invoices))
     }
-
     async getAllSellInvoice(req: Request, res: Response, next: NextFunction){
         const type=0
         const invoices=await this.invoiceRepository.find({where:{type},relations:["seller","bankAccount","appBankAccount","admin","accounter"]})
@@ -206,12 +205,16 @@ export class AdminController{
     }
 
     async getAllInvoiceForAdmin(req: Request, res: Response, next: NextFunction){
-        const invoices=await this.invoiceRepository.find({where:{status:LessThan(5)},relations:["buyer","bankAccount","appBankAccount","admins","seller"]})
+        const invoices=await this.invoiceRepository.find({where:{status:LessThan(5)}
+        ,relations:["buyer","bankAccount","appBankAccount","admins","seller"],order:{id:"DESC"}})
         return next(new responseModel(req, res,null, 'admin', 200, null, invoices))
     }
 
     async getAllInvoiceForAccounter(req: Request, res: Response, next: NextFunction){
-        const invoices=await this.invoiceRepository.find({where:{status:MoreThan(4)},relations:["buyer","bankAccount","appBankAccount","admins","seller"]})
+        const invoices=await this.invoiceRepository.find({where:{status:MoreThan(4)},
+        relations:["buyer","bankAccount","appBankAccount","admins","seller"],
+        order:{id:"DESC"}
+    })
         return next(new responseModel(req, res,null, 'admin', 200, null, invoices))
     }
     

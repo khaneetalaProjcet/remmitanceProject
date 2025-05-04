@@ -452,7 +452,7 @@ ${description}
         const queryRunner = AppDataSource.createQueryRunner()
         await queryRunner.connect()
         await queryRunner.startTransaction()
-
+        
          try{
             const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
             const invoice=await this.invoiceRepository.findOne({where:{id},relations:{buyer:{telegram:true,wallet:true},admins:true}})
@@ -506,7 +506,7 @@ ${description}
             queryRunner.manager.save(walletTransaction)
 
 
-            await queryRunner.commitTransaction()
+            
            
 
             const time= new Date().toLocaleString('fa-IR').split(',')[1]
@@ -528,9 +528,9 @@ ${description}
         `;
 
          this.bot.sendMessage(invoice.buyer.telegram.chatId,message,{parse_mode:"HTML"})
-        
+         await queryRunner.commitTransaction()
          return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
-
+            
          }catch(err){
             console.log("fffffffffffffffffffffffffff");
             await queryRunner.rollbackTransaction()
@@ -539,7 +539,6 @@ ${description}
             console.log('transaction released')
             await queryRunner.release()
          }
-      
     }
 
 

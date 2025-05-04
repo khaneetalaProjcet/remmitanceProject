@@ -200,9 +200,13 @@ export class AdminController{
         return next(new responseModel(req, res,null, 'admin', 200, null, invoices))
     }
 
-
     async getAllInvoiceForAdmin(req: Request, res: Response, next: NextFunction){
         const invoices=await this.invoiceRepository.find({where:{status:LessThan(5)},relations:["buyer","bankAccount","appBankAccount","admins","seller"]})
+        return next(new responseModel(req, res,null, 'admin', 200, null, invoices))
+    }
+
+    async getAllInvoiceForAccounter(req: Request, res: Response, next: NextFunction){
+        const invoices=await this.invoiceRepository.find({where:{status:MoreThan(4)},relations:["buyer","bankAccount","appBankAccount","admins","seller"]})
         return next(new responseModel(req, res,null, 'admin', 200, null, invoices))
     }
     
@@ -298,6 +302,11 @@ ${description}
          }
 
     }
+
+
+
+
+
 
     async approveBuyInvoice(req: Request, res: Response, next: NextFunction){
         const invoiceId=+req.params.id
@@ -415,54 +424,50 @@ ${description}
     async approvePaymentBuy(req: Request, res: Response, next: NextFunction){
         const id=+req.params.id
         const {description}  =req.body
-        const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
+        const queryRunner = AppDataSource.createQueryRunner()
+        await queryRunner.connect()
+        await queryRunner.startTransaction()
 
-        const invoice=await this.invoiceRepository.findOne({where:{id},relations:{buyer:{telegram:true,wallet:true}}})
-        if(!invoice){
-            return  next(new responseModel(req, res," وجود ندارد",'reject', 402," وجود ندارد",null))
-        }
-
-        invoice.status=6
-        invoice.accounterDescription=description
-        invoice.admins=[...invoice.admins,admin]
-
-
-
-        
-
-        
-
-
+         try{
+            const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
+            const invoice=await this.invoiceRepository.findOne({where:{id},relations:{buyer:{telegram:true,wallet:true}}})
+            const systemUser=await this.userRepository.findOne({where:{isSystemUser:true},relations:["wallet"]})
+            if(!invoice){
+                return  next(new responseModel(req, res," وجود ندارد",'reject', 402," وجود ندارد",null))
+            }
     
+            invoice.status=6
+            invoice.accounterDescription=description
+            invoice.admins=[...invoice.admins,admin]
+    
+    
+    
+            const buyerGoldWeight = parseFloat(invoice.buyer.wallet.goldWeight.toString());
+            const buyerBalance = parseFloat(invoice.buyer.wallet.balance.toString());
+            const systemUserGoldWeight = parseFloat(systemUser.wallet.goldWeight.toString());
+            const systemUserBalance = parseFloat(systemUser.wallet.balance.toString());
+            const invoiceGoldWeight = parseFloat(invoice.goldWeight.toString());
+            const invoiceTotalPrice = parseFloat(invoice.totalPrice.toString());
+    
+            
+            
+            invoice.buyer.wallet.goldWeight = parseFloat((buyerGoldWeight + invoiceGoldWeight).toFixed(3));
+            invoice.buyer.wallet.balance = Math.round(buyerBalance - invoiceTotalPrice);
+    
+            systemUser.wallet.goldWeight = parseFloat((systemUserGoldWeight - invoiceGoldWeight).toFixed(3));
+            systemUser.wallet.balance = Math.round(systemUserBalance + invoiceTotalPrice);
 
+            queryRunner.manager.save(invoice)
+            queryRunner.manager.save(systemUser)
+            await queryRunner.commitTransaction()
 
-    }
+            const time= new Date().toLocaleString('fa-IR').split(',')[1]
+            const date= new Date().toLocaleString('fa-IR').split(',')[0]
 
-
-
-    async rejectPaymentBuy(req: Request, res: Response, next: NextFunction){
-        const id=+req.params.id
-        const {description}  =req.body
-        const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
-
-        const invoice=await this.invoiceRepository.findOne({where:{id},relations:{buyer:{telegram:true,wallet:true}}})
-        if(!invoice){
-            return  next(new responseModel(req, res," وجود ندارد",'reject', 402," وجود ندارد",null))
-        }
-
-        invoice.status=7
-        invoice.accounterDescription=description
-        invoice.admins=[...invoice.admins,admin]
-
-        await this.invoiceRepository.save(invoice)
+            const message = `
+          <b>کاربر گرامی</b>
         
-        const time= new Date().toLocaleString('fa-IR').split(',')[1]
-        const date= new Date().toLocaleString('fa-IR').split(',')[0]
-
-        const message = `
-        <b>کاربر گرامی</b>
-        
-        پرداخت حواله خرید شما <b>رد شد</b>:
+        پرداخت حواله خرید شما <b>قبول شد</b>:
         
         <b>مشخصات حواله:</b>
         * <b>مقدار:</b> ${invoice.goldWeight} گرم  
@@ -470,14 +475,80 @@ ${description}
         * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
         * <b>تاریخ و ساعت:</b> ${date} ${time}
         
-        <b>دلیل رد شدن:</b>
+        <b>توضیحات:</b>
         ${description}
         `;
 
         this.bot.sendMessage(invoice.seller.telegram.chatId,message,{parse_mode:"HTML"})
-        
-        return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
-        
+
+            return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
+
+         }catch(err){
+            console.log(err);
+            await queryRunner.rollbackTransaction()
+            return next(new responseModel(req, res,"خطای داخلی سیستم",'invoice', 500,"خطای داخلی سیستم",null))
+         }finally{
+            console.log('transaction released')
+            await queryRunner.release()
+         }
+      
+    }
+
+
+
+    async rejectPaymentBuy(req: Request, res: Response, next: NextFunction){
+        const id=+req.params.id
+        const {description}  =req.body
+        const queryRunner = AppDataSource.createQueryRunner()
+        await queryRunner.connect()
+        await queryRunner.startTransaction()
+        try{
+            const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
+            const invoice=await this.invoiceRepository.findOne({where:{id},relations:{buyer:{telegram:true,wallet:true}}})
+            if(!invoice){
+                return  next(new responseModel(req, res," وجود ندارد",'reject', 402," وجود ندارد",null))
+            }
+    
+            
+    
+            invoice.status=7
+            invoice.accounterDescription=description
+            invoice.admins=[...invoice.admins,admin]
+    
+            
+            queryRunner.manager.save(invoice)
+            const time= new Date().toLocaleString('fa-IR').split(',')[1]
+            const date= new Date().toLocaleString('fa-IR').split(',')[0]
+    
+            const message = `
+            <b>کاربر گرامی</b>
+            
+            پرداخت حواله خرید شما <b>رد شد</b>:
+            
+            <b>مشخصات حواله:</b>
+            * <b>مقدار:</b> ${invoice.goldWeight} گرم  
+            * <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
+            * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
+            * <b>تاریخ و ساعت:</b> ${date} ${time}
+            
+            <b>دلیل رد شدن:</b>
+            ${description}
+            `;
+          
+            await queryRunner.commitTransaction()
+            this.bot.sendMessage(invoice.seller.telegram.chatId,message,{parse_mode:"HTML"})
+            
+            return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
+        }catch(err){
+            console.log(err);
+            
+            await queryRunner.rollbackTransaction()
+            return next(new responseModel(req, res,"خطای داخلی سیستم",'invoice', 500,"خطای داخلی سیستم",null))
+        }finally{
+            console.log('transaction released')
+            await queryRunner.release()
+        }
+       
     }
 
 

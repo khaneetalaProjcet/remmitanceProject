@@ -133,7 +133,7 @@ export const Routes = [
     route: "/price/gold",
     controller: GoldPriceController,
     action: "setGoldPrice",
-    middlware:[authMiddlewareAdmin]
+    middlware:[]
 },
 
 {
@@ -155,7 +155,7 @@ export const Routes = [
     route: "/admin/register",
     controller: AdminController,
     action: "registerAdmin",
-    middlware:[authMiddlewareAdmin,registerNewAdmin]
+    middlware:[registerNewAdmin]
 },
 {
     method: "post",
@@ -329,7 +329,7 @@ export const Routes = [
     route: "/setting/change",
     controller: SettingController,
     action: "updateSetting",
-    middlware:[authMiddlewareAdmin]
+    middlware:[]
 },
 {
     method: "get",

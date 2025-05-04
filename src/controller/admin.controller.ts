@@ -275,7 +275,7 @@ ${description}
             const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId},relations:["seller"]})
             const telegramUser=await this.telegramUserRepository.findOne({where:{user:{id:invoice.buyer.id}}})
             invoice.status=4
-            invoice.admins=[admin]
+            invoice.admins.push(admin)
             invoice.description=description
             const time= new Date().toLocaleString('fa-IR').split(',')[1]
             const date= new Date().toLocaleString('fa-IR').split(',')[0]
@@ -338,7 +338,7 @@ ${description}
            console.log("apppppp",appBank);
            
            invoice.status=3
-           invoice.admins=[admin]
+           invoice.admins.push(admin)
            invoice.description=description
            invoice.appBankAccount=appBank
            await queryRunner.manager.save(invoice)
@@ -378,7 +378,7 @@ ${description}
         }
     }
 
-    async rejectBuyInvoice(req: Request, res: Response, next: NextFunction){
+    async rejectBuyInvoice(req: Request, res: Response, next: NextFunction){    
         const invoiceId=+req.params.id
         const description=req.body.description
         const queryRunner = AppDataSource.createQueryRunner()
@@ -390,7 +390,7 @@ ${description}
            const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId},relations:['buyer']})
            const telegramUser=await this.telegramUserRepository.findOne({where:{user:{id:invoice.buyer.id}}})
            invoice.status=4
-           invoice.admins=[admin]
+           invoice.admins.push(admin)
            invoice.description=description
 
            const time= new Date().toLocaleString('fa-IR').split(',')[1]
@@ -538,7 +538,7 @@ ${description}
     
             invoice.status=7
             invoice.accounterDescription=description
-            invoice.admins=[...invoice.admins,admin]
+            invoice.admins.push(admin)
 
             walletTransaction.status="2"
     

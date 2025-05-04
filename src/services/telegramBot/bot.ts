@@ -128,4 +128,54 @@ bot.on('callback_query',async (query) => {
 
   }
 
+
+
+
+
+  if (data.startsWith('bank-ok:')) {
+    const id = data.split(':')[1];
+    await bot.answerCallbackQuery(query.id);
+    const invoice=await invoiceRepository.findOne({where:{id}})
+
+    if(invoice.status!=5){
+      const message="درخواست نامعتبر"
+      bot.sendMessage(chatId,message)
+      return ;
+  }
+
+   invoice.status=6
+
+   await invoiceRepository.save(invoice)
+
+   const message='اظلاعات بانکی شما دریافت شد و تا ساعاتی اینده برای شما واریز می شود'
+
+   bot.sendMessage(chatId,message)
+
+   return ;
+
+  }
+
+  if (data.startsWith('bank-nok:')) {
+    const id = data.split(':')[1];
+    await bot.answerCallbackQuery(query.id);
+    const invoice=await invoiceRepository.findOne({where:{id}})
+
+    if(invoice.status!=5){
+      const message="درخواست نامعتبر"
+      bot.sendMessage(chatId,message)
+      return ;
+  }
+
+   invoice.status=3
+
+   await invoiceRepository.save(invoice)
+
+   const message='برای ویرایش اطلاعات با شما تماس گرفته خواهد شد'
+
+   bot.sendMessage(chatId,message)
+
+   return ;
+
+  }
+
 });

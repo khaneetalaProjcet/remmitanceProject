@@ -519,19 +519,18 @@ export class InvoiceController{
         console.log(invoiceId);
         console.log(`user-yes:${invoiceId}`);
         
-        this.bot.sendMessage(chatId,message, {
-             reply_markup: {
-               inline_keyboard: [
-                 [
-                   { text: 'تایید', callback_data: `user-yes:${invoiceId}` },
-                   { text: 'لفو', callback_data: `user-cancel:${invoiceId}`},
- 
-                 ]
-               ]
-             },
-             parse_mode:"HTML"
+        this.bot.sendMessage(chatId, message, {
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  { text: 'تایید', callback_data: `user-yes:${invoiceId}` },
+                  { text: 'لغو', callback_data: `user-cancel:${invoiceId}` }
+                ]
+              ]
+            },
+            parse_mode: "HTML"
           });
-     }
+    }
 
     
        

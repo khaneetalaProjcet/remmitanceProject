@@ -13,6 +13,7 @@ import {  validationResult } from "express-validator";
 import { TelegramUser } from "../entity/TelegramUser";
 import TelegramBot from 'node-telegram-bot-api';
 import { showMainMenu } from "../services/telegramBot/menu";
+import {WalletTransaction}   from "../entity/WalletTransaction"
 import { Stream } from "stream";
 import { Between, LessThan, MoreThan } from "typeorm";
 const token = process.env.TELEGRAM_BOT_TOKEN || "7622536105:AAFR0NDFR27rLDF270uuL5Ww_K0XZi61FCw";
@@ -20,11 +21,13 @@ const token = process.env.TELEGRAM_BOT_TOKEN || "7622536105:AAFR0NDFR27rLDF270uu
 export class AdminController{
     private adminRepository=AppDataSource.getRepository(Admin)
     private accessPointRepository=AppDataSource.getRepository(accessPoint)
+    
     private userRepository=AppDataSource.getRepository(User)
     private jwtService=new JwtGenerator()
     private telegramUserRepository=AppDataSource.getRepository(TelegramUser)
     private invoiceRepository=AppDataSource.getRepository(Invoice)
     private appBankRepository=AppDataSource.getRepository(AppBankAccount)
+    private walletTransaction=AppDataSource.getRepository(WalletTransaction)
     private bot=new TelegramBot(token);
 
     /**
@@ -306,8 +309,6 @@ ${description}
 
 
 
-
-
     async approveBuyInvoice(req: Request, res: Response, next: NextFunction){
         const invoiceId=+req.params.id
         const description=req.body.description
@@ -421,6 +422,15 @@ ${description}
 
 
 
+
+   /**
+    * Accounter section
+    * @param req 
+    * @param res 
+    * @param next 
+    * @returns 
+    */
+
     async approvePaymentBuy(req: Request, res: Response, next: NextFunction){
         const id=+req.params.id
         const {description}  =req.body
@@ -432,6 +442,7 @@ ${description}
             const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
             const invoice=await this.invoiceRepository.findOne({where:{id},relations:{buyer:{telegram:true,wallet:true}}})
             const systemUser=await this.userRepository.findOne({where:{isSystemUser:true},relations:["wallet"]})
+            const walletTransaction=await this.walletTransaction.findOne({where:{authority:invoice.authority}})
             if(!invoice){
                 return  next(new responseModel(req, res," وجود ندارد",'reject', 402," وجود ندارد",null))
             }
@@ -440,25 +451,27 @@ ${description}
             invoice.accounterDescription=description
             invoice.admins=[...invoice.admins,admin]
     
+            walletTransaction.status="1"
     
     
             const buyerGoldWeight = parseFloat(invoice.buyer.wallet.goldWeight.toString());
-            const buyerBalance = parseFloat(invoice.buyer.wallet.balance.toString());
+            // const buyerBalance = parseFloat(invoice.buyer.wallet.balance.toString());
             const systemUserGoldWeight = parseFloat(systemUser.wallet.goldWeight.toString());
-            const systemUserBalance = parseFloat(systemUser.wallet.balance.toString());
+            // const systemUserBalance = parseFloat(systemUser.wallet.balance.toString());
             const invoiceGoldWeight = parseFloat(invoice.goldWeight.toString());
-            const invoiceTotalPrice = parseFloat(invoice.totalPrice.toString());
+            // const invoiceTotalPrice = parseFloat(invoice.totalPrice.toString());
     
             
             
             invoice.buyer.wallet.goldWeight = parseFloat((buyerGoldWeight + invoiceGoldWeight).toFixed(3));
-            invoice.buyer.wallet.balance = Math.round(buyerBalance - invoiceTotalPrice);
+            // invoice.buyer.wallet.balance = Math.round(buyerBalance - invoiceTotalPrice);
     
             systemUser.wallet.goldWeight = parseFloat((systemUserGoldWeight - invoiceGoldWeight).toFixed(3));
-            systemUser.wallet.balance = Math.round(systemUserBalance + invoiceTotalPrice);
+            // systemUser.wallet.balance = Math.round(systemUserBalance + invoiceTotalPrice);
 
             queryRunner.manager.save(invoice)
             queryRunner.manager.save(systemUser)
+            queryRunner.manager.save(walletTransaction)
             await queryRunner.commitTransaction()
 
             const time= new Date().toLocaleString('fa-IR').split(',')[1]
@@ -481,7 +494,7 @@ ${description}
 
         this.bot.sendMessage(invoice.seller.telegram.chatId,message,{parse_mode:"HTML"})
 
-            return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
+         return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
 
          }catch(err){
             console.log(err);
@@ -505,6 +518,7 @@ ${description}
         try{
             const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
             const invoice=await this.invoiceRepository.findOne({where:{id},relations:{buyer:{telegram:true,wallet:true}}})
+            const walletTransaction=await this.walletTransaction.findOne({where:{authority:invoice.authority}})
             if(!invoice){
                 return  next(new responseModel(req, res," وجود ندارد",'reject', 402," وجود ندارد",null))
             }
@@ -514,8 +528,10 @@ ${description}
             invoice.status=7
             invoice.accounterDescription=description
             invoice.admins=[...invoice.admins,admin]
+
+            walletTransaction.status="2"
     
-            
+            queryRunner.manager.save(walletTransaction)
             queryRunner.manager.save(invoice)
             const time= new Date().toLocaleString('fa-IR').split(',')[1]
             const date= new Date().toLocaleString('fa-IR').split(',')[0]
@@ -550,6 +566,9 @@ ${description}
         }
        
     }
+
+
+    
 
 
 

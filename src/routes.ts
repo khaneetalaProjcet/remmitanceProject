@@ -256,7 +256,9 @@ export const Routes = [
     action: "getAllInvoiceForAccounter",
     middlware:[authMiddlewareAdmin] 
 },
-
+{
+    
+},
 
 
 /**

@@ -299,9 +299,12 @@ export class InvoiceController{
     
              return next(new responseModel(req, res,null,' user invoice', 200,null,invoice))
         }catch(err){
-
+            await queryRunner.rollbackTransaction()
+            console.log("error",err);
+            return next(new responseModel(req, res,"خطای داخلی سیستم",'invoice', 500,"خطای داخلی سیستم",null))
         }finally{
-
+            console.log('transaction released')
+            await queryRunner.release()
         }
   
       

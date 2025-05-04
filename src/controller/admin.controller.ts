@@ -458,9 +458,9 @@ ${description}
             const invoice=await this.invoiceRepository.findOne({where:{id},relations:{buyer:{telegram:true,wallet:true},admins:true}})
             const systemUser=await this.userRepository.findOne({where:{isSystemUser:true},relations:["wallet"]})
             const walletTransaction=await this.walletTransaction.findOne({where:{authority:invoice.authority}})
-            if(!invoice){
-                return  next(new responseModel(req, res," وجود ندارد",'reject', 402," وجود ندارد",null))
-            }
+            // if(!invoice){
+            //     return  next(new responseModel(req, res," وجود ندارد",'reject', 402," وجود ندارد",null))
+            // }
     
             invoice.status=6
             invoice.accounterDescription=description
@@ -532,7 +532,7 @@ ${description}
          return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
 
          }catch(err){
-            console.log(err);
+            console.log("fffffffffffffffffffffffffff");
             await queryRunner.rollbackTransaction()
             return next(new responseModel(req, res,"خطای داخلی سیستم",'invoice', 500,"خطای داخلی سیستم",null))
          }finally{

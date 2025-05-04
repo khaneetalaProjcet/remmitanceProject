@@ -454,7 +454,7 @@ ${description}
     
             invoice.status=6
             invoice.accounterDescription=description
-            invoice.admins=[...invoice.admins,admin]
+            invoice.admins.push(admin)
     
             walletTransaction.status="1"
     
@@ -590,6 +590,8 @@ ${description}
             invoice.status=5
             
             const walletTransaction=this.walletTransaction.create({
+                type:"0",
+                status:"0",
                 invoiceId:invoice.invoiceId,
                 amount:invoice.totalPrice,
                 wallet:invoice.seller.wallet,
@@ -655,6 +657,12 @@ ${description}
 
 
     }
+
+
+
+
+
+    
 
 
 

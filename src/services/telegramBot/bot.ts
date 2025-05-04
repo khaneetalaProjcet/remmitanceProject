@@ -166,7 +166,7 @@ bot.on('callback_query',async (query) => {
       return ;
   }
 
-   invoice.status=3
+    invoice.status=7
 
    await invoiceRepository.save(invoice)
 

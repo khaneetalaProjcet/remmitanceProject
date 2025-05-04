@@ -45,7 +45,7 @@ export class PricesController{
         return next(new responseModel(req, res,null,'get prices', 200,null,prices))
        }catch(er){
         console.log("err",er);
-        
+        return next(new responseModel(req, res,null,'get prices', 500,null,er))
        }
     }
     async updateHaveSellOrBuy(req: Request, res: Response, next: NextFunction){

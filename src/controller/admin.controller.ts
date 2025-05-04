@@ -346,7 +346,7 @@ ${description}
            
            
 
-           invoice.admins=seconndAdmin
+           invoice.admins=[admin]
            invoice.description=description
            invoice.appBankAccount=appBank
            await queryRunner.manager.save(invoice)

@@ -455,7 +455,7 @@ ${description}
 
          try{
             const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
-            const invoice=await this.invoiceRepository.findOne({where:{id},relations:{buyer:{telegram:true,wallet:true}}})
+            const invoice=await this.invoiceRepository.findOne({where:{id},relations:{buyer:{telegram:true,wallet:true},admins:true}})
             const systemUser=await this.userRepository.findOne({where:{isSystemUser:true},relations:["wallet"]})
             const walletTransaction=await this.walletTransaction.findOne({where:{authority:invoice.authority}})
             if(!invoice){

@@ -504,7 +504,7 @@ ${description}
             queryRunner.manager.save(invoice)
             queryRunner.manager.save(systemUser)
             queryRunner.manager.save(walletTransaction)
-            await queryRunner.commitTransaction()
+           
 
             const time= new Date().toLocaleString('fa-IR').split(',')[1]
             const date= new Date().toLocaleString('fa-IR').split(',')[0]
@@ -524,8 +524,8 @@ ${description}
         ${description}
         `;
 
-        this.bot.sendMessage(invoice.seller.telegram.chatId,message,{parse_mode:"HTML"})
-
+        this.bot.sendMessage(invoice.buyer.telegram.chatId,message,{parse_mode:"HTML"})
+        await queryRunner.commitTransaction()
          return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
 
          }catch(err){

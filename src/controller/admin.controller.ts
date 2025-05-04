@@ -338,7 +338,9 @@ ${description}
            console.log("apppppp",appBank);
            
            invoice.status=3
-           invoice.admins.push(admin)
+           const adddmin=[...invoice.admins,...[admin]]
+
+           invoice.admins=adddmin
            invoice.description=description
            invoice.appBankAccount=appBank
            await queryRunner.manager.save(invoice)

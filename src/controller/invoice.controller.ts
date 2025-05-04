@@ -263,7 +263,9 @@ export class InvoiceController{
                 invoiceId:invoice.invoiceId,
                 date,
                 time,
-                amount:invoice.totalPrice
+                amount:invoice.totalPrice,
+               
+               
             })
             
 

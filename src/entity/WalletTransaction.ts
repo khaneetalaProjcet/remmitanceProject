@@ -9,7 +9,7 @@ export class WalletTransaction{
     @Column()
     type : string
 
-    @Column()
+    @Column({nullable:true})
     description :string
 
     @ManyToOne(()=> Wallet , (wallet)=> wallet.transactions)

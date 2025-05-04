@@ -561,8 +561,8 @@ ${description}
 
             walletTransaction.status="2"
     
-            queryRunner.manager.save(walletTransaction)
-            queryRunner.manager.save(invoice)
+           await queryRunner.manager.save(walletTransaction)
+           await queryRunner.manager.save(invoice)
             const time= new Date().toLocaleString('fa-IR').split(',')[1]
             const date= new Date().toLocaleString('fa-IR').split(',')[0]
     

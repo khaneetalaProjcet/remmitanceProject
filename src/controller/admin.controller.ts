@@ -338,11 +338,13 @@ ${description}
            console.log("apppppp",appBank);
            
            invoice.status=3
-           const adddmin=[...invoice.admins,...[admin]]
-           const seconndAdmin=[...invoice.admins,admin]
 
-           console.log("adddAdmin",adddmin);
-           console.log("secondAdmin",seconndAdmin);
+           
+        //    const adddmin=[...invoice.admins,...[admin]]
+        //    const seconndAdmin=[...invoice.admins,admin]
+
+        //    console.log("adddAdmin",adddmin);
+        //    console.log("secondAdmin",seconndAdmin);
            
            
 

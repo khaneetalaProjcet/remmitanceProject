@@ -35,6 +35,7 @@ export class PricesController{
       return next(new responseModel(req, res,null,'get prices', 200,null,price))
     }
     async getPrices(req: Request, res: Response, next: NextFunction){
+       try{
         let prices=await this.pricesRepository.find({order:{id:"DESC"}})
         if(prices.length==0){
                prices= await this.initPrices()
@@ -42,6 +43,10 @@ export class PricesController{
         console.log("prices",prices[0].id,prices[prices.length-1]);
         
         return next(new responseModel(req, res,null,'get prices', 200,null,prices))
+       }catch(er){
+        console.log("err",er);
+        
+       }
     }
     async updateHaveSellOrBuy(req: Request, res: Response, next: NextFunction){
         const {haveSell,haveBuy,id}=req.body

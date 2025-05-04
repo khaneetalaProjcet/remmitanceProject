@@ -466,6 +466,7 @@ export class InvoiceController{
                 // bankAccount:userBankAccount,
                 time,
                 date,
+                admins:[],
                 description,
                 productName:prices.persianName
             });

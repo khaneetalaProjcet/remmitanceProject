@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
 import { User } from "./User"
 import { InvoiceType } from "./enums/InvoiceType"
 import {TradeType} from "./enums/TradeType"
@@ -53,8 +53,8 @@ export class Invoice {
     })
     type : InvoiceType
      
-    @ManyToMany(() => Admin)
-    @JoinTable()
+    @ManyToMany(() => Admin ,  (admins=> admins.invoices))
+    @JoinColumn()
     admins:Admin[]
 
     @ManyToOne(() => BankAccount)

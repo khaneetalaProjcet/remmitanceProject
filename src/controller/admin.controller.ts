@@ -231,7 +231,7 @@ export class AdminController{
             const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId},relations:["seller"]})
             const telegramUser=await this.telegramUserRepository.findOne({where:{user:{id:invoice.seller.id}}})
             invoice.status=3
-            invoice.admins=[admin]
+            invoice.admins.push(admin)
             invoice.description=description
             const time= new Date().toLocaleString('fa-IR').split(',')[1]
             const date= new Date().toLocaleString('fa-IR').split(',')[0]
@@ -454,7 +454,13 @@ ${description}
     
             invoice.status=6
             invoice.accounterDescription=description
+
+            const array=invoice.admins
+
+
+            // const a=invoice,admins
             invoice.admins.push(admin)
+            // invoice.admins=[...invoice.admins,admin]
     
             walletTransaction.status="1"
     

@@ -205,13 +205,13 @@ export class AdminController{
     }
 
     async getAllInvoiceForAdmin(req: Request, res: Response, next: NextFunction){
-        const invoices=await this.invoiceRepository.find({where:{status:LessThan(5)}
+        const invoices=await this.invoiceRepository.find({where:{status:LessThan(2)}
         ,relations:["buyer","bankAccount","appBankAccount","admins","seller"],order:{id:"DESC"}})
         return next(new responseModel(req, res,null, 'admin', 200, null, invoices))
     }
 
     async getAllInvoiceForAccounter(req: Request, res: Response, next: NextFunction){
-        const invoices=await this.invoiceRepository.find({where:{status:MoreThan(4)},
+        const invoices=await this.invoiceRepository.find({where:{status:MoreThan(2)},
         relations:["buyer","bankAccount","appBankAccount","admins","seller"],
         order:{id:"DESC"}
     })
@@ -587,6 +587,7 @@ ${description}
             const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId},relations:{seller:{telegram:true,wallet:true}}})
             const bankAccount=this.bankRepository.create({owner:invoice.seller,shebaNumber,name:bankName,ownerName})
             invoice.bankAccount=bankAccount
+            invoice.status=5
             
             const walletTransaction=this.walletTransaction.create({
                 invoiceId:invoice.invoiceId,
@@ -610,15 +611,33 @@ ${description}
             * <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
             * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
             * <b>تاریخ و ساعت:</b> ${date} ${time}
-            * <b>تاریخ و ساعت:</b> ${date} ${time}
-            * <b>تاریخ و ساعت:</b> ${date} ${time}
-            * <b>تاریخ و ساعت:</b> ${date} ${time}
-            * <b>تاریخ و ساعت:</b> ${date} ${time}
+             <b>مشخضات حساب دریافتی:</b>
+            * <b> شماره شبا:</b> ${date} 
+            * <b>نام بانک:</b> ${date} 
+            * <b>صاحب حساب:</b> ${date} 
+             
+           
+             در صورت اشتباه بودن اطلاعات دکمه <b>عدم تایید</b> را بزنید
+             در صورت درست بودن اطلاعات دکمه <b>تایید</b> را بزنید
             
             `;
           
             await queryRunner.commitTransaction()
-            this.bot.sendMessage(invoice.seller.telegram.chatId,message,{parse_mode:"HTML"})
+          
+           
+            this.bot.sendMessage(invoice.seller.telegram.chatId, message, {
+                reply_markup: {
+                  inline_keyboard: [
+                    [
+                        { text: 'عدم تایید', callback_data: `bank-nok:${invoiceId}` },
+                        { text: 'تایید', callback_data: `bank-ok:${invoiceId}`},
+                    ]
+                  ]
+                },
+                parse_mode: "HTML"
+              });
+
+             
             
             return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
  
@@ -672,6 +691,6 @@ ${description}
     
 
     
-
+  
 
 }

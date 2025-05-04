@@ -285,7 +285,8 @@ export class InvoiceController{
              const message = `
              <b>کاربر گرامی</b>
              
-             پرداخت حواله فروش شما <b>ثبت شد</b> و در حال بررسی می‌باشد:
+             پرداخت حواله خرید شما <b>ثبت شد</b> 
+             و در حال بررسی می‌باشد:
              
              <b>مشخصات پرداخت:</b>
              • <b>مقدار:</b> ${invoice.goldWeight} گرم  
@@ -516,9 +517,6 @@ export class InvoiceController{
             await queryRunner.release()
         }
     }
-
-
-
 
     sendMessageWithInline(message : string ,chatId : any ,invoiceId:any){
         console.log(invoiceId);

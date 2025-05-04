@@ -53,7 +53,7 @@ export class Invoice {
     })
     type : InvoiceType
      
-    @ManyToMany(() => Admin ,  )
+    @ManyToMany(() => Admin  )
     @JoinColumn()
     admins:Admin[]
 

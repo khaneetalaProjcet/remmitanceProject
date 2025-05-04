@@ -206,13 +206,13 @@ export class AdminController{
 
     async getAllInvoiceForAdmin(req: Request, res: Response, next: NextFunction){
         const invoices=await this.invoiceRepository.find({where:{status:LessThan(2)}
-        ,relations:["buyer","bankAccount","appBankAccount","admins","seller"],order:{id:"DESC"}})
+        ,relations:["buyer","bankAccount","appBankAccount","seller"],order:{id:"DESC"}})
         return next(new responseModel(req, res,null, 'admin', 200, null, invoices))
     }
 
     async getAllInvoiceForAccounter(req: Request, res: Response, next: NextFunction){
         const invoices=await this.invoiceRepository.find({where:{status:MoreThan(2)},
-        relations:["buyer","bankAccount","appBankAccount","admins","seller"],
+        relations:["buyer","bankAccount","appBankAccount","seller"],
         order:{id:"DESC"}
     })
         return next(new responseModel(req, res,null, 'admin', 200, null, invoices))

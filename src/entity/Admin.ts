@@ -37,7 +37,7 @@ export class Admin {
     accessPoints : accessPoint[];
 
 
-    @ManyToMany(()=>Invoice  )
+    @ManyToMany(()=>Invoice )
     @JoinColumn()
     invoices: Invoice[];
 

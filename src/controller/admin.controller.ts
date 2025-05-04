@@ -501,9 +501,9 @@ ${description}
             systemUser.wallet.goldWeight = parseFloat((systemUserGoldWeight - invoiceGoldWeight).toFixed(3));
             // systemUser.wallet.balance = Math.round(systemUserBalance + invoiceTotalPrice);
 
-            queryRunner.manager.save(invoice)
-            queryRunner.manager.save(systemUser)
-            queryRunner.manager.save(walletTransaction)
+           await queryRunner.manager.save(invoice)
+           await queryRunner.manager.save(systemUser)
+           await queryRunner.manager.save(walletTransaction)
 
 
             
@@ -534,11 +534,7 @@ ${description}
          }catch(err){
             console.log("fffffffffffffffffffffffffff");
             await queryRunner.rollbackTransaction()
-            return next(new responseModel(req, res,"خطای داخلی سیستم",'invoice', 500,"خطای داخلی سیستم",null))
-         }finally{
-            console.log('transaction released')
-            await queryRunner.release()
-         }
+            return next(new responseModel(req, res,"خطای داخلی سیستم",'invoice', 500,"خطای داخلی سیستم",null))}
     }
 
 

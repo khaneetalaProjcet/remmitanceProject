@@ -78,11 +78,11 @@ export class UserController{
          
       const systemUser=new User()
       systemUser.isSystemUser=true
+      systemUser.phoneNumber="0"
       const wallet =new Wallet()
       wallet.balance=10000000
       wallet.goldWeight=10000
       systemUser.wallet=wallet
-
       await this.userRepository.save(systemUser)
 
       return  next(new responseModel(req, res,null,'profile', 200,null,systemUser))

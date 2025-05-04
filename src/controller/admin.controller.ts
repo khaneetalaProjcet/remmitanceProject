@@ -339,8 +339,14 @@ ${description}
            
            invoice.status=3
            const adddmin=[...invoice.admins,...[admin]]
+           const seconndAdmin=[...invoice.admins,admin]
 
-           invoice.admins=adddmin
+           console.log("adddAdmin",adddmin);
+           console.log("secondAdmin",seconndAdmin);
+           
+           
+
+           invoice.admins=seconndAdmin
            invoice.description=description
            invoice.appBankAccount=appBank
            await queryRunner.manager.save(invoice)

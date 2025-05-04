@@ -78,7 +78,7 @@ export class UserController{
          
       const systemUser=new User()
       systemUser.isSystemUser=true
-      systemUser.phoneNumber="0"
+      systemUser.phoneNumber="091211111111"
       const wallet =new Wallet()
       wallet.balance=10000000
       wallet.goldWeight=10000

@@ -45,6 +45,9 @@ export class User {
 
     @Column({ default: false })
     isHaveBank : boolean
+    
+    @Column({ default: false })
+    isSystemUser : boolean
 
     @Column({type:"varchar",nullable:true})
     date:string

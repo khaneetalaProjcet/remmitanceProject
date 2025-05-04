@@ -106,6 +106,16 @@ export const Routes = [
     middlware:[]  
 },
 
+{
+    method: "get",
+    route: "/user/systemuser",
+    controller: UserController,
+    action: "createSystemUser",
+    middlware:[]  
+},
+
+
+
 /**
  * ?? GoldPrice Routes
  */

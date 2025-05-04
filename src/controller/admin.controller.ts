@@ -426,6 +426,10 @@ ${description}
         invoice.accounterDescription=description
         invoice.admins=[...invoice.admins,admin]
 
+
+
+        
+
         
 
 
@@ -433,6 +437,8 @@ ${description}
 
 
     }
+
+
 
     async rejectPaymentBuy(req: Request, res: Response, next: NextFunction){
         const id=+req.params.id
@@ -478,12 +484,6 @@ ${description}
 
 
 
-
-
-
-   
-   
-   
 
     private  generateOTP(limit) {          
         var digits = '0123456789';

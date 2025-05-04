@@ -9,6 +9,7 @@ import { responseModel } from "../utills/response.model";
 import TelegramBot from 'node-telegram-bot-api';
 import { runInThisContext } from "vm";
 import { Wallet } from "../entity/Wallet";
+import { ReturnDocument } from "typeorm";
 const token = process.env.TELEGRAM_BOT_TOKEN || "7622536105:AAFR0NDFR27rLDF270uuL5Ww_K0XZi61FCw";
 
 
@@ -73,9 +74,30 @@ export class UserController{
     
 
      
+    async createSystemUser(req: Request, res: Response, next: NextFunction){
+         
+      const systemUser=new User()
+      systemUser.isSystemUser=true
+      const wallet =new Wallet()
+      wallet.balance=10000000
+      wallet.goldWeight=10000
+      systemUser.wallet=wallet
+
+      await this.userRepository.save(systemUser)
+
+      return  next(new responseModel(req, res,null,'profile', 200,null,systemUser))
+    
+    }
 
     
 
     
 
 }
+
+
+
+
+
+
+

@@ -16,6 +16,7 @@ import { showMainMenu } from "../services/telegramBot/menu";
 import {WalletTransaction}   from "../entity/WalletTransaction"
 import { Stream } from "stream";
 import { Between, LessThan, MoreThan } from "typeorm";
+import { BankAccount } from "../entity/BankAccount";
 const token = process.env.TELEGRAM_BOT_TOKEN || "7622536105:AAFR0NDFR27rLDF270uuL5Ww_K0XZi61FCw";
 
 export class AdminController{
@@ -27,6 +28,7 @@ export class AdminController{
     private telegramUserRepository=AppDataSource.getRepository(TelegramUser)
     private invoiceRepository=AppDataSource.getRepository(Invoice)
     private appBankRepository=AppDataSource.getRepository(AppBankAccount)
+    private bankRepository=AppDataSource.getRepository(BankAccount)
     private walletTransaction=AppDataSource.getRepository(WalletTransaction)
     private bot=new TelegramBot(token);
 
@@ -568,7 +570,71 @@ ${description}
     }
 
 
-    
+    async getPaymentInfoForSell(req: Request, res: Response, next: NextFunction){
+        const {invoiceId,shebaNumber,bankName,ownerName} =req.body
+
+        const queryRunner = AppDataSource.createQueryRunner()
+        await queryRunner.connect()
+        await queryRunner.startTransaction()
+
+        const time= new Date().toLocaleString('fa-IR').split(',')[1]
+        const date= new Date().toLocaleString('fa-IR').split(',')[0]
+
+        try{
+            const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId},relations:{seller:{telegram:true,wallet:true}}})
+            const bankAccount=this.bankRepository.create({owner:invoice.seller,shebaNumber,name:bankName,ownerName})
+            invoice.bankAccount=bankAccount
+            
+            const walletTransaction=this.walletTransaction.create({
+                invoiceId:invoice.invoiceId,
+                amount:invoice.totalPrice,
+                wallet:invoice.seller.wallet,
+                date,
+                time
+            })
+
+            queryRunner.manager.save(bankAccount)
+            queryRunner.manager.save(invoice)
+            queryRunner.manager.save(walletTransaction)
+
+            const message = `
+            <b>کاربر گرامی</b>
+            
+              دریافت اطلاعات بانکی شما <b>انجام شد</b>:
+            
+            <b>مشخصات حواله:</b>
+            * <b>مقدار:</b> ${invoice.goldWeight} گرم  
+            * <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
+            * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
+            * <b>تاریخ و ساعت:</b> ${date} ${time}
+            * <b>تاریخ و ساعت:</b> ${date} ${time}
+            * <b>تاریخ و ساعت:</b> ${date} ${time}
+            * <b>تاریخ و ساعت:</b> ${date} ${time}
+            * <b>تاریخ و ساعت:</b> ${date} ${time}
+            
+            `;
+          
+            await queryRunner.commitTransaction()
+            this.bot.sendMessage(invoice.seller.telegram.chatId,message,{parse_mode:"HTML"})
+            
+            return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
+ 
+
+
+        }catch(err){
+            console.log(err);
+            
+            await queryRunner.rollbackTransaction()
+            return next(new responseModel(req, res,"خطای داخلی سیستم",'invoice', 500,"خطای داخلی سیستم",null))
+        }finally{
+            console.log('transaction released')
+            await queryRunner.release()
+        }
+
+
+    }
+
+
 
 
 

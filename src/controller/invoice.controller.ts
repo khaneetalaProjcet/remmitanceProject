@@ -270,7 +270,7 @@ export class InvoiceController{
             const user=await this.userRepository.findOne({where:{id:req.user.id},relations:["telegram"]})
     
     
-             if(!invoice || invoice.status!==1){
+             if(!invoice || invoice.status!==3){
                 return next(new responseModel(req, res,"درخواست نامعتبر",'create Invoice', 400,"درخواست نامعتبر",null))
              }
              
@@ -321,29 +321,29 @@ export class InvoiceController{
         const date= new Date().toLocaleString('fa-IR').split(',')[0]
 
 
-        if(!invoice || invoice.status!==1){
+        if(!invoice || invoice.status!==3){
             return next(new responseModel(req, res,"درخواست نامعتبر",'create Invoice', 400,"درخواست نامعتبر",null))
          }
         
-        invoice.status=6
+        invoice.status=2
 
 
-        const  message=  `کاربر گرامی پرداخت حواله فروش شما
-                                                      به مقدار
-                                                  ${invoice.goldWeight}
-                                                      به مبلغه 
-                                                 ${invoice.totalPrice}
-                                               به شماره پیگیری
-                                                  ${invoiceId}
-                                               در تاریخ و ساعت                                     
-                                               ${date + " "+ time}
-                                               توسط شما لغو شد
-                                                             
-                `
-  
-
-                showMainMenu(this.bot,user.telegram.chatId,message)
-                return next(new responseModel(req, res,null,' user invoice', 200,null,invoice))
+        const message = `
+        <b>کاربر گرامی</b>
+        
+        پرداخت حواله فروش شما توسط شما <b>لغو شد</b>:
+        
+        <b>مشخصات حواله:</b>
+        • <b>مقدار:</b> ${invoice.goldWeight} گرم  
+        • <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
+        • <b>شماره پیگیری:</b> ${invoiceId}  
+        • <b>تاریخ و ساعت:</b> ${date} ${time}
+        
+        در صورت نیاز می‌توانید مجدداً اقدام نمایید.
+        `;
+        
+       this.bot.sendMessage(user.telegram.chatId, message, { parse_mode: 'HTML' });
+       return next(new responseModel(req, res,null,' user invoice', 200,null,invoice))
 
     }
 
@@ -497,7 +497,7 @@ export class InvoiceController{
 `;
             }
 
-            showMainMenu(this.bot,user.telegram.chatId,message)
+            // showMainMenu(this.bot,user.telegram.chatId,message)
             this.sendMessageWithInline(message,user.telegram.chatId,transaction.id)
             return next(new responseModel(req, res,null,'create Invoice', 200,null,transaction))
             

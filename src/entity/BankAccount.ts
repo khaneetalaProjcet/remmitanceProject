@@ -18,6 +18,9 @@ export class BankAccount {
     @Column({nullable : true})
     name : string
 
+    @Column({nullable : true})
+    ownerName : string
+
     @ManyToOne(()=> User , (user)=> user.bankAccounts , { onDelete: "CASCADE" })
     owner : User
     

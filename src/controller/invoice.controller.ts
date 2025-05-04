@@ -176,7 +176,7 @@ export class InvoiceController{
         const all=await this.invoiceRepository.find({where:[
             {seller:{id:req.user.id}},
             {buyer:{id:req.user.id}}
-        ],relations:["seller","buyer","bankAccount","appBankAccount"],order:{createdAt:"DESC"}})
+        ],relations:["seller","buyer","bankAccount","appBankAccount"],order:{id:"DESC"}})
 
 
         return next(new responseModel(req, res,null,' user invoice', 200,null,all))

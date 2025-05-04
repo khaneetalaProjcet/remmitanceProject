@@ -38,7 +38,7 @@ export class Admin {
 
 
     @ManyToMany(()=>Invoice )
-    @JoinColumn()
+    @JoinTable()
     invoices: Invoice[];
 
 

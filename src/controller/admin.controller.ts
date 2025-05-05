@@ -502,7 +502,7 @@ ${description}
             // systemUser.wallet.balance = Math.round(systemUserBalance + invoiceTotalPrice);
 
            await queryRunner.manager.save(invoice)
-           await queryRunner.manager.save(invoice.buyer)
+           await queryRunner.manager.save(invoice.buyer.wallet)
            await queryRunner.manager.save(systemUser)
            await queryRunner.manager.save(walletTransaction)
 

@@ -272,7 +272,7 @@ export class InvoiceController{
             const user=await this.userRepository.findOne({where:{id:req.user.id},relations:["telegram"]})
     
     
-             if(!invoice || invoice.status!==3){
+             if(!invoice){
                 return next(new responseModel(req, res,"درخواست نامعتبر",'create Invoice', 400,"درخواست نامعتبر",null))
              }
              

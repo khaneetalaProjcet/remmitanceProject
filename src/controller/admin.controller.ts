@@ -843,6 +843,9 @@ ${description}
     async  delivery(req: Request, res: Response, next: NextFunction){
          const id=+req.params.id
          const {type,amount,destUserId,description}=req.body
+
+         console.log(req.body);
+         
          const queryRunner = AppDataSource.createQueryRunner()
          await queryRunner.connect()
          await queryRunner.startTransaction()
@@ -897,14 +900,20 @@ ${description}
         }
 
         invoice.admins=[...invoice.admins,admin]
+
+
+
         await queryRunner.manager.save(invoice)
         await queryRunner.manager.save(invoice.buyer.wallet)
         await queryRunner.manager.save(destUser.wallet)
+        await queryRunner.manager.save(newDelivery)
 
         await queryRunner.commitTransaction()
         return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
 
          }catch(err){
+            console.log(err);
+            
             await queryRunner.rollbackTransaction()
             return next(new responseModel(req, res,"خطای داخلی سیستم",'invoice', 500,"خطای داخلی سیستم",null))
          }finally{

@@ -462,6 +462,7 @@ export class InvoiceController{
                     totalPrice: Math.floor(+totalPrice),
                     seller: type === 1 ? null : user,
                     buyer: type === 1 ? user :null,
+                    remainGoldWeight:parseFloat(goldWeight),
                     type,
                     invoiceId,
                     // bankAccount:userBankAccount,

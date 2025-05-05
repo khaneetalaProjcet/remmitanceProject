@@ -30,6 +30,9 @@ export class Invoice {
     @Column({ type: "numeric", precision: 10, scale: 3, default: 0 })
     goldWeight : number
 
+    @Column({ type: "numeric", precision: 10, scale: 3, default: 0, nullable:true})
+    remainGoldWeight : number
+
     @Column({ type: "numeric", precision: 10, scale: 0,default : 0 })
     totalPrice : number
     
@@ -67,6 +70,9 @@ export class Invoice {
     @ManyToMany(() => Admin  )
     @JoinTable()
     admins:Admin[]
+
+
+
 
     
 

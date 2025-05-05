@@ -18,6 +18,7 @@ import { Stream } from "stream";
 import { Between, LessThan, MoreThan } from "typeorm";
 import { BankAccount } from "../entity/BankAccount";
 import { Delivery } from "../entity/Delivery";
+import {formatGoldWeight} from "../utills/HelperFunctions"
 import { start } from "repl";
 import { stat } from "fs";
 const token = process.env.TELEGRAM_BOT_TOKEN || "7622536105:AAFR0NDFR27rLDF270uuL5Ww_K0XZi61FCw";
@@ -833,7 +834,7 @@ ${description}
 
     async getDeliverOrder(req: Request, res: Response, next: NextFunction){
         const type=1
-        const invoices=await this.invoiceRepository.find({where:{type,status:6},relations:["buyer","bankAccount","appBankAccount","admin","accounter","deliveries"]})
+        const invoices=await this.invoiceRepository.find({where:{type,status:6},relations:["buyer","bankAccount","appBankAccount","admins","accounter","deliveries"]})
         return next(new responseModel(req, res,null, 'admin', 200, null, invoices))
     }
 
@@ -847,15 +848,45 @@ ${description}
          await queryRunner.startTransaction()
          const time= new Date().toLocaleString('fa-IR').split(',')[1]
          const date= new Date().toLocaleString('fa-IR').split(',')[0]
+         
          try{
             const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
             const invoice=await this.invoiceRepository.findOne({where:{id:id},relations:{seller:{telegram:true,wallet:true},admins:true}})
+            
 
             if(invoice.status!==6){
                 return next(new responseModel(req, res,"تراکتش نامعتبر",'invoice', 400,"تراکتش نامعتبر",null))
             }
 
+        let newDelivery
+        if(type==1){
+            newDelivery=this.deliveryRepository.create({
+                type,
+                date,
+                time,
+                mainUser:invoice.buyer,
+                description,
+                invoice,
+              })
+            
+        }else{
+            const destUser=await  this.userRepository.findOne({where:{id:destUserId},relations:{wallet:true,telegram:true}})
+            newDelivery=this.deliveryRepository.create({
+                type,
+                date,
+                time,
+                mainUser:invoice.buyer,
+                description,
+                invoice,
+                destUser,
+              })
 
+              
+
+        }
+          
+         invoice.remainGoldWeight=formatGoldWeight(amount)
+         
 
          }catch(err){
             await queryRunner.rollbackTransaction()
@@ -879,6 +910,8 @@ ${description}
         }
         return OTP;
     }
+
+    
 
 
     sendMessageWithInline(message : string ,chatId : any ,invoiceId:any){

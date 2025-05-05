@@ -502,6 +502,7 @@ ${description}
             // systemUser.wallet.balance = Math.round(systemUserBalance + invoiceTotalPrice);
 
            await queryRunner.manager.save(invoice)
+           await queryRunner.manager.save(invoice.buyer)
            await queryRunner.manager.save(systemUser)
            await queryRunner.manager.save(walletTransaction)
 
@@ -608,7 +609,8 @@ ${description}
         const date= new Date().toLocaleString('fa-IR').split(',')[0]
 
         try{
-            const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId},relations:{seller:{telegram:true,wallet:true}}})
+            const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
+            const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId},relations:{seller:{telegram:true,wallet:true},admins:true}})
             const bankAccount=this.bankRepository.create({owner:invoice.seller,shebaNumber,name:bankName,ownerName})
             invoice.bankAccount=bankAccount
             invoice.status=5
@@ -623,9 +625,9 @@ ${description}
                 time
             })
 
-            queryRunner.manager.save(bankAccount)
-            queryRunner.manager.save(invoice)
-            queryRunner.manager.save(walletTransaction)
+            await queryRunner.manager.save(bankAccount)
+            await queryRunner.manager.save(invoice)
+            await queryRunner.manager.save(walletTransaction)
 
             const message = `
             <b>کاربر گرامی</b>
@@ -661,7 +663,7 @@ ${description}
                   ]
                 },
                 parse_mode: "HTML"
-              });
+             });
 
              
             
@@ -687,12 +689,6 @@ ${description}
 
 
     
-
-
-
-
-
-
 
 
     private  generateOTP(limit) {          

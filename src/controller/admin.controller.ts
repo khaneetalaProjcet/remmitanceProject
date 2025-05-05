@@ -611,9 +611,18 @@ ${description}
         const time= new Date().toLocaleString('fa-IR').split(',')[1]
         const date= new Date().toLocaleString('fa-IR').split(',')[0]
 
+
+
+
         try{
             const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
             const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId},relations:{seller:{telegram:true,wallet:true},admins:true}})
+
+
+            if(!invoice || invoice.status!==3){
+                return next(new responseModel(req, res,"درخواست نامعتبر",'invoice', 400,"درخواست نامعتبر",null))
+            }
+
             const bankAccount=this.bankRepository.create({owner:invoice.seller,shebaNumber,name:bankName,ownerName})
             invoice.bankAccount=bankAccount
             invoice.admins=[...invoice.admins,admin]
@@ -743,7 +752,7 @@ ${description}
           
           `;
   
-           this.bot.sendMessage(invoice.buyer.telegram.chatId,message,{parse_mode:"HTML"})
+           this.bot.sendMessage(invoice.seller.telegram.chatId,message,{parse_mode:"HTML"})
           
             await queryRunner.commitTransaction()
             return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
@@ -801,7 +810,7 @@ ${description}
           
           `;
   
-           this.bot.sendMessage(invoice.buyer.telegram.chatId,message,{parse_mode:"HTML"})
+           this.bot.sendMessage(invoice.seller.telegram.chatId,message,{parse_mode:"HTML"})
           
             await queryRunner.commitTransaction()
             return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 

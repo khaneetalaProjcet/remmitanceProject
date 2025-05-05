@@ -905,7 +905,10 @@ ${description}
 
         await queryRunner.manager.save(invoice)
         await queryRunner.manager.save(invoice.buyer.wallet)
-        await queryRunner.manager.save(destUser.wallet)
+        if(type==2){
+            await queryRunner.manager.save(destUser.wallet)
+        }
+        
         await queryRunner.manager.save(newDelivery)
 
         await queryRunner.commitTransaction()

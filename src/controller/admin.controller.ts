@@ -211,7 +211,7 @@ export class AdminController{
     }
 
     async getAllInvoiceForAccounter(req: Request, res: Response, next: NextFunction){
-        const invoices=await this.invoiceRepository.find({where:{status:MoreThan(2)},
+        const invoices=await this.invoiceRepository.find({where:{status:Between(2,6),},
         relations:["buyer","bankAccount","appBankAccount","seller"],
         order:{id:"DESC"}
     })

@@ -599,7 +599,8 @@ ${description}
 
 
     async getPaymentInfoForSell(req: Request, res: Response, next: NextFunction){
-        const {invoiceId,shebaNumber,bankName,ownerName} =req.body
+        const {shebaNumber,bankName,ownerName} =req.body
+        const invoiceId=+req.params.id
 
         const queryRunner = AppDataSource.createQueryRunner()
         await queryRunner.connect()
@@ -680,6 +681,13 @@ ${description}
             console.log('transaction released')
             await queryRunner.release()
         }
+
+
+    }
+
+    async sellPaymentDone(req: Request, res: Response, next: NextFunction){
+        const id=req.params.id
+ 
 
 
     }

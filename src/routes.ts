@@ -263,6 +263,13 @@ export const Routes = [
     action: "rejectPaymentBuy",
     middlware:[authMiddlewareAdmin] 
 },
+{
+    method: "post",
+    route: "/admin/invoice/sellpayinfo/:id",
+    controller: AdminController,
+    action: "getPaymentInfoForSell",
+    middlware:[authMiddlewareAdmin] 
+},
 // {
 
 // },

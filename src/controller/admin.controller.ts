@@ -643,9 +643,9 @@ ${description}
             * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
             * <b>تاریخ و ساعت:</b> ${date} ${time}
              <b>مشخضات حساب دریافتی:</b>
-            * <b> شماره شبا:</b> ${date} 
-            * <b>نام بانک:</b> ${date} 
-            * <b>صاحب حساب:</b> ${date} 
+            * <b> شماره شبا:</b> ${shebaNumber} 
+            * <b>نام بانک:</b> ${bankName} 
+            * <b>صاحب حساب:</b> ${ownerName} 
              
            
              در صورت اشتباه بودن اطلاعات دکمه <b>عدم تایید</b> را بزنید
@@ -700,8 +700,10 @@ ${description}
         try{
             const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
             const invoice=await this.invoiceRepository.findOne({where:{id:id},relations:{seller:{telegram:true,wallet:true},admins:true}})
+            const invoiceTotalPrice = parseFloat(invoice.totalPrice.toString());
+            const sellerBalance = parseFloat(invoice.seller.wallet.balance.toString());
             
-          
+            invoice.seller.wallet.balance = Math.round(sellerBalance + invoiceTotalPrice);
             invoice.admins=[...invoice.admins,admin]
             invoice.authority=authority
             invoice.status=6
@@ -719,6 +721,7 @@ ${description}
 
             // await queryRunner.manager.save(bankAccount)
             await queryRunner.manager.save(invoice)
+            await queryRunner.manager.save(invoice.seller.wallet)
             await queryRunner.manager.save(walletTransaction)
 
             const message = `
@@ -737,13 +740,7 @@ ${description}
   
            this.bot.sendMessage(invoice.buyer.telegram.chatId,message,{parse_mode:"HTML"})
           
-           await queryRunner.commitTransaction()
-          
-           
-            
-
-             
-            
+            await queryRunner.commitTransaction()
             return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
  
 

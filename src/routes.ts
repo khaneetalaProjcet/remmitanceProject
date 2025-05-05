@@ -293,7 +293,7 @@ export const Routes = [
 },
 {
     method: "post",
-    route: "/admin/invoice/deliver",
+    route: "/admin/invoice/deliver/:id",
     controller: AdminController,
     action: "delivery",
     middlware:[authMiddlewareAdmin] 

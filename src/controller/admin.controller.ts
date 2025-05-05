@@ -232,7 +232,7 @@ export class AdminController{
             const telegramUser=await this.telegramUserRepository.findOne({where:{user:{id:invoice.seller.id}}})
             invoice.status=3
             invoice.admins=[admin]
-            invoice.description=description
+            invoice.adminDescription=description
             const time= new Date().toLocaleString('fa-IR').split(',')[1]
             const date= new Date().toLocaleString('fa-IR').split(',')[0]
             const message = `
@@ -273,10 +273,10 @@ ${description}
          try{
             const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
             const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId},relations:["seller","admins"]})
-            const telegramUser=await this.telegramUserRepository.findOne({where:{user:{id:invoice.buyer.id}}})
+            const telegramUser=await this.telegramUserRepository.findOne({where:{user:{id:invoice.seller.id}}})
             invoice.status=4
             invoice.admins=[admin]
-            invoice.description=description
+            invoice.adminDescription=description
             const time= new Date().toLocaleString('fa-IR').split(',')[1]
             const date= new Date().toLocaleString('fa-IR').split(',')[0]
 
@@ -349,7 +349,7 @@ ${description}
            
 
            invoice.admins=[admin]
-           invoice.description=description
+           invoice.adminDescription=description
            invoice.appBankAccount=appBank
            await queryRunner.manager.save(invoice)
            await queryRunner.commitTransaction()
@@ -401,7 +401,7 @@ ${description}
            const telegramUser=await this.telegramUserRepository.findOne({where:{user:{id:invoice.buyer.id}}})
            invoice.status=4
            invoice.admins.push(admin)
-           invoice.description=description
+           invoice.adminDescription=description
 
            const time= new Date().toLocaleString('fa-IR').split(',')[1]
            const date= new Date().toLocaleString('fa-IR').split(',')[0]

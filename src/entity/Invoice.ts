@@ -70,6 +70,9 @@ export class Invoice {
     description:string
 
     @Column({nullable:true,default:"",type:"varchar"})
+    adminDescription:string
+
+    @Column({nullable:true,default:"",type:"varchar"})
     accounterDescription:string
     @Column({
           type: "enum",

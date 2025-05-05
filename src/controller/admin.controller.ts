@@ -547,7 +547,7 @@ ${description}
         await queryRunner.startTransaction()
         try{
             const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
-            const invoice=await this.invoiceRepository.findOne({where:{id},relations:{buyer:{telegram:true,wallet:true}}})
+            const invoice=await this.invoiceRepository.findOne({where:{id},relations:{buyer:{telegram:true,wallet:true},admins:true}})
             const walletTransaction=await this.walletTransaction.findOne({where:{authority:invoice.authority}})
             if(!invoice){
                 return  next(new responseModel(req, res," وجود ندارد",'reject', 402," وجود ندارد",null))
@@ -557,12 +557,12 @@ ${description}
     
             invoice.status=7
             invoice.accounterDescription=description
-            invoice.admins.push(admin)
+            invoice.admins=[...invoice.admins,admin]
 
             walletTransaction.status="2"
     
-           await queryRunner.manager.save(walletTransaction)
-           await queryRunner.manager.save(invoice)
+            await queryRunner.manager.save(walletTransaction)
+            await queryRunner.manager.save(invoice)
             const time= new Date().toLocaleString('fa-IR').split(',')[1]
             const date= new Date().toLocaleString('fa-IR').split(',')[0]
     
@@ -582,8 +582,7 @@ ${description}
             `;
           
             await queryRunner.commitTransaction()
-            this.bot.sendMessage(invoice.seller.telegram.chatId,message,{parse_mode:"HTML"})
-            
+            this.bot.sendMessage(invoice.buyer.telegram.chatId,message,{parse_mode:"HTML"})
             return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
         }catch(err){
             console.log(err);

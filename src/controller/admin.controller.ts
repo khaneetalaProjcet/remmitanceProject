@@ -859,9 +859,9 @@ ${description}
             const invoice=await this.invoiceRepository.findOne({where:{id:id},relations:{buyer:{telegram:true,wallet:true},admins:true}})
             
 
-            if(invoice.status!==6){
-                return next(new responseModel(req, res,"تراکتش نامعتبر",'invoice', 400,"تراکتش نامعتبر",null))
-            }
+            // if(invoice.status==6 ){
+            //     return next(new responseModel(req, res,"تراکتش نامعتبر",'invoice', 400,"تراکتش نامعتبر",null))
+            // }
 
         let newDelivery
         let destUser

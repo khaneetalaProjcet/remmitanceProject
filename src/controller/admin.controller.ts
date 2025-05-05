@@ -517,7 +517,7 @@ ${description}
             const time= new Date().toLocaleString('fa-IR').split(',')[1]
             const date= new Date().toLocaleString('fa-IR').split(',')[0]
 
-            const message = `
+        const message = `
           <b>کاربر گرامی</b>
         
         پرداخت حواله خرید شما <b>قبول شد</b>:
@@ -887,9 +887,10 @@ ${description}
                 description,
                 invoice,
                 destUser,
+                goldWeight:parseFloat(amount)
               })
 
-              destUser.wallet.goldWeight=destUserGoldWeight+formatGoldWeight(amount)
+              destUser.wallet.goldWeight=destUserGoldWeight+parseFloat(amount)
 
         }
          
@@ -928,6 +929,52 @@ ${description}
         await queryRunner.manager.save(newDelivery)
 
         await queryRunner.commitTransaction()
+        let message
+        let messageDest
+        if(type==1){
+             message=`<b>کاربر گرامی</b>
+        
+        تحویل حواله خرید شما <b>انجام شد</b>:
+        
+        <b>مشخصات تحویل:</b>
+        * <b> مقدار تحویل داده شده:</b> ${amount} گرم  
+        * <b>مقدار باقی مانده از این سفارش:</b> ${remain} گرم  
+        * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
+        * <b>تاریخ و ساعت:</b> ${date} ${time}
+        
+        <b>توضیحات:</b>
+        ${description}`
+        }else{
+            message=`<b>کاربر گرامی</b>
+        
+                خواندن طلای شما <b>انجام شد</b>:
+            
+             <b>مشخصات تحویل:</b>
+            * <b> مقدار تحویل داده شده:</b> ${amount} گرم  
+            * <b>مقدار باقی مانده از این سفارش:</b> ${remain} گرم  
+            * <b> شخص گیرنده:</b> ${destUser.firstName} ${destUser.lastName} گرم  
+            * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
+            * <b>تاریخ و ساعت:</b> ${date} ${time}
+            
+            <b>توضیحات:</b>
+            ${description}`
+
+            messageDest=`<b>کاربر گرامی</b>
+        
+             طلای برای شما <b>خوانده شد</b>:
+        
+         <b>مشخصات تحویل:</b>
+        * <b> مقدار تحویل داده شده:</b> ${amount} گرم  
+        * <b> شخص انتقال دهنده:</b> ${invoice.seller.firstName} ${invoice.seller.lastName} گرم  
+        * <b>تاریخ و ساعت:</b> ${date} ${time}
+        
+        <b>توضیحات:</b>
+        ${description}`
+
+        this.bot.sendMessage(destUser.telegram.chatId,messageDest,{parse_mode:"HTML"})
+        }
+        this.bot.sendMessage(invoice.buyer.telegram.chatId,message,{parse_mode:"HTML"})
+
         return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
 
          }catch(err){

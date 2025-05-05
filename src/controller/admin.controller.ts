@@ -859,6 +859,7 @@ ${description}
             }
 
         let newDelivery
+        let destUser
         if(type==1){
             newDelivery=this.deliveryRepository.create({
                 type,
@@ -870,7 +871,8 @@ ${description}
               })
             
         }else{
-            const destUser=await  this.userRepository.findOne({where:{id:destUserId},relations:{wallet:true,telegram:true}})
+            destUser=await  this.userRepository.findOne({where:{id:destUserId},relations:{wallet:true,telegram:true}})
+            const destUserGoldWeight = parseFloat(destUser.wallet.goldWeight.toString());
             newDelivery=this.deliveryRepository.create({
                 type,
                 date,
@@ -881,12 +883,26 @@ ${description}
                 destUser,
               })
 
-              
+              destUser.wallet.goldWeight=destUserGoldWeight+formatGoldWeight(amount)
 
         }
-          
-         invoice.remainGoldWeight=formatGoldWeight(amount)
          
+        const remain= invoice.goldPrice - formatGoldWeight(amount)
+        invoice.seller.wallet.goldWeight=invoice.seller.wallet.goldWeight-formatGoldWeight(amount)
+        invoice.remainGoldWeight=remain
+        if(remain>0){
+            invoice.status=8
+        }else{
+            invoice.status=9
+        }
+
+        invoice.admins=[...invoice.admins,admin]
+        await queryRunner.manager.save(invoice)
+        await queryRunner.manager.save(invoice.buyer.wallet)
+        await queryRunner.manager.save(destUser.wallet)
+
+        await queryRunner.commitTransaction()
+        return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
 
          }catch(err){
             await queryRunner.rollbackTransaction()

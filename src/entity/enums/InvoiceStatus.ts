@@ -6,6 +6,8 @@ export enum InvoiceStatus{
     APPROVE_FOR_PAY,
     REJECT_FOR_PAY,
     CANCEL_BY_USER,
-    ARRIVED,
+    PAY_CANCEL,
+    ARRIVED_NOT_COMPELTE,
+    ARRIVED_COMPELTE
 }
 

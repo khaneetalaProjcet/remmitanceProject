@@ -896,7 +896,7 @@ ${description}
         const buyerGoldWeight=parseFloat(invoice.buyer.wallet.goldWeight.toString())
         console.log(buyerGoldWeight);
         
-        const invoiceGold=parseFloat(invoice.goldWeight.toString())
+        const invoiceGold=parseFloat(invoice.remainGoldWeight.toString())
 
         console.log("amount",amount);
         

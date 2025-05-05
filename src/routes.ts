@@ -270,6 +270,20 @@ export const Routes = [
     action: "getPaymentInfoForSell",
     middlware:[authMiddlewareAdmin] 
 },
+{
+    method: "post",
+    route: "/admin/invoice/paydone/:id",
+    controller: AdminController,
+    action: "sellPaymentDone",
+    middlware:[authMiddlewareAdmin] 
+},
+{
+    method: "post",
+    route: "/admin/invoice/paycancel/:id",
+    controller: AdminController,
+    action: "sellPaymentCancel",
+    middlware:[authMiddlewareAdmin] 
+},
 // {
 
 // },

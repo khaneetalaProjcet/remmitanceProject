@@ -17,6 +17,7 @@ import {WalletTransaction}   from "../entity/WalletTransaction"
 import { Stream } from "stream";
 import { Between, LessThan, MoreThan } from "typeorm";
 import { BankAccount } from "../entity/BankAccount";
+import { Delivery } from "../entity/Delivery";
 import { start } from "repl";
 import { stat } from "fs";
 const token = process.env.TELEGRAM_BOT_TOKEN || "7622536105:AAFR0NDFR27rLDF270uuL5Ww_K0XZi61FCw";
@@ -24,7 +25,7 @@ const token = process.env.TELEGRAM_BOT_TOKEN || "7622536105:AAFR0NDFR27rLDF270uu
 export class AdminController{
     private adminRepository=AppDataSource.getRepository(Admin)
     private accessPointRepository=AppDataSource.getRepository(accessPoint)
-    
+    private deliveryRepository=AppDataSource.getRepository(Delivery)
     private userRepository=AppDataSource.getRepository(User)
     private jwtService=new JwtGenerator()
     private telegramUserRepository=AppDataSource.getRepository(TelegramUser)
@@ -830,8 +831,42 @@ ${description}
     }
 
 
+    async getDeliverOrder(req: Request, res: Response, next: NextFunction){
+        const type=1
+        const invoices=await this.invoiceRepository.find({where:{type,status:6},relations:["buyer","bankAccount","appBankAccount","admin","accounter","deliveries"]})
+        return next(new responseModel(req, res,null, 'admin', 200, null, invoices))
+    }
 
 
+  
+    async  delivery(req: Request, res: Response, next: NextFunction){
+         const id=+req.params.id
+         const {type,amount,destUserId,description}=req.body
+         const queryRunner = AppDataSource.createQueryRunner()
+         await queryRunner.connect()
+         await queryRunner.startTransaction()
+         const time= new Date().toLocaleString('fa-IR').split(',')[1]
+         const date= new Date().toLocaleString('fa-IR').split(',')[0]
+         try{
+            const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
+            const invoice=await this.invoiceRepository.findOne({where:{id:id},relations:{seller:{telegram:true,wallet:true},admins:true}})
+
+            if(invoice.status!==6){
+                return next(new responseModel(req, res,"تراکتش نامعتبر",'invoice', 400,"تراکتش نامعتبر",null))
+            }
+
+
+
+         }catch(err){
+            await queryRunner.rollbackTransaction()
+            return next(new responseModel(req, res,"خطای داخلی سیستم",'invoice', 500,"خطای داخلی سیستم",null))
+         }finally{
+            console.log('transaction released')
+            await queryRunner.release()
+         }
+
+
+    }
 
     
 

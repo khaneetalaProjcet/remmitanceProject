@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
 import { User } from "./User"
 import { InvoiceType } from "./enums/InvoiceType"
 import {TradeType} from "./enums/TradeType"
@@ -6,6 +6,8 @@ import {InvoiceStatus} from "./enums/InvoiceStatus"
 import { Admin } from "./Admin"
 import { BankAccount } from "./BankAccount"
 import { AppBankAccount } from "./AppBankAccount"
+import { Delivery } from "./Delivery"
+import { Prices } from "./Prices"
 
 
 @Entity()
@@ -18,6 +20,9 @@ export class Invoice {
    
     @ManyToOne(()=> User , (user)=> user.buys)
     buyer : User
+
+    @ManyToOne(()=> Prices , (price)=> price.invoices,{nullable:true})
+    product : Prices
     
     @Column({ type: "numeric", precision: 10, scale: 0,default : 0 })
     goldPrice : number
@@ -41,6 +46,12 @@ export class Invoice {
     })
     status : InvoiceStatus 
 
+    @OneToMany(()=> Delivery ,(delivery) => delivery.invoice)
+    deliveries : Delivery[]
+
+    @Column({nullable:true})
+    coinCount: number
+
     @Column()
     date : string
 
@@ -56,6 +67,8 @@ export class Invoice {
     @ManyToMany(() => Admin  )
     @JoinTable()
     admins:Admin[]
+
+    
 
     @ManyToOne(() => BankAccount)
     bankAccount: BankAccount;

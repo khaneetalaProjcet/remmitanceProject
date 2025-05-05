@@ -1,4 +1,5 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm"
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm"
+import { Invoice } from "./Invoice";
 
 @Entity()
 export class Prices {
@@ -27,6 +28,10 @@ export class Prices {
     
     @Column({type : "varchar"})  //?0 meltGold -- 1 coin
     type: string
+
+
+     @OneToMany(() => Invoice , (invoice)=> invoice.product , {nullable : true})
+     invoices : Invoice[]
 
 
     @Column({nullable : true , default : '' , type : 'varchar'})

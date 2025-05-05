@@ -19,6 +19,7 @@ import { Prices } from "./entity/Prices"
 
 import {config} from "dotenv"
 import { TelegramUser } from "./entity/TelegramUser"
+import { Delivery } from "./entity/Delivery"
 
 config()
 
@@ -31,7 +32,7 @@ export const AppDataSource = new DataSource({
     database: process.env.DB_NAME || "remmitance",
     synchronize: true,
     logging: false,
-    entities: [Prices,TelegramUser,OfferInvoice,AppBankAccount,Setting,Admin,BankAccount,Invoice,InvoiceType,PaymentInfo,User,Otp,Wallet,WalletTransaction,accessPoint,GoldPrice,Fee],
+    entities: [Delivery,Prices,TelegramUser,OfferInvoice,AppBankAccount,Setting,Admin,BankAccount,Invoice,InvoiceType,PaymentInfo,User,Otp,Wallet,WalletTransaction,accessPoint,GoldPrice,Fee],
     migrations: [],
     subscribers: [],
 })

@@ -4,6 +4,7 @@ import { Invoice } from "./Invoice"
 import { Wallet } from "./Wallet";
 import { BankAccount } from "./BankAccount";
 import { TelegramUser } from "./TelegramUser";
+import { Delivery } from "./Delivery";
 
 
 @Entity()
@@ -33,6 +34,12 @@ export class User {
     
     @OneToMany(() => Invoice , (invoice)=> invoice.buyer , {nullable : true})
     buys : Invoice[]
+
+    @OneToMany(() => Delivery , (delivery)=> delivery.destUser , {nullable : true})
+    transferdeliveries : Invoice[]
+
+    @OneToMany(() => Delivery , (delivery)=> delivery.mainUser , {nullable : true})
+    deliveries : Invoice[]
 
     @OneToOne(() => Wallet, (wallet) => wallet.user, { cascade: true })
     wallet: Wallet;

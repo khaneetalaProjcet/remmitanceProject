@@ -284,8 +284,15 @@ export const Routes = [
     action: "sellPaymentCancel",
     middlware:[authMiddlewareAdmin] 
 },
+{
+    method: "get",
+    route: "/admin/invoice/deliver",
+    controller: AdminController,
+    action: "getDeliverOrder",
+    middlware:[authMiddlewareAdmin] 
+},
 // {
-
+    
 // },
 
 

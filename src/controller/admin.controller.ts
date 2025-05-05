@@ -842,7 +842,9 @@ ${description}
   
     async  delivery(req: Request, res: Response, next: NextFunction){
          const id=+req.params.id
-         const {type,amount,destUserId,description}=req.body
+         let {type,amount,destUserId,description}=req.body
+
+         amount=formatGoldWeight(amount)
 
          console.log(req.body);
          
@@ -871,6 +873,7 @@ ${description}
                 mainUser:invoice.buyer,
                 description,
                 invoice,
+                goldWeight:parseFloat(amount)
               })
             
         }else{
@@ -890,9 +893,22 @@ ${description}
 
         }
          
-        const remain= invoice.goldPrice - formatGoldWeight(amount)
-        invoice.buyer.wallet.goldWeight=invoice.buyer.wallet.goldWeight-formatGoldWeight(amount)
-        invoice.remainGoldWeight=remain
+        const buyerGoldWeight=parseFloat(invoice.buyer.wallet.goldWeight.toString())
+        console.log(buyerGoldWeight);
+        
+        const invoiceGold=parseFloat(invoice.goldWeight.toString())
+
+        console.log("amount",amount);
+        
+        console.log("invoiceWe",invoiceGold);
+        
+
+
+        invoice.buyer.wallet.goldWeight=buyerGoldWeight-parseFloat(amount)
+        const remain=invoiceGold-amount
+        console.log("remainnnn",remain);
+        
+        invoice.remainGoldWeight=invoiceGold-amount
         if(remain>0){
             invoice.status=8
         }else{

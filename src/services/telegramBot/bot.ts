@@ -137,13 +137,13 @@ bot.on('callback_query',async (query) => {
     await bot.answerCallbackQuery(query.id);
     const invoice=await invoiceRepository.findOne({where:{id}})
 
-    if(invoice.status!=5){
+    if(invoice.status!=3){
       const message="درخواست نامعتبر"
       bot.sendMessage(chatId,message)
       return ;
   }
 
-   invoice.status=6
+   invoice.status=5
 
    await invoiceRepository.save(invoice)
 
@@ -160,13 +160,13 @@ bot.on('callback_query',async (query) => {
     await bot.answerCallbackQuery(query.id);
     const invoice=await invoiceRepository.findOne({where:{id}})
 
-    if(invoice.status!=5){
+    if(invoice.status!=3){
       const message="درخواست نامعتبر"
       bot.sendMessage(chatId,message)
       return ;
   }
 
-    invoice.status=7
+   invoice.bankAccount=null
 
    await invoiceRepository.save(invoice)
 

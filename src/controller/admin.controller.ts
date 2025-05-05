@@ -613,21 +613,21 @@ ${description}
             const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId},relations:{seller:{telegram:true,wallet:true},admins:true}})
             const bankAccount=this.bankRepository.create({owner:invoice.seller,shebaNumber,name:bankName,ownerName})
             invoice.bankAccount=bankAccount
-            invoice.status=5
+            invoice.admins=[...invoice.admins,admin]
             
-            const walletTransaction=this.walletTransaction.create({
-                type:"0",
-                status:"0",
-                invoiceId:invoice.invoiceId,
-                amount:invoice.totalPrice,
-                wallet:invoice.seller.wallet,
-                date,
-                time
-            })
+            // const walletTransaction=this.walletTransaction.create({
+            //     type:"0",
+            //     status:"0",
+            //     invoiceId:invoice.invoiceId,
+            //     amount:invoice.totalPrice,
+            //     wallet:invoice.seller.wallet,
+            //     date,
+            //     time
+            // })
 
             await queryRunner.manager.save(bankAccount)
             await queryRunner.manager.save(invoice)
-            await queryRunner.manager.save(walletTransaction)
+            // await queryRunner.manager.save(walletTransaction)
 
             const message = `
             <b>کاربر گرامی</b>

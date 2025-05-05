@@ -17,6 +17,8 @@ import {WalletTransaction}   from "../entity/WalletTransaction"
 import { Stream } from "stream";
 import { Between, LessThan, MoreThan } from "typeorm";
 import { BankAccount } from "../entity/BankAccount";
+import { start } from "repl";
+import { stat } from "fs";
 const token = process.env.TELEGRAM_BOT_TOKEN || "7622536105:AAFR0NDFR27rLDF270uuL5Ww_K0XZi61FCw";
 
 export class AdminController{
@@ -686,8 +688,76 @@ ${description}
     }
 
     async sellPaymentDone(req: Request, res: Response, next: NextFunction){
-        const id=req.params.id
+        const id=+req.params.id
+        const {authority}=req.body
+        const queryRunner = AppDataSource.createQueryRunner()
+        await queryRunner.connect()
+        await queryRunner.startTransaction()
+
+        const time= new Date().toLocaleString('fa-IR').split(',')[1]
+        const date= new Date().toLocaleString('fa-IR').split(',')[0]
+
+        try{
+            const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
+            const invoice=await this.invoiceRepository.findOne({where:{id:id},relations:{seller:{telegram:true,wallet:true},admins:true}})
+            
+          
+            invoice.admins=[...invoice.admins,admin]
+            invoice.authority=authority
+            invoice.status=6
+            
+            const walletTransaction=this.walletTransaction.create({
+                type:"0",
+                status:"1",
+                authority,
+                invoiceId:invoice.invoiceId,
+                amount:invoice.totalPrice,
+                wallet:invoice.seller.wallet,
+                date,
+                time
+            })
+
+            // await queryRunner.manager.save(bankAccount)
+            await queryRunner.manager.save(invoice)
+            await queryRunner.manager.save(walletTransaction)
+
+            const message = `
+            <b>کاربر گرامی</b>
+          
+          پرداخت حواله فروش شما <b>انجام شد</b>:
+          
+          <b>مشخصات حواله:</b>
+          * <b>مقدار:</b> ${invoice.goldWeight} گرم  
+          * <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
+          * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
+          * <b>تاریخ و ساعت:</b> ${date} ${time}
+          * <b>شناسه پرداخات:</b> ${authority} 
+          
+          `;
+  
+           this.bot.sendMessage(invoice.buyer.telegram.chatId,message,{parse_mode:"HTML"})
+          
+           await queryRunner.commitTransaction()
+          
+           
+            
+
+             
+            
+            return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
  
+
+
+        }catch(err){
+            console.log(err);
+            
+            await queryRunner.rollbackTransaction()
+            return next(new responseModel(req, res,"خطای داخلی سیستم",'invoice', 500,"خطای داخلی سیستم",null))
+        }finally{
+            console.log('transaction released')
+            await queryRunner.release()
+        }
+
 
 
     }

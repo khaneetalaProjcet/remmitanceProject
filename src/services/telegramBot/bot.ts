@@ -74,6 +74,8 @@ bot.on('message', async (msg) => {
 });
 bot.on('callback_query',async (query) => {
   const invoiceRepository=AppDataSource.getRepository(Invoice)
+  const userRepository=AppDataSource.getRepository(User)
+
   const chatId = query.message.chat.id;
   const data = query.data;
 
@@ -135,17 +137,29 @@ bot.on('callback_query',async (query) => {
   if (data.startsWith('bank-ok:')) {
     const id = data.split(':')[1];
     await bot.answerCallbackQuery(query.id);
-    const invoice=await invoiceRepository.findOne({where:{id}})
+    const invoice=await invoiceRepository.findOne({where:{id},relations:{seller:{wallet:true}}})
+    const systemUser=await userRepository.findOne({where:{isSystemUser:true},relations:["wallet"]})
+    const sellerBalance = parseFloat(invoice.seller.wallet.balance.toString());
+    const systemUserBalance = parseFloat(systemUser.wallet.balance.toString());
+    const invoiceTotalPrice = parseFloat(invoice.totalPrice.toString());
+
 
     if(invoice.status!=3){
       const message="درخواست نامعتبر"
       bot.sendMessage(chatId,message)
       return ;
   }
+   
+  
+   systemUser.wallet.balance = Math.round(systemUserBalance - invoiceTotalPrice);
+   invoice.seller.wallet.balance = Math.round(sellerBalance + invoiceTotalPrice);
+
+
 
    invoice.status=5
-
+   await invoiceRepository.save(invoice.seller.wallet)
    await invoiceRepository.save(invoice)
+   await userRepository.save(systemUser.wallet)
 
    const message='اظلاعات بانکی شما دریافت شد و تا ساعاتی اینده برای شما واریز می شود'
 

@@ -9,7 +9,7 @@ export class BankAccount {
     @PrimaryGeneratedColumn()
     id: number
     
-    @Column()
+    @Column({nullable:true})
     cardNumber : string
 
     @Column({nullable : true})

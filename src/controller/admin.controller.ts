@@ -854,7 +854,7 @@ ${description}
          
          try{
             const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
-            const invoice=await this.invoiceRepository.findOne({where:{id:id},relations:{seller:{telegram:true,wallet:true},admins:true}})
+            const invoice=await this.invoiceRepository.findOne({where:{id:id},relations:{buyer:{telegram:true,wallet:true},admins:true}})
             
 
             if(invoice.status!==6){
@@ -891,7 +891,7 @@ ${description}
         }
          
         const remain= invoice.goldPrice - formatGoldWeight(amount)
-        invoice.seller.wallet.goldWeight=invoice.seller.wallet.goldWeight-formatGoldWeight(amount)
+        invoice.buyer.wallet.goldWeight=invoice.buyer.wallet.goldWeight-formatGoldWeight(amount)
         invoice.remainGoldWeight=remain
         if(remain>0){
             invoice.status=8

@@ -834,7 +834,7 @@ ${description}
 
     async getDeliverOrder(req: Request, res: Response, next: NextFunction){
         const type=1
-        const invoices=await this.invoiceRepository.find({where:{type,status:6},relations:["buyer","bankAccount","appBankAccount","admins","deliveries"]})
+        const invoices=await this.invoiceRepository.find({where:{type,status:MoreThan(5)},relations:["buyer","bankAccount","appBankAccount","admins","deliveries"]})
         return next(new responseModel(req, res,null, 'admin', 200, null, invoices))
     }
 

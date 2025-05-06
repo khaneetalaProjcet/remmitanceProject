@@ -1121,33 +1121,33 @@ ${description}
         <b>توضیحات:</b>
         ${description}`
         }else{
-            message=`<b>کاربر گرامی</b>
+        //     message=`<b>کاربر گرامی</b>
         
-                خواندن طلای شما <b>انجام شد</b>:
+        //         خواندن طلای شما <b>انجام شد</b>:
             
-             <b>مشخصات تحویل:</b>
-            * <b> مقدار تحویل داده شده:</b> ${amount} گرم  
-            * <b>مقدار باقی مانده از این سفارش:</b> ${remain} گرم  
-            * <b> شخص گیرنده:</b> ${destUser.firstName} ${destUser.lastName} گرم  
-            * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
-            * <b>تاریخ و ساعت:</b> ${date} ${time}
+        //      <b>مشخصات تحویل:</b>
+        //     * <b> مقدار تحویل داده شده:</b> ${amount} گرم  
+        //     * <b>مقدار باقی مانده از این سفارش:</b> ${remain} گرم  
+        //     * <b> شخص گیرنده:</b> ${destUser.firstName} ${destUser.lastName} گرم  
+        //     * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
+        //     * <b>تاریخ و ساعت:</b> ${date} ${time}
             
-            <b>توضیحات:</b>
-            ${description}`
+        //     <b>توضیحات:</b>
+        //     ${description}`
 
-            messageDest=`<b>کاربر گرامی</b>
+        //     messageDest=`<b>کاربر گرامی</b>
         
-             طلای برای شما <b>خوانده شد</b>:
+        //      طلای برای شما <b>خوانده شد</b>:
         
-         <b>مشخصات تحویل:</b>
-        * <b> مقدار تحویل داده شده:</b> ${amount} گرم  
-        * <b> شخص انتقال دهنده:</b> ${invoice.buyer.firstName} ${invoice.buyer.lastName} گرم  
-        * <b>تاریخ و ساعت:</b> ${date} ${time}
+        //  <b>مشخصات تحویل:</b>
+        // * <b> مقدار تحویل داده شده:</b> ${amount} گرم  
+        // * <b> شخص انتقال دهنده:</b> ${invoice.buyer.firstName} ${invoice.buyer.lastName} گرم  
+        // * <b>تاریخ و ساعت:</b> ${date} ${time}
         
-        <b>توضیحات:</b>
-        ${description}`
+        // <b>توضیحات:</b>
+        // ${description}`
 
-        this.bot.sendMessage(destUser.telegram.chatId,messageDest,{parse_mode:"HTML"})
+        // this.bot.sendMessage(destUser.telegram.chatId,messageDest,{parse_mode:"HTML"})
         }
         this.bot.sendMessage(invoice.buyer.telegram.chatId,message,{parse_mode:"HTML"})
         await queryRunner.commitTransaction()

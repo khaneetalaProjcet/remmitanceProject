@@ -71,11 +71,10 @@ export class AuthController {
         
         if(!user){  //? user dont exist
         const newUser=this.userRepository.create({phoneNumber:phone})
-        console.log(user);
+        const created= await this.userRepository.save(newUser) 
         
-        const token=await this.jwtGenerator.tokenizeUserToken({id:user.id,phoneNumber:user.phoneNumber,isBlocked:false})
-        const refreshToken=await this.jwtGenerator.tokenizeUserRefreshToken({id:user.id,phoneNumber:user.phoneNumber,isBlocked:false})
-        await this.userRepository.save(newUser) 
+        const token=await this.jwtGenerator.tokenizeUserToken({id:created.id,phoneNumber:created.phoneNumber,isBlocked:false})
+        const refreshToken=await this.jwtGenerator.tokenizeUserRefreshToken({id:created.id,phoneNumber:created.phoneNumber,isBlocked:false})
         return next(new responseModel(req, res,'','login',200,'',{token,refreshToken}))
 
         }else{ //? user exist 

@@ -211,6 +211,7 @@ export class InvoiceController{
        .leftJoinAndSelect('invoice.buyer', 'buyer')
        .leftJoinAndSelect('invoice.seller', 'seller')
        .leftJoin('invoice.bankAccount',"bankAccount")
+       .leftJoin('invoice.product',"product")
        .leftJoin('invoice.appBankAccount',"appBankAccount")
 
        if(type=="0"){

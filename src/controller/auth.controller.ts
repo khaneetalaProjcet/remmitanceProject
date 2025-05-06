@@ -67,12 +67,15 @@ export class AuthController {
 
         const user=await this.userRepository.findOne({where:{phoneNumber:phone}})
 
+
+        
         if(!user){  //? user dont exist
-            
         const newUser=this.userRepository.create({phoneNumber:phone})
-        await this.userRepository.save(newUser) 
+        console.log(user);
+        
         const token=await this.jwtGenerator.tokenizeUserToken({id:user.id,phoneNumber:user.phoneNumber,isBlocked:false})
         const refreshToken=await this.jwtGenerator.tokenizeUserRefreshToken({id:user.id,phoneNumber:user.phoneNumber,isBlocked:false})
+        await this.userRepository.save(newUser) 
         return next(new responseModel(req, res,'','login',200,'',{token,refreshToken}))
 
         }else{ //? user exist 
@@ -82,6 +85,8 @@ export class AuthController {
             return next(new responseModel(req, res,'','login',200,'',{token,refreshToken}))
         }
         }catch(err){
+            console.log("errr",err);
+            
             return next(new responseModel(req, res,"خطای داخلی سیستم",'send otp', 500,"خطای داخلی سیستم",null))
         }
     }

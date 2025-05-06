@@ -20,6 +20,10 @@ export class SettingController{
           minTradeSell,
           maxTradeBuy,
           minTradeBuy,
+          maxSellCoin,
+          minSellCoin,
+          maxBuyCoin,
+          minBuyCoin,
           offerTolerance,
           expireTime,
           tradeIsOpen
@@ -34,13 +38,17 @@ export class SettingController{
             if(settings.length==0){
               maxTradeBuy=formatGoldWeight(maxTradeBuy)
               maxTradeSell=formatGoldWeight(maxTradeSell)
-              minTradeBuy=formatGoldWeight(minTradeBuy)
+              minTradeBuy=formatGoldWeight(minTradeBuy),
               minTradeSell=formatGoldWeight(minTradeSell)
               const newSetting=this.settingRepository.create({
                 maxTradeSell,
                 minTradeSell,
                 maxTradeBuy,
                 minTradeBuy,
+                maxSellCoin,
+                minSellCoin,
+                maxBuyCoin,
+                minBuyCoin,
                 offerTolerance,
                 expireTime,
                 tradeIsOpen
@@ -55,6 +63,10 @@ export class SettingController{
             setting.minTradeSell=minTradeSell?formatGoldWeight(minTradeSell):setting.minTradeSell
             setting.maxTradeBuy=maxTradeBuy?formatGoldWeight(maxTradeBuy):setting.maxTradeBuy
             setting.minTradeBuy=minTradeBuy?formatGoldWeight(minTradeBuy):setting.minTradeBuy
+            setting.maxBuyCoin=maxBuyCoin?maxBuyCoin:setting.maxBuyCoin
+            setting.minBuyCoin=minBuyCoin?maxBuyCoin:setting.minBuyCoin
+            setting.maxSellCoin=maxSellCoin?maxSellCoin:setting.maxSellCoin,
+            setting.minSellCoin=minSellCoin?minSellCoin:setting.minSellCoin
             setting.offerTolerance=offerTolerance?offerTolerance:setting.offerTolerance
             setting.expireTime=expireTime?expireTime:setting.expireTime,
             setting.tradeIsOpen=tradeIsOpen

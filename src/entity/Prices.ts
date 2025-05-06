@@ -1,5 +1,6 @@
 import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm"
 import { Invoice } from "./Invoice";
+import { CoinWallet } from "./CoinWallet";
 
 @Entity()
 export class Prices {
@@ -32,6 +33,10 @@ export class Prices {
 
      @OneToMany(() => Invoice , (invoice)=> invoice.product , {nullable : true})
      invoices : Invoice[]
+
+
+     @OneToMany(() => CoinWallet , (coinWallet)=> coinWallet.product , {nullable : true})
+     coinWallet : CoinWallet[] 
 
 
     @Column({nullable : true , default : '' , type : 'varchar'})

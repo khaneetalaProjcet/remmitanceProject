@@ -516,12 +516,11 @@ ${description}
             console.log("addddf",invoice.admins);
             console.log("aaaaa",admin);
             
-            const array=invoice.admins
 
-            array.push(admin)
+            
 
             walletTransaction.status="1"
-            invoice.admins=array
+            invoice.admins=[...invoice.admins,admin]
             invoice.panelTabel=3
     
     
@@ -572,10 +571,24 @@ ${description}
          return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
             
          }catch(err){
-            console.log("fffffffffffffffffffffffffff");
+            console.log("fffffffffffffffffffffffffff",err);
             await queryRunner.rollbackTransaction()
-            return next(new responseModel(req, res,"خطای داخلی سیستم",'invoice', 500,"خطای داخلی سیستم",null))}
+            return next(new responseModel(req, res,"خطای داخلی سیستم",'invoice', 500,"خطای داخلی سیستم",null))
+        }finally{
+            console.log('transaction released')
+            await queryRunner.release()
+        }
     }
+
+
+
+   async coninApprovePaymentBuy(req: Request, res: Response, next: NextFunction){
+
+   }
+ 
+    
+
+
 
     async rejectPaymentBuy(req: Request, res: Response, next: NextFunction){
         const id=+req.params.id
@@ -743,9 +756,6 @@ ${description}
     }
 
 
-
-
-
     async sellPaymentDone(req: Request, res: Response, next: NextFunction){
         const id=+req.params.id
         const {authority,description}=req.body
@@ -889,12 +899,6 @@ ${description}
         }
 
     }
-
-
-
-
-
-
 
     async getDeliverOrder(req: Request, res: Response, next: NextFunction){
         

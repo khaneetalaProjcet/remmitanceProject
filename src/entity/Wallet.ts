@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, ManyToOne, OneToMany, CreateDateColumn, UpdateDateColumn, DeleteDateColumn } from "typeorm";
 import { User } from "./User";
 import { WalletTransaction } from "./WalletTransaction";
+import { CoinWallet } from "./CoinWallet";
 
 
 @Entity()
@@ -20,6 +21,10 @@ export class Wallet {
     
     @Column({ type: "numeric", precision: 10, scale: 0, default: 0 })
     balance: number;
+    
+    @OneToMany(()=> CoinWallet ,(coin) => coin.wallet)
+    coins : CoinWallet[]
+    
     
     @Column({type : 'int' , nullable : true , default : 0 })
     blocked : number 

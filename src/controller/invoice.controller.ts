@@ -210,8 +210,8 @@ export class InvoiceController{
        const queryBuilder = this.invoiceRepository.createQueryBuilder('invoice')
        .leftJoinAndSelect('invoice.buyer', 'buyer')
        .leftJoinAndSelect('invoice.seller', 'seller')
+       .leftJoinAndSelect('invoice.product', 'product')
        .leftJoin('invoice.bankAccount',"bankAccount")
-       .leftJoin('invoice.product',"product")
        .leftJoin('invoice.appBankAccount',"appBankAccount")
 
        if(type=="0"){

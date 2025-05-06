@@ -20,6 +20,7 @@ import { BankAccount } from "../entity/BankAccount";
 import { Delivery } from "../entity/Delivery";
 import {formatGoldWeight} from "../utills/HelperFunctions"
 import { Actions } from "../entity/Actions";
+import { CoinWallet } from "../entity/CoinWallet";
 import { start } from "repl";
 import { stat } from "fs";
 const token = process.env.TELEGRAM_BOT_TOKEN || "7622536105:AAFR0NDFR27rLDF270uuL5Ww_K0XZi61FCw";
@@ -36,6 +37,7 @@ export class AdminController{
     private bankRepository=AppDataSource.getRepository(BankAccount)
     private walletTransaction=AppDataSource.getRepository(WalletTransaction)
     private actionRepository=AppDataSource.getRepository(Actions)
+    private coinWalletRepository=AppDataSource.getRepository(CoinWallet)
     private bot=new TelegramBot(token);
 
     /**
@@ -583,9 +585,97 @@ ${description}
 
 
    async coninApprovePaymentBuy(req: Request, res: Response, next: NextFunction){
+    const id=+req.params.id
+    const {description}  =req.body
+    const queryRunner = AppDataSource.createQueryRunner()
+    await queryRunner.connect()
+    await queryRunner.startTransaction()
+    const time= new Date().toLocaleString('fa-IR').split(',')[1]
+    const date= new Date().toLocaleString('fa-IR').split(',')[0]
+    
+     try{
+        const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
+        const invoice=await this.invoiceRepository.findOne({where:{id},relations:{product:true,buyer:{telegram:true,wallet:{coins:{product:true}}},admins:true}})
+       
+        const walletTransaction=await this.walletTransaction.findOne({where:{authority:invoice.authority}})
+        if(!invoice || invoice.status!==6){
+            return next(new responseModel(req, res,"تراکتش نامعتبر",'invoice', 400,"تراکتش نامعتبر",null))
+        }
+        const newAction=this.actionRepository.create({admin,type:2,fromStatus:6,toStatus:7,date,time,invoice})
+        invoice.status=7
+        invoice.accounterDescription=description
+         
 
+        console.log("addddf",invoice.admins);
+        console.log("aaaaa",admin);
+        
+
+        
+
+        walletTransaction.status="1"
+        invoice.admins=[...invoice.admins,admin]
+        invoice.panelTabel=3
+
+        
+
+
+        const buyerCoins = invoice.buyer.wallet.coins
+        const invoiceProduct=invoice.product
+        const coinCount=invoice.coinCount
+   
+        const index=buyerCoins.findIndex(item=>item.product.id==invoiceProduct.id)
+
+        if(index==-1){
+            const newItem=this.coinWalletRepository.create({count:coinCount,wallet:invoice.buyer.wallet,product:invoice.product})
+            await queryRunner.manager.save(newItem)
+        }else{
+            const item=buyerCoins[index]
+            const newCount=item.count+coinCount
+            invoice.buyer.wallet.coins[index].count=newCount
+            await queryRunner.manager.save(invoice.buyer.wallet.coins)
+        }
+
+        
+      
+
+       await queryRunner.manager.save(invoice)
+       await queryRunner.manager.save(walletTransaction)
+       await queryRunner.manager.save(newAction)
+
+
+        
+    
+    const message = `
+      <b>کاربر گرامی</b>
+    
+    پرداخت حواله خرید شما <b>قبول شد</b>:
+    
+    <b>مشخصات حواله:</b>
+    * <b>مقدار:</b> ${invoice.goldWeight} گرم  
+    * <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
+    * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
+    * <b>تاریخ و ساعت:</b> ${date} ${time}
+    
+    <b>توضیحات:</b>
+    ${description}
+    `;
+
+     this.bot.sendMessage(invoice.buyer.telegram.chatId,message,{parse_mode:"HTML"})
+     await queryRunner.commitTransaction()
+     return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
+        
+     }catch(err){
+        console.log("fffffffffffffffffffffffffff",err);
+        await queryRunner.rollbackTransaction()
+        return next(new responseModel(req, res,"خطای داخلی سیستم",'invoice', 500,"خطای داخلی سیستم",null))
+    }finally{
+        console.log('transaction released')
+        await queryRunner.release()
+    }
    }
  
+
+   
     
 
 

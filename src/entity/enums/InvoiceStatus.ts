@@ -1,6 +1,7 @@
 
 
 export enum InvoiceStatus {
+    Nothing=0,
     CreatedByUser = 1,
     AwaitingAdminApproval = 2,
     RejectedByInitialBot = 3,

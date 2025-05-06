@@ -65,7 +65,6 @@ export async function  handleAuth(bot, msg) {
       await userRepository.save(user)
       await telegramUserRepository.save(telUser)
       await bot.sendMessage(chatId, 'احراز هویت با موفقیت انجام شد.');
-      showMainMenu(bot, chatId,'برات چه کاری انجام بدم');
       break;
     default:
       clearMenu(bot,chatId)

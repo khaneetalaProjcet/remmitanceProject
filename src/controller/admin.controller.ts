@@ -994,10 +994,10 @@ ${description}
         }
 
         if(remain>0){
-            invoice.status=8
+            invoice.status=9
              newAction=this.actionRepository.create({admin,type:2,fromStatus:invoice.status,toStatus:8,date,time,invoice})
         }else{
-            invoice.status=9
+            invoice.status=10
             newAction=this.actionRepository.create({admin,type:2,fromStatus:invoice.status,toStatus:9,date,time,invoice})
         }
 

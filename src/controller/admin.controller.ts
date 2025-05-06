@@ -211,14 +211,14 @@ export class AdminController{
     }
 
     async getAllInvoiceForAdmin(req: Request, res: Response, next: NextFunction){
-        const invoices=await this.invoiceRepository.find({where:{status:LessThan(2)}
-        ,relations:["buyer","bankAccount","appBankAccount","seller"],order:{id:"DESC"}})
+        const invoices=await this.invoiceRepository.find({where:{panelTabel:1}
+        ,relations:["buyer","bankAccount","appBankAccount","seller","product"],order:{id:"DESC"}})
         return next(new responseModel(req, res,null, 'admin', 200, null, invoices))
     }
 
     async getAllInvoiceForAccounter(req: Request, res: Response, next: NextFunction){
-        const invoices=await this.invoiceRepository.find({where:{status:Between(2,6),},
-        relations:["buyer","bankAccount","appBankAccount","seller"],
+        const invoices=await this.invoiceRepository.find({where:{panelTabel:2},
+        relations:["buyer","bankAccount","appBankAccount","seller","product"],
         order:{id:"DESC"}
     })
         return next(new responseModel(req, res,null, 'admin', 200, null, invoices))
@@ -897,8 +897,8 @@ ${description}
 
 
     async getDeliverOrder(req: Request, res: Response, next: NextFunction){
-        const type=1
-        const invoices=await this.invoiceRepository.find({where:{type,status:MoreThan(5)},relations:["buyer","bankAccount","appBankAccount","admins","deliveries"]})
+        
+        const invoices=await this.invoiceRepository.find({where:{panelTabel:3},relations:["buyer","bankAccount","appBankAccount","admins","deliveries","product"]})
         return next(new responseModel(req, res,null, 'admin', 200, null, invoices))
     }
 

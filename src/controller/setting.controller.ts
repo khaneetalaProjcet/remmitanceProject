@@ -64,7 +64,7 @@ export class SettingController{
             setting.maxTradeBuy=maxTradeBuy?formatGoldWeight(maxTradeBuy):setting.maxTradeBuy
             setting.minTradeBuy=minTradeBuy?formatGoldWeight(minTradeBuy):setting.minTradeBuy
             setting.maxBuyCoin=maxBuyCoin?maxBuyCoin:setting.maxBuyCoin
-            setting.minBuyCoin=minBuyCoin?maxBuyCoin:setting.minBuyCoin
+            setting.minBuyCoin=minBuyCoin?minBuyCoin:setting.minBuyCoin
             setting.maxSellCoin=maxSellCoin?maxSellCoin:setting.maxSellCoin,
             setting.minSellCoin=minSellCoin?minSellCoin:setting.minSellCoin
             setting.offerTolerance=offerTolerance?offerTolerance:setting.offerTolerance

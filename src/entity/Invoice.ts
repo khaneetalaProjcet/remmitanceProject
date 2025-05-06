@@ -95,7 +95,7 @@ export class Invoice {
     @Column({nullable:true,default:"",type:"varchar"})
     adminDescription:string
 
-    @Column({ type: "enum",enum: PanelTabels, default:PanelTabels.admin})
+    @Column({ type: "enum",enum: PanelTabels, default:PanelTabels.noWhere})
     panelTabel:PanelTabels
 
     @Column({nullable:true,default:"",type:"varchar"})

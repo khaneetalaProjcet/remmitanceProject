@@ -101,6 +101,7 @@ bot.on('callback_query',async (query) => {
     
     const user=invoice.type==0?invoice.seller:invoice.buyer
     const newAction=actionRepository.create({user:user,fromStatus:1,toStatus:2,date,time,type:1,invoice})
+    invoice.panelTabel=1
     invoice.status=2
     await invoiceRepository.save(invoice)
     await actionRepository.save(newAction)
@@ -152,7 +153,7 @@ bot.on('callback_query',async (query) => {
     const invoiceTotalPrice = parseFloat(invoice.totalPrice.toString());
 
 
-    if(invoice.status!=3){
+    if(invoice.status!=5){
       const message="درخواست نامعتبر"
       bot.sendMessage(chatId,message)
       return ;
@@ -161,12 +162,12 @@ bot.on('callback_query',async (query) => {
   
    systemUser.wallet.balance = Math.round(systemUserBalance - invoiceTotalPrice);
    invoice.seller.wallet.balance = Math.round(sellerBalance + invoiceTotalPrice);
-
-
-
-   invoice.status=5
+   const user=invoice.type==0?invoice.seller:invoice.buyer
+   const newAction=actionRepository.create({user:user,fromStatus:5,toStatus:7,date,time,type:1,invoice})
+   invoice.status=7
    await invoiceRepository.save(invoice.seller.wallet)
    await invoiceRepository.save(invoice)
+   await actionRepository.save(newAction)
    await userRepository.save(systemUser.wallet)
 
    const message='اظلاعات بانکی شما دریافت شد و تا ساعاتی اینده برای شما واریز می شود'
@@ -182,16 +183,18 @@ bot.on('callback_query',async (query) => {
     await bot.answerCallbackQuery(query.id);
     const invoice=await invoiceRepository.findOne({where:{id}})
 
-    if(invoice.status!=3){
+    if(invoice.status!=5){
       const message="درخواست نامعتبر"
       bot.sendMessage(chatId,message)
       return ;
   }
 
    invoice.bankAccount=null
-
+   invoice.status=6
+   const user=invoice.type==0?invoice.seller:invoice.buyer
+   const newAction=actionRepository.create({user:user,fromStatus:5,toStatus:6,date,time,type:1,invoice})
    await invoiceRepository.save(invoice)
-
+   await actionRepository.save(newAction)
    const message='برای ویرایش اطلاعات با شما تماس گرفته خواهد شد'
 
    bot.sendMessage(chatId,message)

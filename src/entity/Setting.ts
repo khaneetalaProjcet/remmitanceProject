@@ -19,6 +19,18 @@ export class Setting {
     minTradeBuy : number
 
     @Column({ type: "numeric",default:0})
+    maxSellCoin : number
+
+    @Column({ type: "numeric",default:0})
+    minSellCoin : number
+
+    @Column({ type: "numeric",default:0})
+    maxBuyCoin : number
+
+    @Column({ type: "numeric",default:0})
+    minBuyCoin : number
+
+    @Column({ type: "numeric",default:0})
     offerTolerance : number
     @Column({type:"numeric",default:0})
     expireTime:number

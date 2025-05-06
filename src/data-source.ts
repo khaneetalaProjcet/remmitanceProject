@@ -29,7 +29,7 @@ export const AppDataSource = new DataSource({
     port:  +process.env.DB_PORT || 5432,
     username: process.env.DB_USER || "postgres",
     password: process.env.DB_PASSWORD || "qazZAQ!@#",
-    database: process.env.DB_NAME || "remmitance",
+    database: process.env.DB_NAME || "remmitance_new",
     synchronize: true,
     logging: false,
     entities: [Actions,Delivery,Prices,TelegramUser,OfferInvoice,AppBankAccount,Setting,Admin,BankAccount,Invoice,InvoiceType,PaymentInfo,User,Otp,Wallet,WalletTransaction,accessPoint,GoldPrice,Fee],

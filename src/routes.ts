@@ -364,7 +364,7 @@ export const Routes = [
     route: "/setting/change",
     controller: SettingController,
     action: "updateSetting",
-    middlware:[authMiddlewareAdmin]
+    middlware:[]
 },
 {
     method: "get",

@@ -8,6 +8,8 @@ import { BankAccount } from "./BankAccount"
 import { AppBankAccount } from "./AppBankAccount"
 import { Delivery } from "./Delivery"
 import { Prices } from "./Prices"
+import { Actions } from "./Actions"
+import { PanelTabels } from "./enums/PanelTabel"
 
 
 @Entity()
@@ -45,7 +47,7 @@ export class Invoice {
     @Column({
         type: "enum",
         enum: InvoiceStatus,
-        default: InvoiceStatus.PENDING
+        default: InvoiceStatus.CreatedByUser
     })
     status : InvoiceStatus 
 
@@ -73,6 +75,8 @@ export class Invoice {
 
 
 
+    @OneToMany(()=> Actions ,(action) => action.invoice)
+    actions : Actions[]
 
     
 
@@ -90,6 +94,9 @@ export class Invoice {
 
     @Column({nullable:true,default:"",type:"varchar"})
     adminDescription:string
+
+    @Column({ type: "enum",enum: PanelTabels, default:PanelTabels.admin})
+    panelTabel:PanelTabels
 
     @Column({nullable:true,default:"",type:"varchar"})
     accounterDescription:string

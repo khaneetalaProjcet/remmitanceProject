@@ -4,6 +4,7 @@ const { showMainMenu , showPricingMenu , showAfterTradeMenu} = require('./menu')
 import { goldPriceService } from '../goldPrice.service';
 import { handleAuth }  from "./handelers/authHandeler" 
 import { Invoice } from '../../entity/Invoice';
+import { Actions } from '../../entity/Actions';
 // const { handleBuyFlow } = require('./handlers/buyHandler');
 // const { handleSellFlow } = require('./handlers/sellHandler');
 // const { handleConfirm } = require('./handlers/confirmHandler');
@@ -75,10 +76,12 @@ bot.on('message', async (msg) => {
 bot.on('callback_query',async (query) => {
   const invoiceRepository=AppDataSource.getRepository(Invoice)
   const userRepository=AppDataSource.getRepository(User)
+  const actionRepository=AppDataSource.getRepository(Actions)
 
   const chatId = query.message.chat.id;
   const data = query.data;
-
+  const time= new Date().toLocaleString('fa-IR').split(',')[1]
+  const date= new Date().toLocaleString('fa-IR').split(',')[0]
   console.log("here");
   console.log("data",data);
   
@@ -86,19 +89,22 @@ bot.on('callback_query',async (query) => {
   if (data.startsWith('user-yes:')) {
     const id = parseFloat(data.split(':')[1]);
     await bot.answerCallbackQuery(query.id);
-    const invoice=await invoiceRepository.findOne({where:{id}})
+    const invoice=await invoiceRepository.findOne({where:{id},relations:{seller:true,buyer:true}})
     
-    if(invoice.status!=0){
+    if(invoice.status!=1){
         const message="درخواست نامعتبر"
         bot.sendMessage(chatId,message)
         return ;
     }
 
-
-   invoice.status=1
-
-   await invoiceRepository.save(invoice)
-
+   
+    
+    const user=invoice.type==0?invoice.seller:invoice.buyer
+    const newAction=actionRepository.create({user:user,fromStatus:1,toStatus:2,date,time,type:1,invoice})
+    invoice.status=2
+    await invoiceRepository.save(invoice)
+    await actionRepository.save(newAction)
+    
    const message='درخواست شما تایید شد و پس در وضعیت بررسی ادمین قرار گرفت'
 
    bot.sendMessage(chatId,message)
@@ -110,19 +116,21 @@ bot.on('callback_query',async (query) => {
   if (data.startsWith('user-cancel:')) {
     const id = data.split(':')[1];
     await bot.answerCallbackQuery(query.id);
-    const invoice=await invoiceRepository.findOne({where:{id}})
+    const invoice=await invoiceRepository.findOne({where:{id},relations:{seller:true,buyer:true}})
 
-    if(invoice.status!=0){
+    if(invoice.status!=1){
       const message="درخواست نامعتبر"
       bot.sendMessage(chatId,message)
       return ;
   }
 
-   invoice.status=2
+  const user=invoice.type==0?invoice.seller:invoice.buyer
+  const newAction=actionRepository.create({user:user,fromStatus:1,toStatus:3,date,time,type:1,invoice})
+  invoice.status=3
+  await invoiceRepository.save(invoice)
+  await actionRepository.save(newAction)
 
-   await invoiceRepository.save(invoice)
-
-   const message='درخواست شما لفو شد'
+  const message='درخواست شما لفو شد'
 
    bot.sendMessage(chatId,message)
 

@@ -1,13 +1,19 @@
-export enum InvoiceStatus{
-    PENDING ,
-    PENDING_FOR_PAY,
-    REJECT,
-    PENDING_FOR_APPROVE_PAY,
-    APPROVE_FOR_PAY,
-    REJECT_FOR_PAY,
-    CANCEL_BY_USER,
-    PAY_CANCEL,
-    ARRIVED_NOT_COMPELTE,
-    ARRIVED_COMPELTE
-}
+
+
+export enum InvoiceStatus {
+    CreatedByUser = 1,
+    AwaitingAdminApproval = 2,
+    RejectedByInitialBot = 3,
+  
+    AdminApprovedWithIBAN = 4,
+    AdminRejected = 5,
+    UserSubmittedPayment = 6,
+   
+  
+    AccountantApproved = 7,
+    AccountantRejected = 8,
+  
+    PartiallyDelivered = 9,
+    FullyDelivered = 10,
+  }
 

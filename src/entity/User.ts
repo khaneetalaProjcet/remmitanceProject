@@ -4,7 +4,9 @@ import { Invoice } from "./Invoice"
 import { Wallet } from "./Wallet";
 import { BankAccount } from "./BankAccount";
 import { TelegramUser } from "./TelegramUser";
-import { Delivery } from "./Delivery";
+import { Delivery } from "./Delivery"
+import { Actions } from "./Actions";
+
 
 
 @Entity()
@@ -40,6 +42,9 @@ export class User {
 
     @OneToMany(() => Delivery , (delivery)=> delivery.mainUser , {nullable : true})
     deliveries : Invoice[]
+
+    @OneToMany(() => Actions , (action)=> action.user, {nullable : true})
+    actions : Actions[]
 
     @OneToOne(() => Wallet, (wallet) => wallet.user, { cascade: true })
     wallet: Wallet;

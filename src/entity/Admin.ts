@@ -2,6 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateCol
 import { accessPoint } from "./accessPoint";
 import {Invoice}  from "./Invoice";
 import { OfferInvoice } from "./OfferInvoice";
+import { Actions } from "./Actions";
 
 
 
@@ -35,6 +36,9 @@ export class Admin {
     @ManyToMany(()=>accessPoint )
     @JoinTable()
     accessPoints : accessPoint[];
+
+    @OneToMany(() => Actions , (action)=> action.admin, {nullable : true})
+    actions : Actions[]
 
 
     @ManyToMany(()=>Invoice )

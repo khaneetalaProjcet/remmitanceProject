@@ -19,6 +19,7 @@ import { Between, LessThan, MoreThan } from "typeorm";
 import { BankAccount } from "../entity/BankAccount";
 import { Delivery } from "../entity/Delivery";
 import {formatGoldWeight} from "../utills/HelperFunctions"
+import { Actions } from "../entity/Actions";
 import { start } from "repl";
 import { stat } from "fs";
 const token = process.env.TELEGRAM_BOT_TOKEN || "7622536105:AAFR0NDFR27rLDF270uuL5Ww_K0XZi61FCw";
@@ -34,6 +35,7 @@ export class AdminController{
     private appBankRepository=AppDataSource.getRepository(AppBankAccount)
     private bankRepository=AppDataSource.getRepository(BankAccount)
     private walletTransaction=AppDataSource.getRepository(WalletTransaction)
+    private actionRepository=AppDataSource.getRepository(Actions)
     private bot=new TelegramBot(token);
 
     /**
@@ -326,7 +328,8 @@ ${description}
         console.log("invoceeId",invoiceId);
         console.log("description",description);
         console.log("appBanK",appBankAccountId);
-        
+        const time= new Date().toLocaleString('fa-IR').split(',')[1]
+        const date= new Date().toLocaleString('fa-IR').split(',')[0]
         
 
         const queryRunner = AppDataSource.createQueryRunner()
@@ -335,13 +338,22 @@ ${description}
         try{
            const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
            const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId},relations:["buyer"]})
-           console.log("invoice",invoice);
+
+
+
+           if(!invoice || invoice.status!==2){
+            return next(new responseModel(req, res,"تراکتش نامعتبر",'invoice', 400,"تراکتش نامعتبر",null))
+           }
+
            
+          
            const telegramUser=await this.telegramUserRepository.findOne({where:{user:{id:invoice.buyer.id}}})
            const appBank=await this.appBankRepository.findOne({where:{id:appBankAccountId}})
            console.log("apppppp",appBank);
+
+           const newAction=this.actionRepository.create({admin,type:2,fromStatus:2,toStatus:4,date,time,invoice})
            
-           invoice.status=3
+           
 
            
         //    const adddmin=[...invoice.admins,...[admin]]
@@ -351,17 +363,14 @@ ${description}
         //    console.log("secondAdmin",seconndAdmin);
            
            
-
+           invoice.status=4
            invoice.admins=[admin]
+           invoice.panelTabel=2
            invoice.adminDescription=description
            invoice.appBankAccount=appBank
            await queryRunner.manager.save(invoice)
-           await queryRunner.commitTransaction()
-           
-
-            const time= new Date().toLocaleString('fa-IR').split(',')[1]
-            const date= new Date().toLocaleString('fa-IR').split(',')[0]
-
+           await queryRunner.manager.save(newAction)
+        
             const message = `
             <b>کاربر گرامی</b>
             
@@ -378,8 +387,8 @@ ${description}
             <b>بانک:</b> ${appBank.name}
             <b>به نام:</b> ${appBank.ownerName}
             `
-           showMainMenu(this.bot,telegramUser.chatId,message)      
-
+           this.bot.sendMessage(telegramUser.chatId,message,{parse_mode:"HTML"})     
+           await queryRunner.commitTransaction()
            return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
 
         }catch(err){
@@ -398,19 +407,33 @@ ${description}
         const queryRunner = AppDataSource.createQueryRunner()
         await queryRunner.connect()
         await queryRunner.startTransaction()
+        const time= new Date().toLocaleString('fa-IR').split(',')[1]
+        const date= new Date().toLocaleString('fa-IR').split(',')[0]
         try{
            
+
+         
+
            const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
            const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId},relations:['buyer']})
            const telegramUser=await this.telegramUserRepository.findOne({where:{user:{id:invoice.buyer.id}}})
-           invoice.status=4
-           invoice.admins.push(admin)
+
+
+           if(!invoice || invoice.status!==2){
+            return next(new responseModel(req, res,"تراکتش نامعتبر",'invoice', 400,"تراکتش نامعتبر",null))
+           }
+
+           const newAction=this.actionRepository.create({admin,type:2,fromStatus:2,toStatus:5,date,time,invoice})
+
+           invoice.status=5
+           invoice.panelTabel=4
+           invoice.admins=[admin]
            invoice.adminDescription=description
 
-           const time= new Date().toLocaleString('fa-IR').split(',')[1]
-           const date= new Date().toLocaleString('fa-IR').split(',')[0]
+         
            await queryRunner.manager.save(invoice)
-           await queryRunner.commitTransaction()
+           await queryRunner.manager.save(newAction)
+           
            const message = `
            <b>کاربر گرامی</b>
            
@@ -426,8 +449,8 @@ ${description}
            ${description}
            `;
            
-           
-           showMainMenu(this.bot,telegramUser.chatId,message)  
+           this.bot.sendMessage(telegramUser.chatId,message,{parse_mode:"HTML"})  
+           await queryRunner.commitTransaction()  
            return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
         }catch(err){
            await queryRunner.rollbackTransaction()
@@ -456,17 +479,19 @@ ${description}
         const queryRunner = AppDataSource.createQueryRunner()
         await queryRunner.connect()
         await queryRunner.startTransaction()
+        const time= new Date().toLocaleString('fa-IR').split(',')[1]
+        const date= new Date().toLocaleString('fa-IR').split(',')[0]
         
          try{
             const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
             const invoice=await this.invoiceRepository.findOne({where:{id},relations:{buyer:{telegram:true,wallet:true},admins:true}})
             const systemUser=await this.userRepository.findOne({where:{isSystemUser:true},relations:["wallet"]})
             const walletTransaction=await this.walletTransaction.findOne({where:{authority:invoice.authority}})
-            // if(!invoice){
-            //     return  next(new responseModel(req, res," وجود ندارد",'reject', 402," وجود ندارد",null))
-            // }
-    
-            invoice.status=6
+            if(!invoice || invoice.status!==6){
+                return  next(new responseModel(req, res," وجود ندارد",'reject', 402," وجود ندارد",null))
+            }
+            const newAction=this.actionRepository.create({admin,type:2,fromStatus:6,toStatus:7,date,time,invoice})
+            invoice.status=7
             invoice.accounterDescription=description
              
 
@@ -477,17 +502,9 @@ ${description}
 
             array.push(admin)
 
-
-            console.log(array);
-            
-
-
-            // const a=invoice,admins
-            // invoice.admins.push(admin)
-            // invoice.admins=[...invoice.admins,admin]
-    
             walletTransaction.status="1"
             invoice.admins=array
+            invoice.panelTabel=3
     
     
             const buyerGoldWeight = parseFloat(invoice.buyer.wallet.goldWeight.toString());
@@ -509,13 +526,13 @@ ${description}
            await queryRunner.manager.save(invoice.buyer.wallet)
            await queryRunner.manager.save(systemUser)
            await queryRunner.manager.save(walletTransaction)
+           await queryRunner.manager.save(newAction)
 
 
             
            
 
-            const time= new Date().toLocaleString('fa-IR').split(',')[1]
-            const date= new Date().toLocaleString('fa-IR').split(',')[0]
+         
 
         const message = `
           <b>کاربر گرامی</b>
@@ -542,14 +559,14 @@ ${description}
             return next(new responseModel(req, res,"خطای داخلی سیستم",'invoice', 500,"خطای داخلی سیستم",null))}
     }
 
-
-
     async rejectPaymentBuy(req: Request, res: Response, next: NextFunction){
         const id=+req.params.id
         const {description}  =req.body
         const queryRunner = AppDataSource.createQueryRunner()
         await queryRunner.connect()
         await queryRunner.startTransaction()
+        const time= new Date().toLocaleString('fa-IR').split(',')[1]
+         const date= new Date().toLocaleString('fa-IR').split(',')[0]
         try{
             const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
             const invoice=await this.invoiceRepository.findOne({where:{id},relations:{buyer:{telegram:true,wallet:true},admins:true}})
@@ -558,9 +575,10 @@ ${description}
                 return  next(new responseModel(req, res," وجود ندارد",'reject', 402," وجود ندارد",null))
             }
     
-            
+            const newAction=this.actionRepository.create({admin,type:2,fromStatus:6,toStatus:8,date,time,invoice})
     
-            invoice.status=7
+            invoice.status=8
+            invoice.panelTabel=4
             invoice.accounterDescription=description
             invoice.admins=[...invoice.admins,admin]
 
@@ -568,8 +586,8 @@ ${description}
     
             await queryRunner.manager.save(walletTransaction)
             await queryRunner.manager.save(invoice)
-            const time= new Date().toLocaleString('fa-IR').split(',')[1]
-            const date= new Date().toLocaleString('fa-IR').split(',')[0]
+            await queryRunner.manager.save(newAction)
+            
     
             const message = `
             <b>کاربر گرامی</b>
@@ -586,8 +604,8 @@ ${description}
             ${description}
             `;
           
-            await queryRunner.commitTransaction()
             this.bot.sendMessage(invoice.buyer.telegram.chatId,message,{parse_mode:"HTML"})
+            await queryRunner.commitTransaction()
             return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
         }catch(err){
             console.log(err);
@@ -600,6 +618,9 @@ ${description}
         }
        
     }
+
+
+
 
 
     async getPaymentInfoForSell(req: Request, res: Response, next: NextFunction){
@@ -859,12 +880,18 @@ ${description}
             const invoice=await this.invoiceRepository.findOne({where:{id:id},relations:{buyer:{telegram:true,wallet:true},admins:true}})
             
 
-            // if(invoice.status==6 ){
-            //     return next(new responseModel(req, res,"تراکتش نامعتبر",'invoice', 400,"تراکتش نامعتبر",null))
-            // }
+            if(!invoice || invoice.status!==7){
+                if(invoice.status==9){
+                   console.log("part delivery");
+                   
+                }else{
+                    return next(new responseModel(req, res,"تراکتش نامعتبر",'invoice', 400,"تراکتش نامعتبر",null))
+                }
+            }
 
         let newDelivery
         let destUser
+        let newAction
         if(type==1){
             newDelivery=this.deliveryRepository.create({
                 type,
@@ -903,17 +930,28 @@ ${description}
         
         console.log("invoiceWe",invoiceGold);
         
+        const walletBuyerRemain=buyerGoldWeight-parseFloat(amount)
 
+        if(walletBuyerRemain<0){
+            return next(new responseModel(req, res,"","مقدار طلا کافی نمی باشد", 400,"مقدار طلا کافی نمی باشد",null))
+        }
 
-        invoice.buyer.wallet.goldWeight=buyerGoldWeight-parseFloat(amount)
+        invoice.buyer.wallet.goldWeight=walletBuyerRemain
         const remain=invoiceGold-amount
         console.log("remainnnn",remain);
         
         invoice.remainGoldWeight=invoiceGold-amount
+
+        if(remain<0){
+            return next(new responseModel(req, res,"",'مقدار طلا سفارش کافی نمی باشد', 400,"مقدار طلا سفارش کافی نمی باشد",null))
+        }
+
         if(remain>0){
             invoice.status=8
+             newAction=this.actionRepository.create({admin,type:2,fromStatus:invoice.status,toStatus:8,date,time,invoice})
         }else{
             invoice.status=9
+            newAction=this.actionRepository.create({admin,type:2,fromStatus:invoice.status,toStatus:9,date,time,invoice})
         }
 
         invoice.admins=[...invoice.admins,admin]
@@ -922,13 +960,14 @@ ${description}
 
         await queryRunner.manager.save(invoice)
         await queryRunner.manager.save(invoice.buyer.wallet)
+        await queryRunner.manager.save(newAction)
         if(type==2){
             await queryRunner.manager.save(destUser.wallet)
         }
         
         await queryRunner.manager.save(newDelivery)
 
-        await queryRunner.commitTransaction()
+        
         let message
         let messageDest
         if(type==1){
@@ -974,7 +1013,7 @@ ${description}
         // this.bot.sendMessage(destUser.telegram.chatId,messageDest,{parse_mode:"HTML"})
         }
         this.bot.sendMessage(invoice.buyer.telegram.chatId,message,{parse_mode:"HTML"})
-
+        await queryRunner.commitTransaction()
         return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
 
          }catch(err){

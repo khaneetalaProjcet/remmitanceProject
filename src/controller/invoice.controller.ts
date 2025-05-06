@@ -11,6 +11,7 @@ import {settingService} from "../services/setting.service"
 import { BankAccount } from "../entity/BankAccount";
 import {showMainMenu} from "../services/telegramBot/menu"
 import {WalletTransaction}   from "../entity/WalletTransaction"
+import { Actions } from "../entity/Actions";
 import TelegramBot from 'node-telegram-bot-api';
 const token = process.env.TELEGRAM_BOT_TOKEN|| "7622536105:AAFR0NDFR27rLDF270uuL5Ww_K0XZi61FCw";
 
@@ -22,6 +23,7 @@ export class InvoiceController{
     private bankAccountRepository=AppDataSource.getRepository(BankAccount)
     private pricesRepository=AppDataSource.getRepository(Prices)
     private walletTransaction=AppDataSource.getRepository(WalletTransaction)
+    private actionsRepository=AppDataSource.getRepository(Actions)
     private goldPriceService=new goldPriceService()
     private settingService=new settingService()
     private bot=new TelegramBot(token);
@@ -272,15 +274,24 @@ export class InvoiceController{
             const user=await this.userRepository.findOne({where:{id:req.user.id},relations:["telegram"]})
     
     
-             if(!invoice){
-                return next(new responseModel(req, res,"درخواست نامعتبر",'create Invoice', 400,"درخواست نامعتبر",null))
+             if(!invoice || invoice.status!==4){
+                if(invoice.status==8){
+                    invoice.panelTabel=2
+                    console.log("second or more attempt");
+                    
+                }else{
+                    return next(new responseModel(req, res,"درخواست نامعتبر",'create Invoice', 400,"درخواست نامعتبر",null))
+                }
              }
-             
-             invoice.status=5
+
+
+             const newAction=this.actionsRepository.create({user,type:1,fromStatus:4,toStatus:6,date,time,invoice})
+             invoice.status=6
              invoice.authority=authority
              await queryRunner.manager.save(invoice)
+             await queryRunner.manager.save(newAction)
              await queryRunner.manager.save(newTransaction)
-             await queryRunner.commitTransaction()
+            
             
              const message = `
              <b>کاربر گرامی</b>
@@ -299,7 +310,7 @@ export class InvoiceController{
              `;
              
              this.bot.sendMessage(user.telegram.chatId, message, { parse_mode: 'HTML' });
-    
+             await queryRunner.commitTransaction()
              return next(new responseModel(req, res,null,' user invoice', 200,null,invoice))
         }catch(err){
             await queryRunner.rollbackTransaction()
@@ -317,39 +328,54 @@ export class InvoiceController{
 
     async cancelBuyRequest(req: Request, res: Response, next: NextFunction){
         const invoiceId=+req.params.id
+        const queryRunner = AppDataSource.createQueryRunner()
+        await queryRunner.connect()
+        await queryRunner.startTransaction()
         
-  
-        const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId},relations:["buyer"] })
-        const user=await this.userRepository.findOne({where:{id:req.user.id},relations:["telegram"]})
-  
-        
-        const time= new Date().toLocaleString('fa-IR').split(',')[1]
-        const date= new Date().toLocaleString('fa-IR').split(',')[0]
-
-
-        if(!invoice || invoice.status!==3){
-            return next(new responseModel(req, res,"درخواست نامعتبر",'create Invoice', 400,"درخواست نامعتبر",null))
-         }
-        
-        invoice.status=2
-
-
-        const message = `
-        <b>کاربر گرامی</b>
-        
-        پرداخت حواله فروش شما توسط شما <b>لغو شد</b>:
-        
-        <b>مشخصات حواله:</b>
-        • <b>مقدار:</b> ${invoice.goldWeight} گرم  
-        • <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
-        • <b>شماره پیگیری:</b> ${invoiceId}  
-        • <b>تاریخ و ساعت:</b> ${date} ${time}
-        
-        در صورت نیاز می‌توانید مجدداً اقدام نمایید.
-        `;
-        
-       this.bot.sendMessage(user.telegram.chatId, message, { parse_mode: 'HTML' });
-       return next(new responseModel(req, res,null,' user invoice', 200,null,invoice))
+        try{
+            const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId},relations:["buyer"] })
+            const user=await this.userRepository.findOne({where:{id:req.user.id},relations:["telegram"]})
+      
+            
+            const time= new Date().toLocaleString('fa-IR').split(',')[1]
+            const date= new Date().toLocaleString('fa-IR').split(',')[0]
+    
+    
+            if(!invoice || invoice.status!==3){
+                return next(new responseModel(req, res,"درخواست نامعتبر",'create Invoice', 400,"درخواست نامعتبر",null))
+             }
+            
+            invoice.status=3
+            invoice.panelTabel=4
+            const newAction=this.actionsRepository.create({user,type:1,fromStatus:4,toStatus:3,date,time,invoice})
+    
+            await queryRunner.manager.save(invoice)
+            await queryRunner.manager.save(newAction)
+            const message = `
+            <b>کاربر گرامی</b>
+            
+            پرداخت حواله خرید شما توسط شما <b>لغو شد</b>:
+            
+            <b>مشخصات حواله:</b>
+            • <b>مقدار:</b> ${invoice.goldWeight} گرم  
+            • <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
+            • <b>شماره پیگیری:</b> ${invoiceId}  
+            • <b>تاریخ و ساعت:</b> ${date} ${time}
+            
+            در صورت نیاز می‌توانید مجدداً اقدام نمایید.
+            `;
+           this.bot.sendMessage(user.telegram.chatId, message, { parse_mode: 'HTML' });
+           await queryRunner.commitTransaction()
+           return next(new responseModel(req, res,null,' user invoice', 200,null,invoice))
+        }catch(err){
+            await queryRunner.rollbackTransaction()
+            console.log("error",err);
+            return next(new responseModel(req, res,"خطای داخلی سیستم",'invoice', 500,"خطای داخلی سیستم",null))
+        }finally{
+            console.log('transaction released')
+            await queryRunner.release()
+        }
+       
 
     }
 
@@ -512,22 +538,6 @@ export class InvoiceController{
                 this.sendMessageWithInline(message,user.telegram.chatId,transaction.id)
                 return next(new responseModel(req, res,null,'create Invoice', 200,null,transaction))
             }else{
-
-  
-                
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
                 return next(new responseModel(req, res,null,'create Invoice', 200,null,null))

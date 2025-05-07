@@ -1248,9 +1248,10 @@ ${description}
     
          const coins=invoice.buyer.wallet.coins
 
-         console.log("coins",coins);
          
-         console.log("coin",coins[0]);
+         console.log("coin",coins[0].product.id);
+
+
 
          const invoiceCoinIndex=coins.findIndex(item=>item.product.id===invoice.product.id)
 

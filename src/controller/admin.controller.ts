@@ -1212,27 +1212,27 @@ ${description}
            
        }else{
            destUser=await  this.userRepository.findOne({where:{id:destUserId},relations:{wallet:{coins:{product:true}},telegram:true}})
-           
            const destCoins = destUser.wallet.coins
            const invoiceProduct=invoice.product
            const coinCount=amount
         
-         const index=destCoins.findIndex(item=>item.product.id==invoiceProduct.id)
+           const index=destCoins.findIndex(item=>item.product.id==invoiceProduct.id)
 
-         console.log("desuser",index);
+           console.log("desuser",index);
          
  
         if(index==-1){
-            log
+            console.log("heeerrrr");
+            
             const newItem=this.coinWalletRepository.create({count:coinCount,wallet:destUser.wallet,product:invoice.product})
             await queryRunner.manager.save(newItem)
         }else{
             const item=destCoins[index]
-            console.log("item");
+            console.log("item",item);
             
             const newCount=item.count+coinCount
             destUser.wallet.coins[index].count=newCount
-            await queryRunner.manager.save(destUser.wallet.coins)
+            // await queryRunner.manager.save(destUser.wallet.coins)
         }
 
            newDelivery=this.deliveryRepository.create({
@@ -1280,7 +1280,7 @@ ${description}
         
         
 
-        const updatedbuyerCoinWalletCount=invoice.buyer.wallet.coins[invoiceCoinIndex].count-amount
+    const updatedbuyerCoinWalletCount=invoice.buyer.wallet.coins[invoiceCoinIndex].count-amount
 
   
 
@@ -1319,7 +1319,7 @@ ${description}
        await queryRunner.manager.save(invoice.buyer.wallet.coins)
        await queryRunner.manager.save(newAction)
        if(type==2){
-           await queryRunner.manager.save(destUser.wallet)
+           await queryRunner.manager.save(destUser.wallet.coins)
        }
        
        await queryRunner.manager.save(newDelivery)

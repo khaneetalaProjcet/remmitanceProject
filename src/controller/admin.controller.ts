@@ -239,7 +239,7 @@ export class AdminController{
         const date= new Date().toLocaleString('fa-IR').split(',')[0]
          try{
             const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
-            const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId},relations:["seller","admins"]})
+            const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId},relations:["seller","admins","product"]})
             const telegramUser=await this.telegramUserRepository.findOne({where:{user:{id:invoice.seller.id}}})
             if(!invoice || invoice.status!==2){
                 return next(new responseModel(req, res,"تراکتش نامعتبر",'invoice', 400,"تراکتش نامعتبر",null))
@@ -249,21 +249,44 @@ export class AdminController{
             invoice.panelTabel=2
             invoice.admins=[admin]
             invoice.adminDescription=description
+
+            let message
+
+            if(invoice.product.type=="1"){
+                message = `
+                <b>کاربر گرامی</b>
+                
+                درخواست حواله فروش شما <b>تایید شد</b>:
+                
+                <b>مشخصات حواله:</b>
+                * <b>نام:</b> ${invoice.product.persianName} 
+                * <b>تعداد:</b> ${invoice.coinCount} عدد  
+                * <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
+                * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
+                * <b>تاریخ و ساعت:</b> ${date} ${time}
+                
+                <b>توضیحات:</b>
+                ${description}
+                `;
+
+            }else{
+                message = `
+                <b>کاربر گرامی</b>
+                
+                درخواست حواله فروش شما <b>تایید شد</b>:
+                
+                <b>مشخصات حواله:</b>
+                * <b>مقدار:</b> ${invoice.goldWeight} گرم  
+                * <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
+                * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
+                * <b>تاریخ و ساعت:</b> ${date} ${time}
+                
+                <b>توضیحات:</b>
+                ${description}
+                `;
+            }
             
-            const message = `
-<b>کاربر گرامی</b>
-
-درخواست حواله فروش شما <b>تایید شد</b>:
-
-<b>مشخصات حواله:</b>
-* <b>مقدار:</b> ${invoice.goldWeight} گرم  
-* <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
-* <b>شماره پیگیری:</b> ${invoice.invoiceId}  
-* <b>تاریخ و ساعت:</b> ${date} ${time}
-
-<b>توضیحات:</b>
-${description}
-`;
+     
             await queryRunner.manager.save(invoice)
             await queryRunner.manager.save(newAction)
             
@@ -291,7 +314,7 @@ ${description}
          const date= new Date().toLocaleString('fa-IR').split(',')[0]
          try{
             const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
-            const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId},relations:["seller","admins"]})
+            const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId},relations:["seller","admins","product"]})
             const telegramUser=await this.telegramUserRepository.findOne({where:{user:{id:invoice.seller.id}}})
             if(!invoice || invoice.status!==2){
                 return next(new responseModel(req, res,"تراکتش نامعتبر",'invoice', 400,"تراکتش نامعتبر",null))
@@ -307,22 +330,45 @@ ${description}
           
 
             await queryRunner.manager.save(invoice)
+
+            let message
+
+            if(invoice.product.type=="1"){
+                message = `
+                <b>کاربر گرامی</b>
+                
+                درخواست حواله فروش شما <b>رد شد</b>:
+                
+                <b>مشخصات حواله:</b>
+                * <b>نام:</b> ${invoice.product.persianName} 
+                * <b>تعداد:</b> ${invoice.coinCount} عدد  
+                * <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
+                * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
+                * <b>تاریخ و ساعت:</b> ${date} ${time}
+                
+                <b>توضیحات:</b>
+                ${description}
+                `;
+
+            }else{
+                message = `
+                <b>کاربر گرامی</b>
+                
+                درخواست حواله فروش شما <b>رد شد</b>:
+                
+                <b>مشخصات حواله:</b>
+                * <b>مقدار:</b> ${invoice.goldWeight} گرم  
+                * <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
+                * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
+                * <b>تاریخ و ساعت:</b> ${date} ${time}
+                
+                <b>دلیل رد شدن:</b>
+                ${description}
+                `;
+                
+            }
            
-            const message = `
-<b>کاربر گرامی</b>
-
-درخواست حواله فروش شما <b>رد شد</b>:
-
-<b>مشخصات حواله:</b>
-* <b>مقدار:</b> ${invoice.goldWeight} گرم  
-* <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
-* <b>شماره پیگیری:</b> ${invoice.invoiceId}  
-* <b>تاریخ و ساعت:</b> ${date} ${time}
-
-<b>دلیل رد شدن:</b>
-${description}
-`;
-
+          
             
             this.bot.sendMessage(telegramUser.chatId,message,{parse_mode:"HTML"})     
             await queryRunner.commitTransaction()            
@@ -358,7 +404,7 @@ ${description}
         await queryRunner.startTransaction()
         try{
            const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
-           const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId},relations:["buyer"]})
+           const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId},relations:["buyer","product"]})
 
 
 
@@ -391,8 +437,27 @@ ${description}
            invoice.appBankAccount=appBank
            await queryRunner.manager.save(invoice)
            await queryRunner.manager.save(newAction)
-        
-            const message = `
+
+           let message
+
+           if(invoice.product.type=="1"){
+               message = `
+                 <b>کاربر گرامی</b>
+            
+               درخواست حواله خرید شما با مشخصات زیر تایید شد:
+               * <b>نام:</b> ${invoice.product.persianName} 
+               * <b>تعداد:</b> ${invoice.coinCount} عدد  
+               * <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
+               * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
+               * <b>تاریخ و ساعت:</b> ${date} ${time}
+                <b>شبا:</b> ${appBank.shebaNumber}
+               <b>بانک:</b> ${appBank.name}
+              <b>به نام:</b> ${appBank.ownerName}
+               
+               `;
+
+           }else{
+            message = `
             <b>کاربر گرامی</b>
             
             درخواست حواله خرید شما با مشخصات زیر تایید شد:
@@ -408,6 +473,9 @@ ${description}
             <b>بانک:</b> ${appBank.name}
             <b>به نام:</b> ${appBank.ownerName}
             `
+           }
+        
+            
            this.bot.sendMessage(telegramUser.chatId,message,{parse_mode:"HTML"})     
            await queryRunner.commitTransaction()
            return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
@@ -436,7 +504,7 @@ ${description}
          
 
            const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
-           const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId},relations:['buyer']})
+           const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId},relations:['buyer','product']})
            const telegramUser=await this.telegramUserRepository.findOne({where:{user:{id:invoice.buyer.id}}})
 
 
@@ -454,8 +522,29 @@ ${description}
          
            await queryRunner.manager.save(invoice)
            await queryRunner.manager.save(newAction)
+
+           let message
+
+           if(invoice.product.type=="1"){
+            message = `
+             <b>کاربر گرامی</b>
            
-           const message = `
+           درخواست حواله خرید شما <b>رد شد</b>:
+            
+            <b>مشخصات حواله:</b>
+            * <b>نام:</b> ${invoice.product.persianName} 
+            * <b>تعداد:</b> ${invoice.coinCount} عدد  
+            * <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
+            * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
+            * <b>تاریخ و ساعت:</b> ${date} ${time}
+            
+            <b>توضیحات:</b>
+            ${description}
+            `;
+
+        }else{
+           
+            message = `
            <b>کاربر گرامی</b>
            
            درخواست حواله خرید شما <b>رد شد</b>:
@@ -469,6 +558,9 @@ ${description}
            <b>دلیل رد شدن:</b>
            ${description}
            `;
+        }
+           
+         
            
            this.bot.sendMessage(telegramUser.chatId,message,{parse_mode:"HTML"})  
            await queryRunner.commitTransaction()  
@@ -689,7 +781,7 @@ ${description}
          const date= new Date().toLocaleString('fa-IR').split(',')[0]
         try{
             const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
-            const invoice=await this.invoiceRepository.findOne({where:{id},relations:{buyer:{telegram:true,wallet:true},admins:true}})
+            const invoice=await this.invoiceRepository.findOne({where:{id},relations:{buyer:{telegram:true,wallet:true},admins:true,product:true}})
             const walletTransaction=await this.walletTransaction.findOne({where:{authority:invoice.authority}})
             if(!invoice){
                 return  next(new responseModel(req, res," وجود ندارد",'reject', 402," وجود ندارد",null))
@@ -708,21 +800,47 @@ ${description}
             await queryRunner.manager.save(invoice)
             await queryRunner.manager.save(newAction)
             
-    
-            const message = `
-            <b>کاربر گرامی</b>
+            let message
+
+
+
+            if(invoice.product.type=="1"){
+                message = `
+                <b>کاربر گرامی</b>
+                
+                پرداخت حواله خرید شما <b>رد شد</b>:
+                
+                <b>مشخصات حواله:</b>
+                * <b>نام:</b> ${invoice.product.persianName} 
+                * <b>تعداد:</b> ${invoice.coinCount} عدد  
+                * <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
+                * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
+                * <b>تاریخ و ساعت:</b> ${date} ${time}
+                
+                <b>توضیحات:</b>
+                ${description}
+                `;
+
+            }else{
+                message = `
+                <b>کاربر گرامی</b>
+                
+                پرداخت حواله خرید شما <b>رد شد</b>:
+                
+                <b>مشخصات حواله:</b>
+                * <b>مقدار:</b> ${invoice.goldWeight} گرم  
+                * <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
+                * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
+                * <b>تاریخ و ساعت:</b> ${date} ${time}
+                
+                <b>دلیل رد شدن:</b>
+                ${description}
+                `;
+            }
+
             
-            پرداخت حواله خرید شما <b>رد شد</b>:
-            
-            <b>مشخصات حواله:</b>
-            * <b>مقدار:</b> ${invoice.goldWeight} گرم  
-            * <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
-            * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
-            * <b>تاریخ و ساعت:</b> ${date} ${time}
-            
-            <b>دلیل رد شدن:</b>
-            ${description}
-            `;
+
+         
           
             this.bot.sendMessage(invoice.buyer.telegram.chatId,message,{parse_mode:"HTML"})
             await queryRunner.commitTransaction()
@@ -757,7 +875,7 @@ ${description}
 
         try{
             const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
-            const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId},relations:{seller:{telegram:true,wallet:true},admins:true}})
+            const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId},relations:{seller:{telegram:true,wallet:true},admins:true,product:true}})
             const newAction=this.actionRepository.create({admin,type:2,fromStatus:invoice.status,toStatus:5,date,time,invoice})
 
             if(!invoice || invoice.status!==4){
@@ -789,26 +907,57 @@ ${description}
             await queryRunner.manager.save(newAction)
             // await queryRunner.manager.save(walletTransaction)
 
-            const message = `
-            <b>کاربر گرامی</b>
-            
-              دریافت اطلاعات بانکی شما <b>انجام شد</b>:
-            
-            <b>مشخصات حواله:</b>
-            * <b>مقدار:</b> ${invoice.goldWeight} گرم  
-            * <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
-            * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
-            * <b>تاریخ و ساعت:</b> ${date} ${time}
-             <b>مشخضات حساب دریافتی:</b>
-            * <b> شماره شبا:</b> ${shebaNumber} 
+            let message
+
+
+
+            if(invoice.product.type=="1"){
+                message = `
+                <b>کاربر گرامی</b>
+                
+                پرداخت حواله خرید شما <b>رد شد</b>:
+                
+                <b>مشخصات حواله:</b>
+                * <b>نام:</b> ${invoice.product.persianName} 
+                * <b>تعداد:</b> ${invoice.coinCount} عدد  
+                * <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
+                * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
+                * <b>تاریخ و ساعت:</b> ${date} ${time}
+                
+                  * <b> شماره شبا:</b> ${shebaNumber} 
             * <b>نام بانک:</b> ${bankName} 
             * <b>صاحب حساب:</b> ${ownerName} 
              
            
              در صورت اشتباه بودن اطلاعات دکمه <b>عدم تایید</b> را بزنید
              در صورت درست بودن اطلاعات دکمه <b>تایید</b> را بزنید
-            
-            `;
+              
+                `;
+
+            }else{
+                message = `
+                <b>کاربر گرامی</b>
+                
+                  دریافت اطلاعات بانکی شما <b>انجام شد</b>:
+                
+                <b>مشخصات حواله:</b>
+                * <b>مقدار:</b> ${invoice.goldWeight} گرم  
+                * <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
+                * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
+                * <b>تاریخ و ساعت:</b> ${date} ${time}
+                 <b>مشخضات حساب دریافتی:</b>
+                * <b> شماره شبا:</b> ${shebaNumber} 
+                * <b>نام بانک:</b> ${bankName} 
+                * <b>صاحب حساب:</b> ${ownerName} 
+                 
+               
+                 در صورت اشتباه بودن اطلاعات دکمه <b>عدم تایید</b> را بزنید
+                 در صورت درست بودن اطلاعات دکمه <b>تایید</b> را بزنید
+                
+                `;
+            }
+
+          
           
             
           
@@ -857,7 +1006,7 @@ ${description}
 
         try{
             const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
-            const invoice=await this.invoiceRepository.findOne({where:{id:id},relations:{seller:{telegram:true,wallet:true},admins:true}})
+            const invoice=await this.invoiceRepository.findOne({where:{id:id},relations:{seller:{telegram:true,wallet:true},admins:true,product:true}})
             const invoiceTotalPrice = parseFloat(invoice.totalPrice.toString());
             const sellerBalance = parseFloat(invoice.seller.wallet.balance.toString());
 
@@ -889,23 +1038,52 @@ ${description}
             await queryRunner.manager.save(walletTransaction)
             await queryRunner.manager.save(newAction)
 
-            const message = `
-            <b>کاربر گرامی</b>
-          
-          پرداخت حواله فروش شما <b>انجام شد</b>:
-          
-          <b>مشخصات حواله:</b>
-          * <b>مقدار:</b> ${invoice.goldWeight} گرم  
-          * <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
-          * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
-          * <b>تاریخ و ساعت:</b> ${date} ${time}
-          * <b>شناسه پرداخات:</b> ${authority} 
-          
-          <b>توضیحات</b>
-           ${description}
-          
-          
-          `;
+
+            let message
+
+
+
+            if(invoice.product.type=="1"){
+                message = `
+                <b>کاربر گرامی</b>
+                
+                 پرداخت حواله فروش شما <b>انجام شد</b>:
+                
+                <b>مشخصات حواله:</b>
+                * <b>نام:</b> ${invoice.product.persianName} 
+                * <b>تعداد:</b> ${invoice.coinCount} عدد  
+                * <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
+                * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
+                * <b>تاریخ و ساعت:</b> ${date} ${time}
+                
+                <b>توضیحات</b>
+               ${description}
+              
+              
+              `;
+            
+
+            }else{
+                message = `
+                <b>کاربر گرامی</b>
+              
+              پرداخت حواله فروش شما <b>انجام شد</b>:
+              
+              <b>مشخصات حواله:</b>
+              * <b>مقدار:</b> ${invoice.goldWeight} گرم  
+              * <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
+              * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
+              * <b>تاریخ و ساعت:</b> ${date} ${time}
+              * <b>شناسه پرداخات:</b> ${authority} 
+              
+              <b>توضیحات</b>
+               ${description}
+              
+              
+              `;
+            }
+
+            
   
            this.bot.sendMessage(invoice.seller.telegram.chatId,message,{parse_mode:"HTML"})
           

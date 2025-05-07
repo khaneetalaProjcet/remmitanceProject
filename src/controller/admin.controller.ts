@@ -1231,8 +1231,10 @@ ${description}
             console.log("item",item);
             
             const newCount=item.count+coinCount
+            console.log();
+            
             destUser.wallet.coins[index].count=newCount
-            // await queryRunner.manager.save(destUser.wallet.coins)
+            await queryRunner.manager.save(destUser.wallet.coins)
         }
 
            newDelivery=this.deliveryRepository.create({
@@ -1318,10 +1320,6 @@ ${description}
        await queryRunner.manager.save(invoice)
        await queryRunner.manager.save(invoice.buyer.wallet.coins)
        await queryRunner.manager.save(newAction)
-       if(type==2){
-           await queryRunner.manager.save(destUser.wallet.coins)
-       }
-       
        await queryRunner.manager.save(newDelivery)
 
        

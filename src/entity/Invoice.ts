@@ -44,6 +44,9 @@ export class Invoice {
     @Column({nullable : true})
     invoiceId : string
 
+    @Column({nullable : true})
+    remainCoinCount : number
+
     @Column({
         type: "enum",
         enum: InvoiceStatus,

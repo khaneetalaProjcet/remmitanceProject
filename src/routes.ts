@@ -305,6 +305,13 @@ export const Routes = [
     action: "coninApprovePaymentBuy",
     middlware:[authMiddlewareAdmin] 
 },
+{
+    method: "post",
+    route: "/admin/invoice/delivercoin/:id",
+    controller: AdminController,
+    action: "coinDelivery",
+    middlware:[authMiddlewareAdmin] 
+},
 
 /**
  * ?? Invoice Routes

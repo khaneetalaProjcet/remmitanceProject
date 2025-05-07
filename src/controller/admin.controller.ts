@@ -1215,15 +1215,12 @@ ${description}
            const destCoins = destUser.wallet.coins
            const invoiceProduct=invoice.product
            const coinCount=amount
-        
            const index=destCoins.findIndex(item=>item.product.id==invoiceProduct.id)
-
            console.log("desuser",index);
          
  
         if(index==-1){
             console.log("heeerrrr");
-            
             const newItem=this.coinWalletRepository.create({count:coinCount,wallet:destUser.wallet,product:invoice.product})
             await queryRunner.manager.save(newItem)
         }else{
@@ -1231,10 +1228,13 @@ ${description}
             console.log("item",item);
             
             const newCount=item.count+coinCount
-            console.log();
-            
+            console.log("newCount",newCount);
             destUser.wallet.coins[index].count=newCount
-            await queryRunner.manager.save(destUser.wallet.coins)
+
+
+            console.log("wallet",destUser.wallet);
+            
+            await this.userRepository.save(destUser.wallet.coins)
         }
 
            newDelivery=this.deliveryRepository.create({

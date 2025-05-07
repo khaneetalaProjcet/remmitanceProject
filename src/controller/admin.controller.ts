@@ -1222,6 +1222,8 @@ ${description}
         if(index==-1){
             console.log("heeerrrr");
             const newItem=this.coinWalletRepository.create({count:coinCount,wallet:destUser.wallet,product:invoice.product})
+            console.log(newItem);
+            
             await queryRunner.manager.save(newItem)
         }else{
             const item=destCoins[index]
@@ -1322,9 +1324,9 @@ ${description}
        await queryRunner.manager.save(newAction)
        await queryRunner.manager.save(newDelivery)
 
-       if(type==2){
-        await queryRunner.manager.save(destUser.wallet.coins)
-       }
+    //    if(type==2){
+    //     await queryRunner.manager.save(destUser.wallet.coins)
+    //    }
 
        
        let message

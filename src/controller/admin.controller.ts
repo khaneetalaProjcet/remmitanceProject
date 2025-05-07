@@ -645,14 +645,15 @@ ${description}
 
         
     
-    const message = `
+     const message = `
       <b>کاربر گرامی</b>
     
     پرداخت حواله خرید شما <b>قبول شد</b>:
     
     <b>مشخصات حواله:</b>
-    * <b>مقدار:</b> ${invoice.goldWeight} گرم  
-    * <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
+    * <b>تعداد:</b> ${invoice.coinCount} عدد  
+    * <b>نام محصول::</b> ${invoice.product.name} 
+    * <b> مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
     * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
     * <b>تاریخ و ساعت:</b> ${date} ${time}
     
@@ -675,7 +676,7 @@ ${description}
    }
  
 
-
+   
     
 
 

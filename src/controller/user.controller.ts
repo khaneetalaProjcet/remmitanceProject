@@ -10,6 +10,7 @@ import TelegramBot from 'node-telegram-bot-api';
 import { runInThisContext } from "vm";
 import { Wallet } from "../entity/Wallet";
 import { ReturnDocument } from "typeorm";
+import { CoinWallet } from "../entity/CoinWallet";
 const token = process.env.TELEGRAM_BOT_TOKEN || "7622536105:AAFR0NDFR27rLDF270uuL5Ww_K0XZi61FCw";
 
 
@@ -20,6 +21,7 @@ export class UserController{
     private bankRepository=AppDataSource.getRepository(BankAccount)
     private telegramRepository=AppDataSource.getRepository(TelegramUser)
     private walletRepository=AppDataSource.getRepository(Wallet)
+    private coinWalletRepository=AppDataSource.getRepository(CoinWallet)
     private bot=new TelegramBot(token);
      
     async profile(req: Request, res: Response, next: NextFunction){
@@ -89,7 +91,24 @@ export class UserController{
     
     }
 
-    
+    async deleteUSerWallrt(req: Request, res: Response, next: NextFunction){
+      const users=await this.userRepository.find({relations:{wallet:{coins:true}}})
+
+
+      for (let index = 0; index < users.length; index++) {
+        const user = users[index];
+        
+        user.wallet.balance=0
+        await this.coinWalletRepository.remove(user.wallet.coins)
+        user.wallet.goldWeight=0
+
+        await this.userRepository.save(user.wallet)
+
+
+      
+      }
+      return  next(new responseModel(req, res,null,'telegram ', 200,null,null))
+    }
 
     
 

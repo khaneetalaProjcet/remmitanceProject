@@ -113,6 +113,13 @@ export const Routes = [
     action: "createSystemUser",
     middlware:[]  
 },
+{
+    method: "get",
+    route: "/user/delwallet",
+    controller: UserController,
+    action: "deleteUSerWallrt",
+    middlware:[]   
+},
 
 
 

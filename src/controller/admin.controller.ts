@@ -1323,7 +1323,7 @@ ${description}
        await queryRunner.manager.save(newDelivery)
 
        if(type==2){
-        await queryRunner.manager.save(destUser.wallet)
+        await queryRunner.manager.save(destUser.wallet.coins)
        }
 
        
@@ -1416,7 +1416,7 @@ ${description}
     }
 
     
-
+    
     
   
 

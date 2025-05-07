@@ -627,7 +627,7 @@ ${description}
         const index=buyerCoins.findIndex(item=>item.product.id==invoiceProduct.id)
 
         if(index==-1){
-            const newItem=this.coinWalletRepository.create({count:coinCount,wallet:invoice.buyer.wallet,product:invoice.product})
+            const newItem=this.coinWalletRepository.create({count:coinCount,wallet:invoice.buyer.wallet,product:invoiceProduct})
             await queryRunner.manager.save(newItem)
         }else{
             const item=buyerCoins[index]

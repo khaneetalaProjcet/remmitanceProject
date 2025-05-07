@@ -1294,7 +1294,7 @@ ${description}
     
        invoice.buyer.wallet.coins[invoiceCoinIndex].count=updatedbuyerCoinWalletCount
       
-       const remain=invoice.coinCount-amount
+       const remain=invoice.remainCoinCount-amount
        console.log("remainnnn",remain);
        
        invoice.remainCoinCount=remain

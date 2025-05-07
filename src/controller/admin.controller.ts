@@ -1249,8 +1249,12 @@ ${description}
          const coins=invoice.buyer.wallet.coins
 
          
-         console.log("coin",coins[0].product.id);
-         console.log("productIDf",invoice.product.id);
+         console.log("coin",coins[0])
+
+         console.log("productIDf",invoice.product);
+
+
+
          
 
 

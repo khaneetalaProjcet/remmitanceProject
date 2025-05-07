@@ -1250,10 +1250,12 @@ ${description}
 
          
          console.log("coin",coins[0].product.id);
+         console.log("productIDf",invoice.product.id);
+         
 
 
 
-         const invoiceCoinIndex=coins.findIndex(item=>item.product.id===invoice.product.id)
+         const invoiceCoinIndex=coins.findIndex(item=>item.product.id==invoice.product.id)
 
          console.log("index",invoiceCoinIndex);
          

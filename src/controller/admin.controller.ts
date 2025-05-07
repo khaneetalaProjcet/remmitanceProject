@@ -1322,6 +1322,10 @@ ${description}
        await queryRunner.manager.save(newAction)
        await queryRunner.manager.save(newDelivery)
 
+       if(type==2){
+        await queryRunner.manager.save(destUser.wallet)
+       }
+
        
        let message
        let messageDest

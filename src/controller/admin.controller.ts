@@ -23,6 +23,7 @@ import { Actions } from "../entity/Actions";
 import { CoinWallet } from "../entity/CoinWallet";
 import { start } from "repl";
 import { stat } from "fs";
+import { log } from "console";
 const token = process.env.TELEGRAM_BOT_TOKEN || "7622536105:AAFR0NDFR27rLDF270uuL5Ww_K0XZi61FCw";
 
 export class AdminController{
@@ -642,9 +643,6 @@ ${description}
        await queryRunner.manager.save(walletTransaction)
        await queryRunner.manager.save(newAction)
 
-
-        
-    
      const message = `
       <b>کاربر گرامی</b>
     
@@ -652,7 +650,7 @@ ${description}
     
     <b>مشخصات حواله:</b>
     * <b>تعداد:</b> ${invoice.coinCount} عدد  
-    * <b>نام محصول::</b> ${invoice.product.name} 
+    * <b>نام محصول::</b> ${invoice.product.persianName} 
     * <b> مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
     * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
     * <b>تاریخ و ساعت:</b> ${date} ${time}
@@ -1214,7 +1212,7 @@ ${description}
            
        }else{
            destUser=await  this.userRepository.findOne({where:{id:destUserId},relations:{wallet:{coins:{product:true}},telegram:true}})
-           const destUserGoldWeight = parseFloat(destUser.wallet.goldWeight.toString());
+           
            const destCoins = destUser.wallet.coins
            const invoiceProduct=invoice.product
            const coinCount=amount
@@ -1250,15 +1248,27 @@ ${description}
     
          const coins=invoice.buyer.wallet.coins
 
+         console.log("coins",coins);
+         
+
          const invoiceCoinIndex=coins.findIndex(item=>item.product.id===invoice.product.id)
-         if(!invoiceCoinIndex){
+
+         console.log("index",invoiceCoinIndex);
+         
+         
+         if(invoiceCoinIndex==-1){
             return next(new responseModel(req, res,"","مقدار سکه کافی نمی باشد", 400,"مقدار سکه کافی نمی باشد",null))
          }
 
+        console.log("itemmmmmm",invoice.buyer.wallet.coins[invoiceCoinIndex]);
+
+
+        
         
 
-         const updatedbuyerCoinWalletCount=invoice.buyer.wallet.coins[invoiceCoinIndex].count-amount
+        const updatedbuyerCoinWalletCount=invoice.buyer.wallet.coins[invoiceCoinIndex].count-amount
 
+  
 
          
          

@@ -257,7 +257,7 @@ export class InvoiceController{
         try{
             const time= new Date().toLocaleString('fa-IR').split(',')[1]
             const date= new Date().toLocaleString('fa-IR').split(',')[0]
-            const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId},relations:{buyer:{wallet:true}} })
+            const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId},relations:{buyer:{wallet:true},product:true} })
             const newTransaction=this.walletTransaction.create({
                 type:"1",
                 status:"0",
@@ -292,9 +292,29 @@ export class InvoiceController{
              await queryRunner.manager.save(invoice)
              await queryRunner.manager.save(newAction)
              await queryRunner.manager.save(newTransaction)
+             let message
+             if(invoice.product.type=="1"){
+              
+             }else{
+                message = `
+             <b>کاربر گرامی</b>
+             
+             پرداخت حواله خرید شما <b>ثبت شد</b> 
+             و در حال بررسی می‌باشد:
+             
+             <b>مشخصات پرداخت:</b>
+             • <b>مقدار:</b> ${invoice.coinCount} عدد  
+             • <b>نام محصول:</b> ${invoice.product.persianName}  
+             • <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
+             • <b>شماره پیگیری حواله:</b> ${invoice.invoiceId}  
+             • <b>تاریخ و ساعت:</b> ${date} ${time}  
+             • <b>شماره پرداخت:</b> ${authority}
+             
+             با تشکر از شما.
+             `;
+             }
             
-            
-             const message = `
+              message = `
              <b>کاربر گرامی</b>
              
              پرداخت حواله خرید شما <b>ثبت شد</b> 
@@ -303,7 +323,7 @@ export class InvoiceController{
              <b>مشخصات پرداخت:</b>
              • <b>مقدار:</b> ${invoice.goldWeight} گرم  
              • <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
-             • <b>شماره پیگیری حواله:</b> ${invoiceId}  
+             • <b>شماره پیگیری حواله:</b> ${invoice.invoiceId}  
              • <b>تاریخ و ساعت:</b> ${date} ${time}  
              • <b>شماره پرداخت:</b> ${authority}
              

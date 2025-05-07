@@ -1233,8 +1233,8 @@ ${description}
 
 
             console.log("wallet",destUser.wallet);
+            await queryRunner.manager.save(destUser.wallet.coins)
             
-            await this.userRepository.save(destUser.wallet.coins)
         }
 
            newDelivery=this.deliveryRepository.create({

@@ -1218,12 +1218,18 @@ ${description}
            const coinCount=amount
         
          const index=destCoins.findIndex(item=>item.product.id==invoiceProduct.id)
+
+         console.log("desuser",index);
+         
  
         if(index==-1){
+            log
             const newItem=this.coinWalletRepository.create({count:coinCount,wallet:destUser.wallet,product:invoice.product})
             await queryRunner.manager.save(newItem)
         }else{
             const item=destCoins[index]
+            console.log("item");
+            
             const newCount=item.count+coinCount
             destUser.wallet.coins[index].count=newCount
             await queryRunner.manager.save(destUser.wallet.coins)

@@ -367,13 +367,14 @@ export class AdminController{
             const newAction=this.actionRepository.create({admin,type:2,fromStatus:2,toStatus:5,date,time,invoice})
     
             invoice.status=5
-            invoice.panelTabel=4
+            invoice.panelTabel=1
           
             invoice.admins=[admin]
             invoice.adminDescription=description
           
 
             await queryRunner.manager.save(invoice)
+            await queryRunner.manager.save(newAction)
 
             let message
 
@@ -559,7 +560,7 @@ export class AdminController{
            const newAction=this.actionRepository.create({admin,type:2,fromStatus:2,toStatus:5,date,time,invoice})
 
            invoice.status=5
-           invoice.panelTabel=4
+           invoice.panelTabel=1
            invoice.admins=[admin]
            invoice.adminDescription=description
 
@@ -834,7 +835,7 @@ export class AdminController{
             const newAction=this.actionRepository.create({admin,type:2,fromStatus:6,toStatus:8,date,time,invoice})
     
             invoice.status=8
-            invoice.panelTabel=4
+            invoice.panelTabel=2
             invoice.accounterDescription=description
             invoice.admins=[...invoice.admins,admin]
 

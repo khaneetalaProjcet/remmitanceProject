@@ -1,4 +1,5 @@
 import axios from "axios";
+import { log } from "winston";
 
 const  Kavenegar = require('kavenegar')
 
@@ -43,11 +44,17 @@ export class SmsService{
             async snedNormalMessage(phone:string , otp: number){
                const message=`کد ورود شما ${otp}` 
                const response=await axios.get(`https://api.kavenegar.com/v1/7167656544666430374262632B61415374556A7A4A4D383170764A7843775142357A4B566B6E75493837633D/sms/send.json?receptor=${phone}&message=${message}`)
-               if(response.status==200){
-                return response.status
-               }else{
-                return response.status
-               }
+               console.log("res",response);
+
+               console.log(response.status);
+               
+               return response
+               
+            //    if(response.status==200){
+            //     return response.status
+            //    }else{
+            //     return response.status
+            //    }
                 
             }
 

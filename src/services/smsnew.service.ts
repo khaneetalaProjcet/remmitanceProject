@@ -7,10 +7,10 @@ export class SmsNewService{
       const body={
             user:"u09123460671",
             pass:"Faraz@2049270020529643",
-            op:'pattern',
-            fromNum:'3000505',
+            op:"pattern",
+            fromNum:"3000505",
             toNum:phoneNumber,
-            patternCode:`Ydmrl65a4g7l7syv`,
+            patternCode:"dmrl65a4g7l7syv",
             inputData:[{otp:otp}]
            
       }

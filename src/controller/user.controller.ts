@@ -59,16 +59,20 @@ export class UserController{
       if(!user){
         return  next(new responseModel(req, res,"کاربر وجود ندارد",'profile', 402,"کاربر وجود ندارد",user))
       }
-      await this.actionRepository.remove(user.actions)
-      await this.deliveryRepository.remove(user.deliveries)
-      await this.deliveryRepository.remove(user.transferdeliveries)
-      await  this.invoioceRepository.remove(user.sells)
-      await  this.invoioceRepository.remove(user.buys)
-      await this.bankRepository.remove(user.bankAccounts)
-      await this.telegramRepository.remove(user.telegram)
-      await this.userRepository.remove(user)
-   
-      return  next(new responseModel(req, res,"deleteUser",'profile', 200,"deleteUser",user))
+      try{
+        await this.actionRepository.remove(user.actions)
+        await this.deliveryRepository.remove(user.deliveries)
+        await this.deliveryRepository.remove(user.transferdeliveries)
+        await this.invoioceRepository.remove(user.sells)
+        await this.invoioceRepository.remove(user.buys)
+        await this.bankRepository.remove(user.bankAccounts)
+        await this.telegramRepository.remove(user.telegram)
+        await this.userRepository.remove(user)
+        return  next(new responseModel(req, res,"deleteUser",'profile', 200,"deleteUser",user))
+      }catch(err){
+        return  next(new responseModel(req, res,null,'telegram ',500,null,null))
+      }
+     
 
     }
      

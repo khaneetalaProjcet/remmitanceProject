@@ -40,8 +40,10 @@ export class SmsService{
 
             async snedNormalMessage(phone:string , otp: number){
                const response=await this.api.send({ message: ` ${otp}کد اعتبار سنجی شما ` , sender: "2000660110" , receptor:phone })
+               console.log(response.status);
+               
                if(response){
-                
+
                }
                 
             }

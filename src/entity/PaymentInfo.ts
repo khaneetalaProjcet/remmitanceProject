@@ -7,7 +7,7 @@ export class PaymentInfo {
     @PrimaryGeneratedColumn()
     id: string
     
-    @Column({ type: "numeric", precision: 10, scale: 0,default : 0 })
+    @Column({ type: "numeric", precision: 15, scale: 0,default : 0 })
     amount: number
 
     @Column()

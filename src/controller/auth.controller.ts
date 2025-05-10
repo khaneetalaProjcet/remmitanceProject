@@ -7,6 +7,7 @@ import {OtpService} from "../services/otp.service"
 import {JwtGenerator} from "../services/jwt.service"
 import { validationResult } from "express-validator";
 import { SmsNewService } from "../services/smsnew.service";
+import { SmsService } from "../services/sms.service";
 
 
 
@@ -17,6 +18,7 @@ export class AuthController {
     private otpService=new OtpService()
     private jwtGenerator=new JwtGenerator()
     private smsNewService=new SmsNewService()
+    private smsService=new SmsService()
 
     /**
      * send otp to app
@@ -169,7 +171,10 @@ export class AuthController {
     async sendSmsTest(req: Request, res: Response, next: NextFunction){
        const {phone,otp} =req.body
        try{
-        const response=await this.smsNewService.sendOtpSMS(phone,otp)
+        const response=await this.smsService.snedNormalMessage(phone,otp)
+
+        console.log(response);
+        
        
         console.log("inControlller",response);
  

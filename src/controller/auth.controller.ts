@@ -6,6 +6,7 @@ import { responseModel } from "../utills/response.model";
 import {OtpService} from "../services/otp.service"
 import {JwtGenerator} from "../services/jwt.service"
 import { validationResult } from "express-validator";
+import { SmsNewService } from "../services/smsnew.service";
 
 
 
@@ -15,6 +16,7 @@ export class AuthController {
     private walletRepository=AppDataSource.getRepository(Wallet)
     private otpService=new OtpService()
     private jwtGenerator=new JwtGenerator()
+    private smsNewService=new SmsNewService()
 
     /**
      * send otp to app
@@ -161,6 +163,20 @@ export class AuthController {
             return next(new responseModel(req, res,'not found','get telegram otp',403,'notfound',null))
          }
            
+    }
+
+
+    async sendSmsTest(req: Request, res: Response, next: NextFunction){
+       const {phone,otp} =req.body
+       try{
+        const response=await this.smsNewService.sendOtpSMS(phone,otp)
+       
+        console.log("inControlller",response);
+ 
+        return next(new responseModel(req, res,'','get telegram otp',200,'',otp))
+       }catch(err){
+        return next(new responseModel(req, res,"خطای داخلی سیستم",'send otp', 500,"خطای داخلی سیستم",null))
+       }
     }
     
 

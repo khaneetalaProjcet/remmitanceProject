@@ -1,6 +1,7 @@
 import { AppDataSource } from "../data-source"
 import { Otp } from "../entity/Otp"
 import {SmsService} from "./sms.service"
+import {SmsNewService} from "./smsnew.service"
 
 
 export class OtpService{
@@ -40,6 +41,7 @@ export class OtpService{
             return error
         }
     }
+
     async checkOtpVerification(phoneNumber:string,otp:string) {
         try {
             const foundUserOtp = await this.otpRepository.findOneByOrFail({ phoneNumber });

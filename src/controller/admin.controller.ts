@@ -120,6 +120,44 @@ export class AdminController{
         return next(new responseModel(req, res,null, 'admin', 200, null, admins))
     }
 
+    async checkToken(req: Request, res: Response, next: NextFunction){
+        const admimId=req.admin.id
+        const admin=await this.adminRepository.findOneOrFail({where:{id:admimId}})
+        return next(new responseModel(req, res,null, 'login admin', 200, null, admin))
+    }
+
+
+    async removeAdmin(req: Request, res: Response, next: NextFunction){
+        const id=+req.params.id
+
+        try{
+         const admin= await this.adminRepository.findOneOrFail({where:{id:id}})
+         if(!admin){
+            return next(new responseModel(req, res,null,"درخواست نا معتبر", 400, "درخواست نا معتبر", null))
+         }
+         await this.adminRepository.remove(admin)
+         return next(new responseModel(req, res,null,null, 200,null, admin))
+        }catch(err){
+            return next(new responseModel(req, res,"خطای داخلی سیستم",'invoice', 500,"خطای داخلی سیستم",null))
+        }
+
+    }
+
+    async inActiveAdmin(req: Request, res: Response, next: NextFunction){
+        const id=+req.params.id
+        try{
+         const admin= await this.adminRepository.findOneOrFail({where:{id:id}})
+         if(!admin){
+            return next(new responseModel(req, res,null,"درخواست نا معتبر", 400, "درخواست نا معتبر", null))
+         }
+         admin.isBlocked=true
+         await this.adminRepository.save(admin)
+         return next(new responseModel(req, res,null,null, 200,null, admin))
+        }catch(err){
+            return next(new responseModel(req, res,"خطای داخلی سیستم",'invoice', 500,"خطای داخلی سیستم",null))
+        }
+    }
+
 
    /**
     * user section

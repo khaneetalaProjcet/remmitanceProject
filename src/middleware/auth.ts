@@ -93,6 +93,9 @@ export const authMiddlewareAdmin = async (req: Request, res: Response, next: Nex
         const decoded = jwt.verify(token, secretKey) as JwtPayload;
         req.admin = { id: decoded.id ,firstName:decoded.firstName,lastName:decoded.lastName ,phoneNumber:decoded.phoneNumber,role:decoded.role , isBlocked:decoded.isBlocked };
         console.log(decoded);
+        if(req.admin.isBlocked){
+            return next(new responseModel(req,res,"اکانت شما غیر فعال می باشد","admin",401,"اکانت شما غیر فعال می باشد",null))
+        }
         next(); 
     } catch (error) {
         console.error(error);

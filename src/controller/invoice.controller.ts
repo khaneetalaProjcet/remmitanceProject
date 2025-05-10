@@ -501,7 +501,7 @@ export class InvoiceController{
                 const time= new Date().toLocaleString('fa-IR').split(',')[1]
                 const date= new Date().toLocaleString('fa-IR').split(',')[0]
                 if(goldWeight<min||goldWeight>max){
-                    return next(new responseModel(req, res,'لطفا مقدار وزن طلا را تغییر دهید','create Invoice', 400,'لطفا مقدار وزن طلا را تغییر دهید' ,null))
+                    return next(new responseModel(req, res,'میزان خرید شما بالا تر یا پایین تر سقف و کف فروش می باشد','create Invoice', 400,'میزان خرید شما بالا تر یا پایین تر سقف و کف فروش می باشد' ,null))
                 }
                 console.log('start the transaction',goldWeight)
                 const invoiceId= this.generateInvoice()

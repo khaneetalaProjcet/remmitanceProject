@@ -65,6 +65,13 @@ export const Routes = [
     action: "getTelegramOtp",
     middlware:[authMiddlewareUser]
 },
+{
+    method: "post",
+    route: "/auth/testsms",
+    controller: AuthController,
+    action: "sendSmsTest",
+    middlware:[]
+},
 
 /**
  * ?? User Routes
@@ -173,6 +180,13 @@ export const Routes = [
 },
 {
     method: "get",
+    route: "/admin/check",
+    controller: AdminController,
+    action: "checkToken",
+    middlware:[authMiddlewareAdmin] 
+},
+{
+    method: "get",
     route: "/admin/authrequest",
     controller: AdminController,
     action: "getApproveRequest",
@@ -183,6 +197,20 @@ export const Routes = [
     route: "/admin/users",
     controller: AdminController,
     action: "getAllUser",
+    middlware:[authMiddlewareAdmin] 
+},
+{
+    method: "get",
+    route: "/admin/remove/:id",
+    controller: AdminController,
+    action: "removeAdmin",
+    middlware:[authMiddlewareAdmin] 
+},
+{
+    method: "get",
+    route: "/admin/deactive/:id",
+    controller: AdminController,
+    action: "inActiveAdmin",
     middlware:[authMiddlewareAdmin] 
 },
 {

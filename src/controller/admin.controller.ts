@@ -77,9 +77,10 @@ export class AdminController{
           return next(new responseModel(req, res,bodyError['errors'][0].msg,'admin',400,bodyError['errors'][0].msg ,null))
         }  
         console.log('body' , req.body)
-        let admin = await this.adminRepository.findOne({
+        let admin = await this.adminRepository.findOneOrFail({
             where: {
-                phoneNumber: req.body.phone
+                phoneNumber: req.body.phone,
+                isDelete:false
             }
         })
         console.log("log",req.body);
@@ -116,7 +117,7 @@ export class AdminController{
     }
     async getAllAdmins(req: Request, res: Response, next: NextFunction){
         // await 
-        const admins=await this.adminRepository.find()
+        const admins=await this.adminRepository.find({where:{isDelete:false}})
         return next(new responseModel(req, res,null, 'admin', 200, null, admins))
     }
 
@@ -134,8 +135,10 @@ export class AdminController{
          const admin= await this.adminRepository.findOneOrFail({where:{id:id}})
          if(!admin){
             return next(new responseModel(req, res,null,"درخواست نا معتبر", 400, "درخواست نا معتبر", null))
+
          }
-         await this.adminRepository.remove(admin)
+         admin.isDelete=true
+         await this.adminRepository.save(admin)
          return next(new responseModel(req, res,null,null, 200,null, admin))
         }catch(err){
             return next(new responseModel(req, res,"خطای داخلی سیستم",'invoice', 500,"خطای داخلی سیستم",null))
@@ -150,7 +153,7 @@ export class AdminController{
          if(!admin){
             return next(new responseModel(req, res,null,"درخواست نا معتبر", 400, "درخواست نا معتبر", null))
          }
-         admin.isBlocked=true
+         admin.isBlocked=!admin.isBlocked
          await this.adminRepository.save(admin)
          return next(new responseModel(req, res,null,null, 200,null, admin))
         }catch(err){

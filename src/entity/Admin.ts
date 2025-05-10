@@ -33,6 +33,9 @@ export class Admin {
     @Column({type : 'boolean' , default : false})
     isBlocked : boolean
 
+    @Column({type:'boolean',default:false})
+    isDelete : boolean
+
     @ManyToMany(()=>accessPoint )
     @JoinTable()
     accessPoints : accessPoint[];

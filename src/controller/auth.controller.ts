@@ -180,6 +180,7 @@ export class AuthController {
  
         return next(new responseModel(req, res,'','get telegram otp',200,'',otp))
        }catch(err){
+        console.log("err",err);
         return next(new responseModel(req, res,"خطای داخلی سیستم",'send otp', 500,"خطای داخلی سیستم",null))
        }
     }

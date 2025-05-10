@@ -50,12 +50,6 @@ export class SmsService{
                
                return response
                
-            //    if(response.status==200){
-            //     return response.status
-            //    }else{
-            //     return response.status
-            //    }
-                
             }
 
     

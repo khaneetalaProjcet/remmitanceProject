@@ -1063,7 +1063,7 @@ export class AdminController{
             invoice.admins=[...invoice.admins,admin]
             invoice.authority=authority
             invoice.status=9
-            invoice.panelTabel=3
+            invoice.panelTabel=4
             invoice.accounterDescription=description
             
             const walletTransaction=this.walletTransaction.create({

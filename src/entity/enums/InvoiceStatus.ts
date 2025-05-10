@@ -16,5 +16,7 @@ export enum InvoiceStatus {
   
     PartiallyDelivered = 9,
     FullyDelivered = 10,
+
+    sellFullyDelivered=11
   }
 

@@ -7,16 +7,16 @@ export class SmsNewService{
       const password="k2x4OT'@16i"
   
       const body={
-          userName,
-          password,
-          fromNumber:'',
-          toNumbers:[phoneNumber],
-          messageContent:`کد ورود شما ${otp}`,
-          isFlash:false,
+            userName,
+            password,
+            fromNumber:'',
+            toNumbers:phoneNumber,
+            messageContent:`کد ورود شما ${otp}`,
+            isFlash:false,
   
       }
   
-        const response=await axios.post('https://niazpardaz-sms.com/webservice',body,{headers: {
+        const response=await axios.post('http://www.payamak.vip/api/v1/RestWebApi/SendBatchSms',body,{headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         }})
   

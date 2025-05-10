@@ -166,7 +166,7 @@ export class AdminController{
     * @param next 
     * @returns 
     */
-
+    
 
     async getApproveRequest(req: Request, res: Response, next: NextFunction){
         const users=await this.userRepository.find({where:{verificationStatus:1}})
@@ -212,6 +212,9 @@ export class AdminController{
         const users=await this.userRepository.find()
         return next(new responseModel(req, res,null, 'admin', 200, null, users))
     }
+    
+
+
 
  
 
@@ -1056,7 +1059,7 @@ export class AdminController{
             invoice.admins=[...invoice.admins,admin]
             invoice.authority=authority
             invoice.status=9
-            invoice.panelTabel=4
+            invoice.panelTabel=3
             invoice.accounterDescription=description
             
             const walletTransaction=this.walletTransaction.create({
@@ -1381,6 +1384,173 @@ export class AdminController{
 
     }
 
+    async sellDelivery(req: Request, res: Response, next: NextFunction){
+        const id=+req.params.id
+        let {type,amount,destUserId,description}=req.body
+
+        amount=formatGoldWeight(amount)
+
+        console.log(req.body);
+        
+        const queryRunner = AppDataSource.createQueryRunner()
+        await queryRunner.connect()
+        await queryRunner.startTransaction()
+        const time= new Date().toLocaleString('fa-IR').split(',')[1]
+        const date= new Date().toLocaleString('fa-IR').split(',')[0]
+        
+        try{
+           const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
+           const invoice=await this.invoiceRepository.findOne({where:{id:id},relations:{seller:{telegram:true,wallet:true},admins:true}})
+           
+
+           if(!invoice || invoice.status!==9){
+               if(invoice.status==10){
+                  console.log("part delivery");
+                  
+               }else{
+                   return next(new responseModel(req, res,"تراکتش نامعتبر",'invoice', 400,"تراکتش نامعتبر",null))
+               }
+           }
+
+       let newDelivery
+       let destUser
+       let newAction
+       if(type==1){
+           newDelivery=this.deliveryRepository.create({
+               type,
+               date,
+               time,
+               mainUser:invoice.seller,
+               description,
+               invoice,
+               goldWeight:parseFloat(amount)
+             })
+           
+       }else{
+           destUser=await  this.userRepository.findOne({where:{id:destUserId},relations:{wallet:true,telegram:true}})
+           const destUserGoldWeight = parseFloat(destUser.wallet.goldWeight.toString());
+           newDelivery=this.deliveryRepository.create({
+               type,
+               date,
+               time,
+               mainUser:invoice.seller,
+               description,
+               invoice,
+               destUser,
+               goldWeight:parseFloat(amount)
+             })
+
+             destUser.wallet.goldWeight=destUserGoldWeight+parseFloat(amount)
+
+       }
+        
+       const buyerGoldWeight=parseFloat(invoice.seller.wallet.goldWeight.toString())
+       console.log(buyerGoldWeight);
+       
+       const invoiceGold=parseFloat(invoice.remainGoldWeight.toString())
+
+       console.log("amount",amount);
+       
+       console.log("invoiceWe",invoiceGold);
+       
+       const walletBuyerRemain=buyerGoldWeight-parseFloat(amount)
+
+       if(walletBuyerRemain<0){
+           return next(new responseModel(req, res,"","مقدار طلا کافی نمی باشد", 400,"مقدار طلا کافی نمی باشد",null))
+       }
+
+       invoice.seller.wallet.goldWeight=walletBuyerRemain
+       const remain=invoiceGold-amount
+       console.log("remainnnn",remain);
+       
+       invoice.remainGoldWeight=invoiceGold-amount
+
+       if(remain<0){
+           return next(new responseModel(req, res,"",'مقدار طلا سفارش کافی نمی باشد', 400,"مقدار طلا سفارش کافی نمی باشد",null))
+       }
+
+       if(remain>0){
+           invoice.status=10
+            newAction=this.actionRepository.create({admin,type:2,fromStatus:invoice.status,toStatus:10,date,time,invoice})
+       }else{
+           invoice.status=11
+           newAction=this.actionRepository.create({admin,type:2,fromStatus:invoice.status,toStatus:11,date,time,invoice})
+       }
+
+       invoice.admins=[...invoice.admins,admin]
+
+
+
+       await queryRunner.manager.save(invoice)
+       await queryRunner.manager.save(invoice.buyer.wallet)
+       await queryRunner.manager.save(newAction)
+       if(type==2){
+           await queryRunner.manager.save(destUser.wallet)
+       }
+       
+       await queryRunner.manager.save(newDelivery)
+
+       
+       let message
+       let messageDest
+       if(type==1){
+            message=`<b>کاربر گرامی</b>
+       
+       تحویل حواله فروش شما <b>انجام شد</b>:
+       
+       <b>مشخصات تحویل:</b>
+       * <b> مقدار تحویل داده شده:</b> ${amount} گرم  
+       * <b>مقدار باقی مانده از این سفارش:</b> ${remain} گرم  
+       * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
+       * <b>تاریخ و ساعت:</b> ${date} ${time}
+       
+       <b>توضیحات:</b>
+       ${description}`
+       }else{
+       //     message=`<b>کاربر گرامی</b>
+       
+       //         خواندن طلای شما <b>انجام شد</b>:
+           
+       //      <b>مشخصات تحویل:</b>
+       //     * <b> مقدار تحویل داده شده:</b> ${amount} گرم  
+       //     * <b>مقدار باقی مانده از این سفارش:</b> ${remain} گرم  
+       //     * <b> شخص گیرنده:</b> ${destUser.firstName} ${destUser.lastName} گرم  
+       //     * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
+       //     * <b>تاریخ و ساعت:</b> ${date} ${time}
+           
+       //     <b>توضیحات:</b>
+       //     ${description}`
+
+       //     messageDest=`<b>کاربر گرامی</b>
+       
+       //      طلای برای شما <b>خوانده شد</b>:
+       
+       //  <b>مشخصات تحویل:</b>
+       // * <b> مقدار تحویل داده شده:</b> ${amount} گرم  
+       // * <b> شخص انتقال دهنده:</b> ${invoice.buyer.firstName} ${invoice.buyer.lastName} گرم  
+       // * <b>تاریخ و ساعت:</b> ${date} ${time}
+       
+       // <b>توضیحات:</b>
+       // ${description}`
+
+       // this.bot.sendMessage(destUser.telegram.chatId,messageDest,{parse_mode:"HTML"})
+       }
+       this.bot.sendMessage(invoice.buyer.telegram.chatId,message,{parse_mode:"HTML"})
+       await queryRunner.commitTransaction()
+       return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
+
+        }catch(err){
+           console.log(err);
+           
+           await queryRunner.rollbackTransaction()
+           return next(new responseModel(req, res,"خطای داخلی سیستم",'invoice', 500,"خطای داخلی سیستم",null))
+        }finally{
+           console.log('transaction released')
+           await queryRunner.release()
+        }
+
+    }
+
 
 
     async coinDelivery(req: Request, res: Response, next: NextFunction){
@@ -1529,6 +1699,226 @@ export class AdminController{
        }else{
            invoice.status=10
            newAction=this.actionRepository.create({admin,type:2,fromStatus:invoice.status,toStatus:9,date,time,invoice})
+       }
+
+       invoice.admins=[...invoice.admins,admin]
+
+
+
+       await queryRunner.manager.save(invoice)
+       await queryRunner.manager.save(invoice.buyer.wallet.coins)
+       await queryRunner.manager.save(newAction)
+       await queryRunner.manager.save(newDelivery)
+
+    //    if(type==2){
+    //     await queryRunner.manager.save(destUser.wallet.coins)
+    //    }
+
+       
+       let message
+       let messageDest
+       if(type==1){
+            message=`<b>کاربر گرامی</b>
+       
+       تحویل حواله خرید شما <b>انجام شد</b>:
+       
+       <b>مشخصات تحویل:</b>
+       * <b> مقدار تحویل داده شده:</b> ${amount} گرم  
+       * <b>مقدار باقی مانده از این سفارش:</b> ${remain} گرم  
+       * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
+       * <b>تاریخ و ساعت:</b> ${date} ${time}
+       
+       <b>توضیحات:</b>
+       ${description}`
+       }else{
+           message=`<b>کاربر گرامی</b>
+       
+               خواندن طلای شما <b>انجام شد</b>:
+           
+            <b>مشخصات تحویل:</b>
+           * <b> مقدار تحویل داده شده:</b> ${amount} گرم  
+           * <b>مقدار باقی مانده از این سفارش:</b> ${remain} گرم  
+           * <b> شخص گیرنده:</b> ${destUser.firstName} ${destUser.lastName} گرم  
+           * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
+           * <b>تاریخ و ساعت:</b> ${date} ${time}
+           
+           <b>توضیحات:</b>
+           ${description}`
+
+    //        messageDest=`<b>کاربر گرامی</b>
+       
+    //         طلای برای شما <b>خوانده شد</b>:
+       
+    //    //  <b>مشخصات تحویل:</b>
+    //    // * <b> مقدار تحویل داده شده:</b> ${amount} گرم  
+    //    // * <b> شخص انتقال دهنده:</b> ${invoice.buyer.firstName} ${invoice.buyer.lastName} گرم  
+    //    // * <b>تاریخ و ساعت:</b> ${date} ${time}
+       
+    //    // <b>توضیحات:</b>
+    //    // ${description}`
+
+       // this.bot.sendMessage(destUser.telegram.chatId,messageDest,{parse_mode:"HTML"})
+       }
+       this.bot.sendMessage(invoice.buyer.telegram.chatId,message,{parse_mode:"HTML"})
+       await queryRunner.commitTransaction()
+       return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
+
+        }catch(err){
+           console.log(err);
+           
+           await queryRunner.rollbackTransaction()
+           return next(new responseModel(req, res,"خطای داخلی سیستم",'invoice', 500,"خطای داخلی سیستم",null))
+        }finally{
+           console.log('transaction released')
+           await queryRunner.release()
+        }
+    }
+
+
+    async coinSellDelivery(req: Request, res: Response, next: NextFunction){
+        const id=+req.params.id
+        let {type,amount,destUserId,description}=req.body
+
+
+        amount=formatGoldWeight(amount)
+
+        console.log(req.body);
+        
+        const queryRunner = AppDataSource.createQueryRunner()
+        await queryRunner.connect()
+        await queryRunner.startTransaction()
+        const time= new Date().toLocaleString('fa-IR').split(',')[1]
+        const date= new Date().toLocaleString('fa-IR').split(',')[0]
+        
+        try{
+           const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
+           const invoice=await this.invoiceRepository.findOne({where:{id:id},relations:{seller:{telegram:true,wallet:{coins:{product:true}}},admins:true,product:true}})
+           if(!invoice || invoice.status!==9){
+               if(invoice.status==10){
+                  console.log("part delivery");
+                  
+               }else{
+                   return next(new responseModel(req, res,"تراکتش نامعتبر",'invoice', 400,"تراکتش نامعتبر",null))
+               }
+           }
+
+       let newDelivery
+       let destUser
+       let newAction
+       if(type==1){
+           newDelivery=this.deliveryRepository.create({
+               type,
+               date,
+               time,
+               mainUser:invoice.seller,
+               description,
+               invoice,
+               coinCount:amount
+             })
+           
+       }else{
+           destUser=await  this.userRepository.findOne({where:{id:destUserId},relations:{wallet:{coins:{product:true}},telegram:true}})
+           const destCoins = destUser.wallet.coins
+           const invoiceProduct=invoice.product
+           const coinCount=amount
+           const index=destCoins.findIndex(item=>item.product.id==invoiceProduct.id)
+           console.log("desuser",index);
+         
+ 
+        if(index==-1){
+            console.log("heeerrrr");
+            const newItem=this.coinWalletRepository.create({count:coinCount,wallet:destUser.wallet,product:invoice.product})
+            console.log(newItem);
+            
+            await queryRunner.manager.save(newItem)
+        }else{
+            const item=destCoins[index]
+            console.log("item",item);
+            
+            const newCount=item.count+coinCount
+            console.log("newCount",newCount);
+            destUser.wallet.coins[index].count=newCount
+
+
+            console.log("wallet",destUser.wallet);
+            await queryRunner.manager.save(destUser.wallet.coins)
+            
+        }
+
+           newDelivery=this.deliveryRepository.create({
+               type,
+               date,
+               time,
+               mainUser:invoice.seller,
+               description,
+               invoice,
+               destUser,
+               coinCount:parseFloat(amount)
+             })
+
+             
+
+       }
+
+
+    
+         const coins=invoice.seller.wallet.coins
+
+         
+         console.log("coin",coins[0])
+
+         console.log("productIDf",invoice.product);
+
+
+
+         
+
+
+
+         const invoiceCoinIndex=coins.findIndex(item=>item.product.id==invoice.product.id)
+
+         console.log("index",invoiceCoinIndex);
+         
+         
+         if(invoiceCoinIndex==-1){
+            return next(new responseModel(req, res,"","مقدار سکه کافی نمی باشد", 400,"مقدار سکه کافی نمی باشد",null))
+         }
+
+        console.log("itemmmmmm",invoice.seller.wallet.coins[invoiceCoinIndex]);
+
+
+        
+        
+
+    const updatedbuyerCoinWalletCount=invoice.seller.wallet.coins[invoiceCoinIndex].count-amount
+
+  
+
+         
+         
+   
+    
+    if(updatedbuyerCoinWalletCount<0){
+        return next(new responseModel(req, res,"","مقدار طلا کافی نمی باشد", 400,"مقدار طلا کافی نمی باشد",null))
+    }
+    
+       invoice.seller.wallet.coins[invoiceCoinIndex].count=updatedbuyerCoinWalletCount
+      
+       const remain=invoice.remainCoinCount-amount
+       console.log("remainnnn",remain);
+       
+       invoice.remainCoinCount=remain
+
+       if(remain<0){
+           return next(new responseModel(req, res,"",'مقدار طلا سفارش کافی نمی باشد', 400,"مقدار طلا سفارش کافی نمی باشد",null))
+       }
+
+       if(remain>0){
+           invoice.status=10
+            newAction=this.actionRepository.create({admin,type:2,fromStatus:invoice.status,toStatus:10,date,time,invoice})
+       }else{
+           invoice.status=11
+           newAction=this.actionRepository.create({admin,type:2,fromStatus:invoice.status,toStatus:11,date,time,invoice})
        }
 
        invoice.admins=[...invoice.admins,admin]

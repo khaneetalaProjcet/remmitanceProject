@@ -70,6 +70,7 @@ export class UserController{
         await this.userRepository.remove(user)
         return  next(new responseModel(req, res,"deleteUser",'profile', 200,"deleteUser",user))
       }catch(err){
+        console.log("err",err);
         return  next(new responseModel(req, res,null,'telegram ',500,null,null))
       }
      

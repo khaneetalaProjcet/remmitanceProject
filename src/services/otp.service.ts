@@ -7,6 +7,7 @@ import {SmsNewService} from "./smsnew.service"
 export class OtpService{
     private otpRepository  = AppDataSource.getRepository(Otp)
     private smsService = new SmsService()
+    private smsNweService=new SmsNewService()
      
     async sendOtpMessage(phoneNumber: string) {
         try {
@@ -17,8 +18,10 @@ export class OtpService{
                 phoneNumber : phoneNumber
             }});
             console.log('otpExisttttttt' , otpExist)
-            let res : any = await this.smsService.sendOtpMessage(phoneNumber , otp);                // Await the response          
-            if (res.success) {
+            let res : any = await this.smsService.sendOtpMessage(phoneNumber , otp);   
+            let response=await this.smsNweService.sendOtpSMS(phoneNumber,+otp)
+
+            if(response){
                 if (otpExist) {
                     console.log('otp existtt')
                     otpExist.time = new Date().getTime().toString();
@@ -31,12 +34,11 @@ export class OtpService{
                     let saved =  await this.otpRepository.save(createdOtp);
                     console.log('saved transActions2222' , saved)
                 }
-                return {status:"ok",msg:res.msg,otp}
-                
-            } else {
-               
-                return {status:"nok",msg:res.msg,otp}
+                return {status:"ok",msg:"ارسال شد",otp}
+            }else{
+                return {status:"nok",msg:"ارسال نشد",otp}
             }
+                         // Await the response          
         } catch (error) {
             return error
         }

@@ -3,20 +3,20 @@ import axios from "axios"
 export class SmsNewService{
   async sendOtpSMS(phoneNumber:string,otp:number){
     try{
-      const userName="t.09121000108"
-      const password="k2x4OT'@16i"
-  
+    
       const body={
-            userName,
-            password,
-            fromNumber:'',
-            toNumbers:phoneNumber,
-            messageContent:`کد ورود شما ${otp}`,
-            isFlash:false,
+            user:" u09123460671",
+            pass:" Faraz@2049270020529643",
+            op:'pattern',
+            fromNum:'',
+            toNum:phoneNumber,
+            patternCode:`Ydmrl65a4g7l7syv`,
+            inputData:[{"verification-code":otp}]
+           
   
       }
   
-        const response=await axios.post('http://www.payamak.vip/api/v1/RestWebApi/SendBatchSms',body,{headers: {
+        const response=await axios.post('http://ippanel.com/api/select',body,{headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         }})
   

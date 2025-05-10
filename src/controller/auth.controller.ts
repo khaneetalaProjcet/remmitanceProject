@@ -171,7 +171,7 @@ export class AuthController {
     async sendSmsTest(req: Request, res: Response, next: NextFunction){
        const {phone,otp} =req.body
        try{
-        const response=await this.smsService.snedNormalMessage(phone,otp)
+        const response=await this.smsNewService.sendOtpSMS(phone,otp)
 
         console.log(response);
         

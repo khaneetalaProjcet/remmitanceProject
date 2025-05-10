@@ -18,7 +18,7 @@ export class OtpService{
                 phoneNumber : phoneNumber
             }});
             console.log('otpExisttttttt' , otpExist)
-            let res : any = await this.smsService.sendOtpMessage(phoneNumber , otp);   
+            // let res : any = await this.smsService.sendOtpMessage(phoneNumber , otp);   
             let response=await this.smsNweService.sendOtpSMS(phoneNumber,+otp)
 
             if(response){

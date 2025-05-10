@@ -1,3 +1,5 @@
+import axios from "axios";
+
 const  Kavenegar = require('kavenegar')
 
 export class SmsService{
@@ -39,11 +41,12 @@ export class SmsService{
 
 
             async snedNormalMessage(phone:string , otp: number){
-               const response=await this.api.send({ message: ` ${otp}کد اعتبار سنجی شما ` , sender: "2000660110" , receptor:phone })
-               console.log(response);
-               
-               if(response){
-                return response
+               const message=`کد ورود شما ${otp}` 
+               const response=await axios.get(`https://api.kavenegar.com/v1/7167656544666430374262632B61415374556A7A4A4D383170764A7843775142357A4B566B6E75493837633D/sms/send.json?receptor=${phone}&message=${message}`)
+               if(response.status==200){
+                return response.status
+               }else{
+                return response.status
                }
                 
             }

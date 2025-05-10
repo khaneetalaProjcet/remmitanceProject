@@ -12,6 +12,7 @@ import { Wallet } from "../entity/Wallet";
 import { ReturnDocument } from "typeorm";
 import { CoinWallet } from "../entity/CoinWallet";
 import { Actions } from "../entity/Actions";
+import { Delivery } from "../entity/Delivery";
 const token = process.env.TELEGRAM_BOT_TOKEN || "7622536105:AAFR0NDFR27rLDF270uuL5Ww_K0XZi61FCw";
 
 
@@ -24,6 +25,8 @@ export class UserController{
     private walletRepository=AppDataSource.getRepository(Wallet)
     private coinWalletRepository=AppDataSource.getRepository(CoinWallet)
     private actionRepository=AppDataSource.getRepository(Actions)
+    private deliveryRepository=AppDataSource.getRepository(Delivery)
+
     private bot=new TelegramBot(token);
      
     async profile(req: Request, res: Response, next: NextFunction){
@@ -52,16 +55,17 @@ export class UserController{
 
     async deleteUser(req: Request, res: Response, next: NextFunction){
       const phone=req.params.phone
-      const user=await this.userRepository.findOne({where:{phoneNumber:phone},relations:["bankAccounts","telegram","sells","buys","actions"]})
+      const user=await this.userRepository.findOne({where:{phoneNumber:phone},relations:["bankAccounts","telegram","sells","buys","actions","transferdeliveries","deliveries"]})
       if(!user){
         return  next(new responseModel(req, res,"کاربر وجود ندارد",'profile', 402,"کاربر وجود ندارد",user))
       }
+      await this.actionRepository.remove(user.actions)
+      await this.deliveryRepository.remove(user.deliveries)
+      await this.deliveryRepository.remove(user.transferdeliveries)
       await  this.invoioceRepository.remove(user.sells)
       await  this.invoioceRepository.remove(user.buys)
-      await this.actionRepository.remove(user.actions)
       await this.bankRepository.remove(user.bankAccounts)
       await this.telegramRepository.remove(user.telegram)
-      
       await this.userRepository.remove(user)
    
       return  next(new responseModel(req, res,"deleteUser",'profile', 200,"deleteUser",user))

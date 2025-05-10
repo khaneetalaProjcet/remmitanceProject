@@ -38,10 +38,10 @@ export class User {
     buys : Invoice[]
 
     @OneToMany(() => Delivery , (delivery)=> delivery.destUser , {nullable : true})
-    transferdeliveries : Invoice[]
+    transferdeliveries : Delivery[]
 
     @OneToMany(() => Delivery , (delivery)=> delivery.mainUser , {nullable : true})
-    deliveries : Invoice[]
+    deliveries : Delivery[]
 
     @OneToMany(() => Actions , (action)=> action.user, {nullable : true})
     actions : Actions[]

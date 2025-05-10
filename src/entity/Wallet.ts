@@ -19,7 +19,7 @@ export class Wallet {
     @Column({ type: "int" , nullable : true })
     goldBlock: number;
     
-    @Column({ type: "numeric", precision: 10, scale: 0, default: 0 })
+    @Column({ type: "numeric", precision: 15, scale: 0, default: 0 })
     balance: number;
     
     @OneToMany(()=> CoinWallet ,(coin) => coin.wallet)

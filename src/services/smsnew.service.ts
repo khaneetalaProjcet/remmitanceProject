@@ -15,7 +15,7 @@ export class SmsNewService{
            
       }
         const response=await axios.post('http://ippanel.com/api/select',body,{headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
+          'Content-Type': 'application/json'
         }})
   
         console.log("status",response.status);
@@ -25,7 +25,7 @@ export class SmsNewService{
        if(response.status==200){
         return true
        }else{
-        return false
+        return
        }
     }catch(err){
       console.log("err",err);

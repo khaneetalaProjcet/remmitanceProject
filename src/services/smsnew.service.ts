@@ -5,8 +5,8 @@ export class SmsNewService{
     try{
      
       const body={
-            user:" u09123460671",
-            pass:" Faraz@2049270020529643",
+            user:"u09123460671",
+            pass:"Faraz@2049270020529643",
             op:'pattern',
             fromNum:'3000505',
             toNum:phoneNumber,

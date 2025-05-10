@@ -13,8 +13,19 @@ export class Prices {
  
     @Column({ type : 'varchar'})
     persianName:string
+
+    @Column({ type: "numeric",default:0})
+    maxSell : number
+
+    @Column({ type: "numeric",default:0})
+    minSell : number
+
+    @Column({ type: "numeric",default:0})
+    maxBuy : number
+
+    @Column({ type: "numeric",default:0})
+    minBuy : number
     
- 
     @Column({type : 'varchar',nullable:true})
     sellPrice: string
 

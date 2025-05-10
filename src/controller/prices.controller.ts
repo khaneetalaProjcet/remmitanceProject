@@ -63,6 +63,24 @@ export class PricesController{
         return next(new responseModel(req, res,null,'get prices', 200,null,price))
 
     }
+    async updateMaxSellOrBuy(req: Request, res: Response, next: NextFunction){
+        const id=+req.params.id
+        const {minSell,maxSell,minBuy,maxBuy}=req.body
+        const price=await this.pricesRepository.findOne({where:{id}})
+        if(!price){
+          return next(new responseModel(req, res,"قیمت پیدا نشد",'get prices',400,"قیمت پیدا نشد",null))
+        }
+        price.maxBuy=maxBuy?maxBuy:price.maxBuy
+        price.minBuy=minBuy?minBuy:price.minBuy
+        price.maxSell=maxSell?maxSell:price.maxSell
+        price.minSell=minSell?minSell:price.minSell
+        
+       
+        await this.pricesRepository.save(price)
+
+        return next(new responseModel(req, res,null,'get prices', 200,null,price))
+
+    }
     async initPrices(){
         const time= new Date().toLocaleString('fa-IR').split(',')[1]
         const date= new Date().toLocaleString('fa-IR').split(',')[0]

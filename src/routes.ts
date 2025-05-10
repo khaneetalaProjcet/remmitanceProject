@@ -494,6 +494,13 @@ export const Routes = [
     middlware:[authMiddlewareAdmin]
 },
 {
+    method: "post",
+    route: "/prices/maxmin/:id",
+    controller: PricesController,
+    action: "updateMaxSellOrBuy",
+    middlware:[authMiddlewareAdmin]
+},
+{
     method: "get",
     route: "/prices/all",
     controller: PricesController,

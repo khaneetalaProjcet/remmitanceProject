@@ -463,11 +463,11 @@ export class InvoiceController{
                     // return response.status(400).json({ msg: 'امکان ثبت معامله در این قیمت وجود ندارد' });
                 }   
                 console.log('weight>>>' , (realTotalrice) , totalPrice)
-                // console.log('total' , totalPrice , typeof(totalPrice))
-                // if ((totalPrice.toString()).split('').length > 10){
-                //     // return response.status(400).json({ msg: 'مبلغ بیش از حد مجاز' });
-                //     return next(new responseModel(req, res,'مبلغ بیش از حد مجاز' ,'create Invoice', 400,'مبلغ بیش از حد مجاز' ,null))
-                // }
+                console.log('total' , totalPrice , typeof(totalPrice))
+                if ((totalPrice.toString()).split('').length > 10){
+                    // return response.status(400).json({ msg: 'مبلغ بیش از حد مجاز' });
+                    // return next(new responseModel(req, res,'مبلغ بیش از حد مجاز' ,'create Invoice', 400,'مبلغ بیش از حد مجاز' ,null))
+                }
                 if ( +goldWeight < 0.01){
                     // return response.status(400).json({ msg: 'میزان طلای درخاستی نمی تواند کمتر از 0.01 باشد' });
                     return next(new responseModel(req, res,'میزان طلای درخاستی نمی تواند کمتر از 0.01 باشد'  ,'create Invoice', 400,'میزان طلای درخاستی نمی تواند کمتر از 0.01 باشد'  ,null))

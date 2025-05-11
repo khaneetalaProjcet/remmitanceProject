@@ -113,7 +113,7 @@ export class AdminController{
         }
         
         let token = await this.jwtService.tokenizeAdminToken(tokenData)
-        return next(new responseModel(req, res,null, 'login admin', 200, null, token))
+        return next(new responseModel(req, res,null, 'login admin', 200, null, {token,admin}))
     }
     async getAllAdmins(req: Request, res: Response, next: NextFunction){
         // await 

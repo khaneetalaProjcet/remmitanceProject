@@ -213,7 +213,7 @@ export class AdminController{
         return next(new responseModel(req, res,null, 'admin', 200, null, user))
     }
     async getAllUser(req: Request, res: Response, next: NextFunction){
-        const users=await this.userRepository.find()
+        const users=await this.userRepository.find({where:{isSystemUser:false},relations:{wallet:{transactions:true}}})
         return next(new responseModel(req, res,null, 'admin', 200, null, users))
     }
     

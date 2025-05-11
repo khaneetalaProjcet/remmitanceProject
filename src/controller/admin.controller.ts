@@ -1063,7 +1063,7 @@ export class AdminController{
             invoice.admins=[...invoice.admins,admin]
             invoice.authority=authority
             invoice.status=9
-            invoice.panelTabel=4
+            invoice.panelTabel=3
             invoice.accounterDescription=description
             
             const walletTransaction=this.walletTransaction.create({
@@ -1390,8 +1390,8 @@ export class AdminController{
 
     async sellDelivery(req: Request, res: Response, next: NextFunction){
         const id=+req.params.id
-        let {type,amount,destUserId,description}=req.body
-
+        let {amount,description}=req.body
+        
         amount=formatGoldWeight(amount)
 
         console.log(req.body);
@@ -1419,9 +1419,9 @@ export class AdminController{
        let newDelivery
        let destUser
        let newAction
-       if(type==1){
+       
            newDelivery=this.deliveryRepository.create({
-               type,
+               type:"1",
                date,
                time,
                mainUser:invoice.seller,
@@ -1430,40 +1430,21 @@ export class AdminController{
                goldWeight:parseFloat(amount)
              })
            
-       }else{
-           destUser=await  this.userRepository.findOne({where:{id:destUserId},relations:{wallet:true,telegram:true}})
-           const destUserGoldWeight = parseFloat(destUser.wallet.goldWeight.toString());
-           newDelivery=this.deliveryRepository.create({
-               type,
-               date,
-               time,
-               mainUser:invoice.seller,
-               description,
-               invoice,
-               destUser,
-               goldWeight:parseFloat(amount)
-             })
-
-             destUser.wallet.goldWeight=destUserGoldWeight+parseFloat(amount)
-
-       }
+       
         
-       const buyerGoldWeight=parseFloat(invoice.seller.wallet.goldWeight.toString())
-       console.log(buyerGoldWeight);
+  
        
        const invoiceGold=parseFloat(invoice.remainGoldWeight.toString())
-
        console.log("amount",amount);
-       
        console.log("invoiceWe",invoiceGold);
        
-       const walletBuyerRemain=buyerGoldWeight-parseFloat(amount)
+    //    const walletBuyerRemain=buyerGoldWeight-parseFloat(amount)
 
-       if(walletBuyerRemain<0){
-           return next(new responseModel(req, res,"","مقدار طلا کافی نمی باشد", 400,"مقدار طلا کافی نمی باشد",null))
-       }
+    //    if(walletBuyerRemain<0){
+    //        return next(new responseModel(req, res,"","مقدار طلا کافی نمی باشد", 400,"مقدار طلا کافی نمی باشد",null))
+    //    }
 
-       invoice.seller.wallet.goldWeight=walletBuyerRemain
+    //    invoice.seller.wallet.goldWeight=walletBuyerRemain
        const remain=invoiceGold-amount
        console.log("remainnnn",remain);
        
@@ -1486,19 +1467,14 @@ export class AdminController{
 
 
        await queryRunner.manager.save(invoice)
-       await queryRunner.manager.save(invoice.buyer.wallet)
        await queryRunner.manager.save(newAction)
-       if(type==2){
-           await queryRunner.manager.save(destUser.wallet)
-       }
-       
        await queryRunner.manager.save(newDelivery)
 
        
-       let message
-       let messageDest
-       if(type==1){
-            message=`<b>کاربر گرامی</b>
+       
+      
+      
+       const  message=`<b>کاربر گرامی</b>
        
        تحویل حواله فروش شما <b>انجام شد</b>:
        
@@ -1510,35 +1486,7 @@ export class AdminController{
        
        <b>توضیحات:</b>
        ${description}`
-       }else{
-       //     message=`<b>کاربر گرامی</b>
-       
-       //         خواندن طلای شما <b>انجام شد</b>:
-           
-       //      <b>مشخصات تحویل:</b>
-       //     * <b> مقدار تحویل داده شده:</b> ${amount} گرم  
-       //     * <b>مقدار باقی مانده از این سفارش:</b> ${remain} گرم  
-       //     * <b> شخص گیرنده:</b> ${destUser.firstName} ${destUser.lastName} گرم  
-       //     * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
-       //     * <b>تاریخ و ساعت:</b> ${date} ${time}
-           
-       //     <b>توضیحات:</b>
-       //     ${description}`
-
-       //     messageDest=`<b>کاربر گرامی</b>
-       
-       //      طلای برای شما <b>خوانده شد</b>:
-       
-       //  <b>مشخصات تحویل:</b>
-       // * <b> مقدار تحویل داده شده:</b> ${amount} گرم  
-       // * <b> شخص انتقال دهنده:</b> ${invoice.buyer.firstName} ${invoice.buyer.lastName} گرم  
-       // * <b>تاریخ و ساعت:</b> ${date} ${time}
-       
-       // <b>توضیحات:</b>
-       // ${description}`
-
-       // this.bot.sendMessage(destUser.telegram.chatId,messageDest,{parse_mode:"HTML"})
-       }
+      
        this.bot.sendMessage(invoice.buyer.telegram.chatId,message,{parse_mode:"HTML"})
        await queryRunner.commitTransaction()
        return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 

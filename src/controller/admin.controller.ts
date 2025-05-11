@@ -81,7 +81,8 @@ export class AdminController{
             where: {
                 phoneNumber: req.body.phone,
                 isDelete:false
-            }
+            },
+            relations:{actions:true,accessPoints:true,invoices:true}
         })
         console.log("log",req.body);
         

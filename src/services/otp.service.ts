@@ -19,39 +19,39 @@ export class OtpService{
             }});
             console.log('otpExisttttttt' , otpExist)
             // let res : any = await this.smsService.sendOtpMessage(phoneNumber , otp);   
-            // let response=await this.smsNweService.sendOtpSMS(phoneNumber,+otp)
+            let response=await this.smsNweService.sendOtpSMS(phoneNumber,+otp)
 
-            if (otpExist) {
-                console.log('otp existtt')
-                otpExist.time = new Date().getTime().toString();
-                otpExist.otp = otp;
-                let saved = await this.otpRepository.save(otpExist);
-                console.log('saved transActions' , saved)
-            } else {
-                let createdOtp = this.otpRepository.create({ otp, phoneNumber, time: new Date().getTime().toString()});
-                console.log('created>>>' , createdOtp)
-                let saved =  await this.otpRepository.save(createdOtp);
-                console.log('saved transActions2222' , saved)
-            }
-            return {status:"ok",msg:"ارسال شد",otp}
-
-            // if(response){
-                // if (otpExist) {
-                //     console.log('otp existtt')
-                //     otpExist.time = new Date().getTime().toString();
-                //     otpExist.otp = otp;
-                //     let saved = await this.otpRepository.save(otpExist);
-                //     console.log('saved transActions' , saved)
-                // } else {
-                //     let createdOtp = this.otpRepository.create({ otp, phoneNumber, time: new Date().getTime().toString()});
-                //     console.log('created>>>' , createdOtp)
-                //     let saved =  await this.otpRepository.save(createdOtp);
-                //     console.log('saved transActions2222' , saved)
-                // }
-                // return {status:"ok",msg:"ارسال شد",otp}
-            // }else{
-                // return {status:"nok",msg:"ارسال نشد",otp}
+            // if (otpExist) {
+            //     console.log('otp existtt')
+            //     otpExist.time = new Date().getTime().toString();
+            //     otpExist.otp = otp;
+            //     let saved = await this.otpRepository.save(otpExist);
+            //     console.log('saved transActions' , saved)
+            // } else {
+            //     let createdOtp = this.otpRepository.create({ otp, phoneNumber, time: new Date().getTime().toString()});
+            //     console.log('created>>>' , createdOtp)
+            //     let saved =  await this.otpRepository.save(createdOtp);
+            //     console.log('saved transActions2222' , saved)
             // }
+            // return {status:"ok",msg:"ارسال شد",otp}
+
+            if(response){
+                if (otpExist) {
+                    console.log('otp existtt')
+                    otpExist.time = new Date().getTime().toString();
+                    otpExist.otp = otp;
+                    let saved = await this.otpRepository.save(otpExist);
+                    console.log('saved transActions' , saved)
+                } else {
+                    let createdOtp = this.otpRepository.create({ otp, phoneNumber, time: new Date().getTime().toString()});
+                    console.log('created>>>' , createdOtp)
+                    let saved =  await this.otpRepository.save(createdOtp);
+                    console.log('saved transActions2222' , saved)
+                }
+                return {status:"ok",msg:"ارسال شد",otp}
+            }else{
+                return {status:"nok",msg:"ارسال نشد",otp}
+            }
                          // Await the response          
         } catch (error) {
             return error

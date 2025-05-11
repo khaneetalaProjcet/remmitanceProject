@@ -321,7 +321,7 @@ export class AdminController{
                 درخواست حواله فروش شما <b>تایید شد</b>:
                 
                 <b>مشخصات حواله:</b>
-                * <b>مقدار:</b> ${invoice.goldWeight} گرم  
+                * <b>مقدار:</b> ${invoice.goldWeight} مثقال  
                 * <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
                 * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
                 * <b>تاریخ و ساعت:</b> ${date} ${time}
@@ -403,7 +403,7 @@ export class AdminController{
                 درخواست حواله فروش شما <b>رد شد</b>:
                 
                 <b>مشخصات حواله:</b>
-                * <b>مقدار:</b> ${invoice.goldWeight} گرم  
+                * <b>مقدار:</b> ${invoice.goldWeight} مثقال  
                 * <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
                 * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
                 * <b>تاریخ و ساعت:</b> ${date} ${time}
@@ -508,7 +508,7 @@ export class AdminController{
             
             درخواست حواله خرید شما با مشخصات زیر تایید شد:
             
-            <b>مقدار:</b> ${invoice.goldWeight} گرم
+            <b>مقدار:</b> ${invoice.goldWeight} مثقال
             <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان
             <b>شماره پیگیری:</b> ${invoice.invoiceId}
             <b>تاریخ و ساعت:</b> ${date} - ${time}
@@ -596,7 +596,7 @@ export class AdminController{
            درخواست حواله خرید شما <b>رد شد</b>:
            
            <b>مشخصات حواله:</b>
-           * <b>مقدار:</b> ${invoice.goldWeight} گرم  
+           * <b>مقدار:</b> ${invoice.goldWeight} مثقال  
            * <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
            * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
            * <b>تاریخ و ساعت:</b> ${date} ${time}
@@ -698,7 +698,7 @@ export class AdminController{
         پرداخت حواله خرید شما <b>قبول شد</b>:
         
         <b>مشخصات حواله:</b>
-        * <b>مقدار:</b> ${invoice.goldWeight} گرم  
+        * <b>مقدار:</b> ${invoice.goldWeight} مثقال  
         * <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
         * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
         * <b>تاریخ و ساعت:</b> ${date} ${time}
@@ -813,6 +813,100 @@ export class AdminController{
  
 
    
+    async paymnetBuyInfoByAccounter(req: Request, res: Response, next: NextFunction){
+        const invoiceId=+req.params.id
+        const {authority}=req.body
+        const queryRunner = AppDataSource.createQueryRunner()
+        await queryRunner.connect()
+        await queryRunner.startTransaction()
+
+        try{
+            const time= new Date().toLocaleString('fa-IR').split(',')[1]
+            const date= new Date().toLocaleString('fa-IR').split(',')[0]
+            const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId},relations:{buyer:{wallet:true,telegram:true},product:true} })
+            const newTransaction=this.walletTransaction.create({
+                type:"1",
+                status:"0",
+                wallet:invoice.buyer.wallet,
+                authority,
+                invoiceId:invoice.invoiceId,
+                date,
+                time,
+                amount:invoice.totalPrice,
+                
+            })
+            
+
+            // const user=await this.userRepository.findOne({where:{id:req.user.id},relations:["telegram"]})
+            const admin=await this.adminRepository.findOne({where:{id:req.admin.id}})
+    
+             if(!invoice || invoice.status!==4){
+                if(invoice.status==8){
+                    invoice.panelTabel=2
+                    console.log("second or more attempt");
+                    
+                }else{
+                    return next(new responseModel(req, res,"درخواست نامعتبر",'create Invoice', 400,"درخواست نامعتبر",null))
+                }
+             }
+
+
+             const newAction=this.actionRepository.create({admin,type:1,fromStatus:4,toStatus:6,date,time,invoice})
+             invoice.status=6
+             invoice.authority=authority
+             await queryRunner.manager.save(invoice)
+             await queryRunner.manager.save(newAction)
+             await queryRunner.manager.save(newTransaction)
+             let message
+             if(invoice.product.type=="1"){
+              
+             }else{
+                message = `
+             <b>کاربر گرامی</b>
+             
+             پرداخت حواله خرید شما <b>ثبت شد</b> 
+             و در حال بررسی می‌باشد:
+             
+             <b>مشخصات پرداخت:</b>
+             • <b>مقدار:</b> ${invoice.coinCount} عدد  
+             • <b>نام محصول:</b> ${invoice.product.persianName}  
+             • <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
+             • <b>شماره پیگیری حواله:</b> ${invoice.invoiceId}  
+             • <b>تاریخ و ساعت:</b> ${date} ${time}  
+             • <b>شماره پرداخت:</b> ${authority}
+             
+             با تشکر از شما.
+             `;
+             }
+            
+              message = `
+             <b>کاربر گرامی</b>
+             
+             پرداخت حواله خرید شما <b>ثبت شد</b> 
+             و در حال بررسی می‌باشد:
+             
+             <b>مشخصات پرداخت:</b>
+             • <b>مقدار:</b> ${invoice.goldWeight} مثقال  
+             • <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
+             • <b>شماره پیگیری حواله:</b> ${invoice.invoiceId}  
+             • <b>تاریخ و ساعت:</b> ${date} ${time}  
+             • <b>شماره پرداخت:</b> ${authority}
+             
+             با تشکر از شما.
+             `;
+             
+             this.bot.sendMessage(invoice.buyer.telegram.chatId, message, { parse_mode: 'HTML' });
+             await queryRunner.commitTransaction()
+             return next(new responseModel(req, res,null,' user invoice', 200,null,invoice))
+        }catch(err){
+            await queryRunner.rollbackTransaction()
+            console.log("error",err);
+            return next(new responseModel(req, res,"خطای داخلی سیستم",'invoice', 500,"خطای داخلی سیستم",null))
+        }finally{
+            console.log('transaction released')
+            await queryRunner.release()
+        }
+    }
     
 
 
@@ -874,7 +968,7 @@ export class AdminController{
                 پرداخت حواله خرید شما <b>رد شد</b>:
                 
                 <b>مشخصات حواله:</b>
-                * <b>مقدار:</b> ${invoice.goldWeight} گرم  
+                * <b>مقدار:</b> ${invoice.goldWeight} مثقال  
                 * <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
                 * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
                 * <b>تاریخ و ساعت:</b> ${date} ${time}
@@ -987,7 +1081,7 @@ export class AdminController{
                   دریافت اطلاعات بانکی شما <b>انجام شد</b>:
                 
                 <b>مشخصات حواله:</b>
-                * <b>مقدار:</b> ${invoice.goldWeight} گرم  
+                * <b>مقدار:</b> ${invoice.goldWeight} مثقال  
                 * <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
                 * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
                 * <b>تاریخ و ساعت:</b> ${date} ${time}
@@ -1116,7 +1210,7 @@ export class AdminController{
               پرداخت حواله فروش شما <b>انجام شد</b>:
               
               <b>مشخصات حواله:</b>
-              * <b>مقدار:</b> ${invoice.goldWeight} گرم  
+              * <b>مقدار:</b> ${invoice.goldWeight} مثقال  
               * <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
               * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
               * <b>تاریخ و ساعت:</b> ${date} ${time}
@@ -1183,7 +1277,7 @@ export class AdminController{
           پرداخت حواله فروش شما <b>لغو شد</b>:
           
           <b>مشخصات حواله:</b>
-          * <b>مقدار:</b> ${invoice.goldWeight} گرم  
+          * <b>مقدار:</b> ${invoice.goldWeight} مثقال  
           * <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
           * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
           * <b>تاریخ و ساعت:</b> ${date} ${time}
@@ -1336,8 +1430,8 @@ export class AdminController{
         تحویل حواله خرید شما <b>انجام شد</b>:
         
         <b>مشخصات تحویل:</b>
-        * <b> مقدار تحویل داده شده:</b> ${amount} گرم  
-        * <b>مقدار باقی مانده از این سفارش:</b> ${remain} گرم  
+        * <b> مقدار تحویل داده شده:</b> ${amount} مثقال  
+        * <b>مقدار باقی مانده از این سفارش:</b> ${remain} مثقال  
         * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
         * <b>تاریخ و ساعت:</b> ${date} ${time}
         
@@ -1349,9 +1443,9 @@ export class AdminController{
         //         خواندن طلای شما <b>انجام شد</b>:
             
         //      <b>مشخصات تحویل:</b>
-        //     * <b> مقدار تحویل داده شده:</b> ${amount} گرم  
-        //     * <b>مقدار باقی مانده از این سفارش:</b> ${remain} گرم  
-        //     * <b> شخص گیرنده:</b> ${destUser.firstName} ${destUser.lastName} گرم  
+        //     * <b> مقدار تحویل داده شده:</b> ${amount} مثقال  
+        //     * <b>مقدار باقی مانده از این سفارش:</b> ${remain} مثقال  
+        //     * <b> شخص گیرنده:</b> ${destUser.firstName} ${destUser.lastName} مثقال  
         //     * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
         //     * <b>تاریخ و ساعت:</b> ${date} ${time}
             
@@ -1363,8 +1457,8 @@ export class AdminController{
         //      طلای برای شما <b>خوانده شد</b>:
         
         //  <b>مشخصات تحویل:</b>
-        // * <b> مقدار تحویل داده شده:</b> ${amount} گرم  
-        // * <b> شخص انتقال دهنده:</b> ${invoice.buyer.firstName} ${invoice.buyer.lastName} گرم  
+        // * <b> مقدار تحویل داده شده:</b> ${amount} مثقال  
+        // * <b> شخص انتقال دهنده:</b> ${invoice.buyer.firstName} ${invoice.buyer.lastName} مثقال  
         // * <b>تاریخ و ساعت:</b> ${date} ${time}
         
         // <b>توضیحات:</b>
@@ -1480,8 +1574,8 @@ export class AdminController{
        تحویل حواله فروش شما <b>انجام شد</b>:
        
        <b>مشخصات تحویل:</b>
-       * <b> مقدار تحویل داده شده:</b> ${amount} گرم  
-       * <b>مقدار باقی مانده از این سفارش:</b> ${remain} گرم  
+       * <b> مقدار تحویل داده شده:</b> ${amount} مثقال  
+       * <b>مقدار باقی مانده از این سفارش:</b> ${remain} مثقال  
        * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
        * <b>تاریخ و ساعت:</b> ${date} ${time}
        
@@ -1676,8 +1770,8 @@ export class AdminController{
        تحویل حواله خرید شما <b>انجام شد</b>:
        
        <b>مشخصات تحویل:</b>
-       * <b> مقدار تحویل داده شده:</b> ${amount} گرم  
-       * <b>مقدار باقی مانده از این سفارش:</b> ${remain} گرم  
+       * <b> مقدار تحویل داده شده:</b> ${amount} مثقال  
+       * <b>مقدار باقی مانده از این سفارش:</b> ${remain} مثقال  
        * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
        * <b>تاریخ و ساعت:</b> ${date} ${time}
        
@@ -1689,9 +1783,9 @@ export class AdminController{
                خواندن طلای شما <b>انجام شد</b>:
            
             <b>مشخصات تحویل:</b>
-           * <b> مقدار تحویل داده شده:</b> ${amount} گرم  
-           * <b>مقدار باقی مانده از این سفارش:</b> ${remain} گرم  
-           * <b> شخص گیرنده:</b> ${destUser.firstName} ${destUser.lastName} گرم  
+           * <b> مقدار تحویل داده شده:</b> ${amount} مثقال  
+           * <b>مقدار باقی مانده از این سفارش:</b> ${remain} مثقال  
+           * <b> شخص گیرنده:</b> ${destUser.firstName} ${destUser.lastName} مثقال  
            * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
            * <b>تاریخ و ساعت:</b> ${date} ${time}
            
@@ -1703,8 +1797,8 @@ export class AdminController{
     //         طلای برای شما <b>خوانده شد</b>:
        
     //    //  <b>مشخصات تحویل:</b>
-    //    // * <b> مقدار تحویل داده شده:</b> ${amount} گرم  
-    //    // * <b> شخص انتقال دهنده:</b> ${invoice.buyer.firstName} ${invoice.buyer.lastName} گرم  
+    //    // * <b> مقدار تحویل داده شده:</b> ${amount} مثقال  
+    //    // * <b> شخص انتقال دهنده:</b> ${invoice.buyer.firstName} ${invoice.buyer.lastName} مثقال  
     //    // * <b>تاریخ و ساعت:</b> ${date} ${time}
        
     //    // <b>توضیحات:</b>
@@ -1896,8 +1990,8 @@ export class AdminController{
        تحویل حواله خرید شما <b>انجام شد</b>:
        
        <b>مشخصات تحویل:</b>
-       * <b> مقدار تحویل داده شده:</b> ${amount} گرم  
-       * <b>مقدار باقی مانده از این سفارش:</b> ${remain} گرم  
+       * <b> مقدار تحویل داده شده:</b> ${amount} مثقال  
+       * <b>مقدار باقی مانده از این سفارش:</b> ${remain} مثقال  
        * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
        * <b>تاریخ و ساعت:</b> ${date} ${time}
        
@@ -1909,9 +2003,9 @@ export class AdminController{
                خواندن طلای شما <b>انجام شد</b>:
            
             <b>مشخصات تحویل:</b>
-           * <b> مقدار تحویل داده شده:</b> ${amount} گرم  
-           * <b>مقدار باقی مانده از این سفارش:</b> ${remain} گرم  
-           * <b> شخص گیرنده:</b> ${destUser.firstName} ${destUser.lastName} گرم  
+           * <b> مقدار تحویل داده شده:</b> ${amount} مثقال  
+           * <b>مقدار باقی مانده از این سفارش:</b> ${remain} مثقال  
+           * <b> شخص گیرنده:</b> ${destUser.firstName} ${destUser.lastName} مثقال  
            * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
            * <b>تاریخ و ساعت:</b> ${date} ${time}
            
@@ -1923,8 +2017,8 @@ export class AdminController{
     //         طلای برای شما <b>خوانده شد</b>:
        
     //    //  <b>مشخصات تحویل:</b>
-    //    // * <b> مقدار تحویل داده شده:</b> ${amount} گرم  
-    //    // * <b> شخص انتقال دهنده:</b> ${invoice.buyer.firstName} ${invoice.buyer.lastName} گرم  
+    //    // * <b> مقدار تحویل داده شده:</b> ${amount} مثقال  
+    //    // * <b> شخص انتقال دهنده:</b> ${invoice.buyer.firstName} ${invoice.buyer.lastName} مثقال  
     //    // * <b>تاریخ و ساعت:</b> ${date} ${time}
        
     //    // <b>توضیحات:</b>
@@ -1946,6 +2040,12 @@ export class AdminController{
            await queryRunner.release()
         }
     }
+
+
+
+
+
+    
     
 
 

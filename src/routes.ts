@@ -92,6 +92,13 @@ export const Routes = [
     middlware:[authMiddlewareUser]
 },
 {
+    method: "post",
+    route: "/user/deliver",
+    controller: UserController,
+    action: "deliverRequest",
+    middlware:[authMiddlewareUser]
+},
+{
     method: "get",
     route: "/user/remove/:phone",
     controller: UserController,
@@ -335,6 +342,13 @@ export const Routes = [
 },
 {
     method: "post",
+    route: "/admin/invoice/getauthority/:id",
+    controller: AdminController,
+    action: "paymnetBuyInfoByAccounter",
+    middlware:[authMiddlewareAdmin] 
+},
+{
+    method: "post",
     route: "/admin/invoice/selldeliver/:id",
     controller: AdminController,
     action: "sellDelivery",
@@ -423,14 +437,28 @@ export const Routes = [
     route: "/setting/change",
     controller: SettingController,
     action: "updateSetting",
-    middlware:[]
+    middlware:[authMiddlewareAdmin]
 },
 {
     method: "get",
     route: "/setting",
     controller: SettingController,
     action: "getSetting",
-    middlware:[]
+    middlware:[authMiddlewareAdmin]
+},
+{
+    method: "get",
+    route: "/setting/sellmax",
+    controller: SettingController,
+    action: "updateHaveSellMax",
+    middlware:[authMiddlewareAdmin]
+},
+{
+    method: "get",
+    route: "/setting/buymax",
+    controller: SettingController,
+    action: "updateHaveBuyMax",
+    middlware:[authMiddlewareAdmin]
 },
 /**
  * ?? Bank Account Routes

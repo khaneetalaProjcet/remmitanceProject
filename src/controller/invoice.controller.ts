@@ -321,7 +321,7 @@ export class InvoiceController{
              و در حال بررسی می‌باشد:
              
              <b>مشخصات پرداخت:</b>
-             • <b>مقدار:</b> ${invoice.goldWeight} گرم  
+             • <b>مقدار:</b> ${invoice.goldWeight} مثقال  
              • <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
              • <b>شماره پیگیری حواله:</b> ${invoice.invoiceId}  
              • <b>تاریخ و ساعت:</b> ${date} ${time}  
@@ -362,8 +362,13 @@ export class InvoiceController{
             const date= new Date().toLocaleString('fa-IR').split(',')[0]
     
     
-            if(!invoice || invoice.status!==3){
-                return next(new responseModel(req, res,"درخواست نامعتبر",'create Invoice', 400,"درخواست نامعتبر",null))
+            if(!invoice || invoice.status!==4){
+                if(invoice.status==8){
+                    console.log("in nice");
+                    
+                }else{
+                    return next(new responseModel(req, res,"درخواست نامعتبر",'create Invoice', 400,"درخواست نامعتبر",null))
+                }
              }
             
             invoice.status=3
@@ -378,7 +383,7 @@ export class InvoiceController{
             پرداخت حواله خرید شما توسط شما <b>لغو شد</b>:
             
             <b>مشخصات حواله:</b>
-            • <b>مقدار:</b> ${invoice.goldWeight} گرم  
+            • <b>مقدار:</b> ${invoice.goldWeight} مثقال  
             • <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
             • <b>شماره پیگیری:</b> ${invoiceId}  
             • <b>تاریخ و ساعت:</b> ${date} ${time}
@@ -517,8 +522,9 @@ export class InvoiceController{
                     // bankAccount:userBankAccount,
                     time,
                     date,
-                    product:prices,
-    
+                    product:prices, 
+                    status:2,
+                    panelTabel:1,
                     admins:[],
                     description,
                     productName:prices.persianName
@@ -534,7 +540,7 @@ export class InvoiceController{
                     درخواست حواله خرید شما <b>ثبت شد</b> و در حال بررسی می‌باشد:
                     
                     <b>مشخصات حواله:</b>
-                    * <b>مقدار:</b> ${goldWeight} گرم  
+                    * <b>مقدار:</b> ${goldWeight} مثقال  
                     * <b>مبلغ:</b> ${totalPrice.toLocaleString()} تومان  
                     * <b>شماره فاکتور:</b> ${invoiceId}  
                     * <b>تاریخ و ساعت:</b> ${date} ${time}
@@ -545,10 +551,10 @@ export class InvoiceController{
                      message = `
     <b>کاربر گرامی</b>
     
-    درخواست حواله خرید شما <b>ثبت شد</b> و در حال بررسی می‌باشد:
+    درخواست حواله فروش شما <b>ثبت شد</b> و در حال بررسی می‌باشد:
     
     <b>مشخصات حواله:</b>
-    * <b>مقدار:</b> ${goldWeight} گرم  
+    * <b>مقدار:</b> ${goldWeight} مثقال  
     * <b>مبلغ:</b> ${totalPrice.toLocaleString()} تومان  
     * <b>شماره فاکتور:</b> ${invoiceId}  
     * <b>تاریخ و ساعت:</b> ${date} ${time}
@@ -558,7 +564,9 @@ export class InvoiceController{
                 }
     
                 // showMainMenu(this.bot,user.telegram.chatId,message)
-                this.sendMessageWithInline(message,user.telegram.chatId,transaction.id)
+                // this.sendMessageWithInline(message,user.telegram.chatId,transaction.id)
+                this.bot.sendMessage(user.telegram.chatId, message, { parse_mode: 'HTML' });
+
                 await queryRunner.commitTransaction()
                 return next(new responseModel(req, res,null,'create Invoice', 200,null,transaction))
                 }else{

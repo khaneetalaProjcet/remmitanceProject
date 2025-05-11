@@ -116,9 +116,9 @@ export class bankAccountController {
             }
     }
     async createAppBankAccount(req: Request, res: Response, next: NextFunction){
-        const {cardNumber,shebaNumber,name,ownerName}=req.body
+        const {cardNumber,shebaNumber,name,ownerName,type}=req.body
         try{
-            const newAppBankAccount=this.appBankAccount.create({cardNumber,shebaNumber,name,ownerName})
+            const newAppBankAccount=this.appBankAccount.create({cardNumber,shebaNumber,name,ownerName,type})
             await this.appBankAccount.save(newAppBankAccount)
             return next(new responseModel(req, res,null,'create bank account', 200,null,newAppBankAccount))
 
@@ -126,7 +126,6 @@ export class bankAccountController {
             return next(new responseModel(req, res, "خطا در ثبت کارت بانکی",'create Invoice', 500, "خطا در ثبت کارت بانکی",null))
         }
        
-
     }
     async deleteAppBankAccount(req: Request, res: Response, next: NextFunction){
         const id=+req.params.id
@@ -165,7 +164,7 @@ export class bankAccountController {
     }
 
     async getAllBankAccount(req: Request, res: Response, next: NextFunction){
-        const all=await this.appBankAccount.find()
+        const all=await this.appBankAccount.find({where:{type:1}})
         return  next(new responseModel(req, res,"all app Bank",'profile', 200,"all app Bank",all))
     }
 

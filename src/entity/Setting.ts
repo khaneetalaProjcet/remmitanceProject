@@ -5,6 +5,11 @@ export class Setting {
 
     @PrimaryGeneratedColumn()
     id: string
+    @Column({type:"boolean",default:true})
+    haveMaxSell:boolean
+
+    @Column({type:"boolean",default:true})
+    haveMaxBuy:boolean
     
     @Column({ type: "numeric", precision: 10, scale: 3, default: 0 })
     maxTradeSell: number

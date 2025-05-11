@@ -13,6 +13,9 @@ export class AppBankAccount {
     @Column()
     cardNumber : string
 
+    @Column({type:"numeric",nullable:true,default:1})
+    type : number
+
     @Column({nullable : true})
     shebaNumber : string
     

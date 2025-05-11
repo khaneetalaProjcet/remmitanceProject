@@ -63,11 +63,7 @@ export class SettingController{
             setting.minTradeSell=minTradeSell?formatGoldWeight(minTradeSell):setting.minTradeSell
             setting.maxTradeBuy=maxTradeBuy?formatGoldWeight(maxTradeBuy):setting.maxTradeBuy
             setting.minTradeBuy=minTradeBuy?formatGoldWeight(minTradeBuy):setting.minTradeBuy
-            setting.maxBuyCoin=maxBuyCoin?maxBuyCoin:setting.maxBuyCoin
-            setting.minBuyCoin=minBuyCoin?minBuyCoin:setting.minBuyCoin
-            setting.maxSellCoin=maxSellCoin?maxSellCoin:setting.maxSellCoin,
-            setting.minSellCoin=minSellCoin?minSellCoin:setting.minSellCoin
-            setting.offerTolerance=offerTolerance?offerTolerance:setting.offerTolerance
+            
             setting.expireTime=expireTime?expireTime:setting.expireTime,
             setting.tradeIsOpen=tradeIsOpen
 
@@ -112,6 +108,30 @@ export class SettingController{
             return next(new responseModel(req, res,"خطای داخلی سیستم",'setting', 500,"خطای داخلی سیستم",null))
         }
       
+    }
+    async updateHaveSellMax(req: Request, res: Response, next: NextFunction){
+        try{
+            const settings= await this.settingRepository.find()
+            const setting=settings[0]
+            setting.haveMaxSell=!setting.haveMaxSell
+            await this.settingRepository.save(setting)
+            return next(new responseModel(req, res,null,' user invoice', 200,null,setting))
+        }catch(err){
+            return next(new responseModel(req, res,"خطای داخلی سیستم",'setting', 500,"خطای داخلی سیستم",null))
+        }
+      
+    }
+    async updateHaveBuyMax(req: Request, res: Response, next: NextFunction){
+        try{
+            const settings= await this.settingRepository.find()
+            const setting=settings[0]
+            setting.haveMaxBuy=!setting.haveMaxBuy
+            await this.settingRepository.save(setting)
+            return next(new responseModel(req, res,null,' user invoice', 200,null,setting))
+        }catch(err){
+            return next(new responseModel(req, res,"خطای داخلی سیستم",'setting', 500,"خطای داخلی سیستم",null)) 
+        }
+       
     }
 
     

@@ -9,13 +9,13 @@ export class Delivery {
     @PrimaryGeneratedColumn()
     id : number
    
-    @Column() //! 1 -> noraml    2->transfer
+    @Column({default:"3"}) //! 1 -> noraml    2->transfer
     type : string 
     
     @Column({ type: "numeric", precision: 10, scale: 3, default: 0 ,nullable:true})
     goldWeight : number
 
-    @ManyToOne(()=> Invoice ,(invoice) => invoice.deliveries )
+    @ManyToOne(()=> Invoice ,(invoice) => invoice.deliveries,{nullable:true})
     invoice:Invoice
 
     @ManyToOne(()=> User , (user)=> user.deliveries , {nullable:true})
@@ -29,6 +29,9 @@ export class Delivery {
 
     @Column({nullable:true,default:"",type:"varchar"})
     description:string
+
+    @Column({type:"numeric",default:1,nullable:true}) //! 1 -> initial   2->approve  3->reject
+    status : number 
 
     @Column()
     date : string

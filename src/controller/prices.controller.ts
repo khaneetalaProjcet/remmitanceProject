@@ -37,9 +37,8 @@ export class PricesController{
     async getPrices(req: Request, res: Response, next: NextFunction){
        try{
         let prices=await this.pricesRepository.find({where:{id:1},order:{id:"DESC"}})
-        const price=await this.pricesRepository.findOneOrFail({where:{id:1}})
-        price.persianName='آبشده'
-        await this.pricesRepository.save(price)
+      
+       
         if(prices.length==0){
                prices= await this.initPrices()
         }

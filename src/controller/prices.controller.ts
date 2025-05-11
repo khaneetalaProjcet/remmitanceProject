@@ -93,69 +93,69 @@ export class PricesController{
             date,
             time
         },
-        {
-            name:'meltTowDayAhead' ,
-            persianName:'آبشده نقد پس فردا',
-            sellPrice:'70000',
-            buyPrice:'70000',
-            type:'0',
-            date,
-            time
-        },
-        {
-            name:'coin complete 86' ,
-            persianName:'سکه تمام 86',
-            sellPrice:'70000',
-            buyPrice:'70000',
-            type:'1',
-            date,
-            time
-        },
-        {
-            name:'coin half 86' ,
-            persianName:'نیم سکه 86',
-            sellPrice:'70000',
-            buyPrice:'70000',
-            type:'1',
-            date,
-            time
-        },
-        {
-            name:'coin quarter 86' ,
-            persianName:'ربع سکه 86',
-            sellPrice:'70000',
-            buyPrice:'70000',
-            type:'1',
-            date,
-            time
-        },
-        {
-            name:'coin  old' ,
-            persianName:'سکه تاریخ پایین',
-            sellPrice:'70000',
-            buyPrice:'70000',
-            type:'1',
-            date,
-            time
-        },
-        {
-            name:'coin half old' ,
-            persianName:'نیم تاریخ پایین',
-            sellPrice:'70000',
-            buyPrice:'70000',
-            type:'1',
-            date,
-            time
-        },
-        {
-            name:'coin quarter old' ,
-            persianName:'ربع تاریخ پایین',
-            sellPrice:'70000',
-            buyPrice:'70000',
-            type:'1',
-            date,
-            time
-        },
+        // {
+        //     name:'meltTowDayAhead' ,
+        //     persianName:'آبشده نقد پس فردا',
+        //     sellPrice:'70000',
+        //     buyPrice:'70000',
+        //     type:'0',
+        //     date,
+        //     time
+        // },
+        // {
+        //     name:'coin complete 86' ,
+        //     persianName:'سکه تمام 86',
+        //     sellPrice:'70000',
+        //     buyPrice:'70000',
+        //     type:'1',
+        //     date,
+        //     time
+        // },
+        // {
+        //     name:'coin half 86' ,
+        //     persianName:'نیم سکه 86',
+        //     sellPrice:'70000',
+        //     buyPrice:'70000',
+        //     type:'1',
+        //     date,
+        //     time
+        // },
+        // {
+        //     name:'coin quarter 86' ,
+        //     persianName:'ربع سکه 86',
+        //     sellPrice:'70000',
+        //     buyPrice:'70000',
+        //     type:'1',
+        //     date,
+        //     time
+        // },
+        // {
+        //     name:'coin  old' ,
+        //     persianName:'سکه تاریخ پایین',
+        //     sellPrice:'70000',
+        //     buyPrice:'70000',
+        //     type:'1',
+        //     date,
+        //     time
+        // },
+        // {
+        //     name:'coin half old' ,
+        //     persianName:'نیم تاریخ پایین',
+        //     sellPrice:'70000',
+        //     buyPrice:'70000',
+        //     type:'1',
+        //     date,
+        //     time
+        // },
+        // {
+        //     name:'coin quarter old' ,
+        //     persianName:'ربع تاریخ پایین',
+        //     sellPrice:'70000',
+        //     buyPrice:'70000',
+        //     type:'1',
+        //     date,
+        //     time
+        // },
        
     
         ]

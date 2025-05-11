@@ -36,11 +36,11 @@ export class PricesController{
     }
     async getPrices(req: Request, res: Response, next: NextFunction){
        try{
-        let prices=await this.pricesRepository.find({order:{id:"DESC"}})
+        let prices=await this.pricesRepository.find({where:{id:1},order:{id:"DESC"}})
         if(prices.length==0){
                prices= await this.initPrices()
         }
-        console.log("prices",prices[0].id,prices[prices.length-1]);
+        
         
         return next(new responseModel(req, res,null,'get prices', 200,null,prices))
        }catch(er){

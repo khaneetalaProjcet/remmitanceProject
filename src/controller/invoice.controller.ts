@@ -500,8 +500,8 @@ export class InvoiceController{
                 goldWeight = formatGoldWeight(goldWeight)
                 const time= new Date().toLocaleString('fa-IR').split(',')[1]
                 const date= new Date().toLocaleString('fa-IR').split(',')[0]
-                if(goldWeight<min||goldWeight>max){
-                    return next(new responseModel(req, res,'میزان خرید شما بالا تر یا پایین تر سقف و کف فروش می باشد','create Invoice', 400,'میزان خرید شما بالا تر یا پایین تر سقف و کف فروش می باشد' ,null))
+                if(goldWeight>max){
+                    return next(new responseModel(req, res,'میزان خرید و فروش نباید بالا تر از سقف خرید و فروش باشد','create Invoice', 400,'میزان خرید و فروش نباید بالا تر از سقف خرید و فروش باشد' ,null))
                 }
                 console.log('start the transaction',goldWeight)
                 const invoiceId= this.generateInvoice()
@@ -561,7 +561,7 @@ export class InvoiceController{
                 this.sendMessageWithInline(message,user.telegram.chatId,transaction.id)
                 await queryRunner.commitTransaction()
                 return next(new responseModel(req, res,null,'create Invoice', 200,null,transaction))
-            }else{
+                }else{
                 const realGoldprice=(type==0)?+prices.sellPrice:+prices.buyPrice
                 const isHave=(type==0)?prices.haveSell:prices.haveBuy
                 

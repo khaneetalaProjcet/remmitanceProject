@@ -1214,7 +1214,7 @@ export class AdminController{
 
     async getDeliverOrder(req: Request, res: Response, next: NextFunction){
         
-        const invoices=await this.invoiceRepository.find({where:{panelTabel:3},relations:["buyer","bankAccount","appBankAccount","admins","deliveries","product"]})
+        const invoices=await this.invoiceRepository.find({where:{panelTabel:3},relations:["buyer","bankAccount","appBankAccount","admins","deliveries","product","seller"]})
         return next(new responseModel(req, res,null, 'admin', 200, null, invoices))
     }
 

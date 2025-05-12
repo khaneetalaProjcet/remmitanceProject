@@ -429,6 +429,9 @@ export class InvoiceController{
             const max=(type==0)?setting.maxTradeSell:setting.maxTradeBuy
             const min=(type==0)?setting.minTradeSell:setting.minTradeBuy
 
+
+            const haveMax=(type==0)?setting.haveMaxSell:setting.haveMaxBuy
+
             const maxCoin=(type==0)?setting.maxSellCoin:setting.maxBuyCoin
             const minCoin=(type==0)?setting.minCoin:setting.minCoin
 
@@ -505,7 +508,7 @@ export class InvoiceController{
                 goldWeight = formatGoldWeight(goldWeight)
                 const time= new Date().toLocaleString('fa-IR').split(',')[1]
                 const date= new Date().toLocaleString('fa-IR').split(',')[0]
-                if(goldWeight>max){
+                if(goldWeight>max&&haveMax){
                     return next(new responseModel(req, res,'میزان خرید و فروش نباید بالا تر از سقف خرید و فروش باشد','create Invoice', 400,'میزان خرید و فروش نباید بالا تر از سقف خرید و فروش باشد' ,null))
                 }
                 console.log('start the transaction',goldWeight)

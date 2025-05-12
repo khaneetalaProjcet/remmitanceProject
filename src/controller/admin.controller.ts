@@ -438,6 +438,10 @@ export class AdminController{
         const description=req.body.description
         const appBankAccountId=req.body.appBankAccountId
 
+        console.log("req.body",req.body);
+        
+        
+
         console.log("invoceeId",invoiceId);
         console.log("description",description);
         console.log("appBanK",appBankAccountId);
@@ -461,7 +465,7 @@ export class AdminController{
            
           
            const telegramUser=await this.telegramUserRepository.findOne({where:{user:{id:invoice.buyer.id}}})
-           const appBank=await this.appBankRepository.findOne({where:{id:appBankAccountId}})
+           const appBank=await this.appBankRepository.findOneOrFail({where:{id:appBankAccountId}})
            console.log("apppppp",appBank);
 
            const newAction=this.actionRepository.create({admin,type:2,fromStatus:2,toStatus:4,date,time,invoice})
@@ -2056,12 +2060,36 @@ export class AdminController{
 
 
     async approveDeliveryRequest(req: Request, res: Response, next: NextFunction){
-      try{}catch(err){}finally{}
+     const queryRunner = AppDataSource.createQueryRunner()
+     await queryRunner.connect()
+     await queryRunner.startTransaction()
+      try{
+
+        await queryRunner.commitTransaction()
+        return next(new responseModel(req, res,null, 'admin', 200, null, null)) 
+      }catch(err){
+           console.log(err);
+           await queryRunner.rollbackTransaction()
+      }finally{
+        console.log('transaction released')
+        await queryRunner.release()
+      }
     }
 
 
     async rejectDeliveryRequest(req: Request, res: Response, next: NextFunction){
-        try{}catch(err){}finally{}
+        const queryRunner = AppDataSource.createQueryRunner()
+        await queryRunner.connect()
+        await queryRunner.startTransaction()
+        try{
+
+            await queryRunner.commitTransaction()
+            return next(new responseModel(req, res,null, 'admin', 200, null, null)) 
+        }catch(err){
+
+        }finally{
+
+        }
     }
 
     

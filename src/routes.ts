@@ -384,16 +384,23 @@ export const Routes = [
 },
 {
     method: "post",
-    route: "/admin/invoice/approvedelivery/:id",
+    route: "/admin/deliver/approvedelivery/:id",
     controller: AdminController,
     action: "approveDeliveryRequest",
     middlware:[authMiddlewareAdmin]  
 },
 {
     method: "post",
-    route: "/admin/invoice/rejectdelivery/:id",
+    route: "/admin/deliver/rejectdelivery/:id",
     controller: AdminController,
     action: "rejectDeliveryRequest",
+    middlware:[authMiddlewareAdmin] 
+},
+{
+    method: "get",
+    route: "/admin/deliver/deliver",
+    controller: AdminController,
+    action: "getAllDeliveryRequest",
     middlware:[authMiddlewareAdmin] 
 },
 

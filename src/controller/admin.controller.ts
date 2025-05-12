@@ -2073,6 +2073,9 @@ export class AdminController{
         if(!delivery){
             return next(new responseModel(req, res,"درخواست پیدا نشد", 'admin',400,"درخواست پیدا نشد",null)) 
         }
+        if(delivery.status!=1){
+            return next(new responseModel(req, res,"درخواست نامعتبر",'create Invoice', 400,"درخواست نامعتبر",null))
+        }
 
         delivery.status=2
         delivery.description=description
@@ -2134,7 +2137,10 @@ export class AdminController{
             if(!delivery){
                 return next(new responseModel(req, res,"درخواست پیدا نشد", 'admin',400,"درخواست پیدا نشد",null)) 
             }
-
+            if(delivery.status!=1){
+                return next(new responseModel(req, res,"درخواست نامعتبر",'create Invoice', 400,"درخواست نامعتبر",null))
+            }
+    
             const deliverAmount=parseFloat(delivery.goldWeight.toString())
     
             delivery.status=3

@@ -132,7 +132,7 @@ export class bankAccountController {
         const deleteBankAccount=await this.appBankAccount.findOne({where:{id}})
         deleteBankAccount.isDelete=true
         await this.appBankAccount.save(deleteBankAccount)
-          return  next(new responseModel(req, res,null,'create bank',200,null,deleteBankAccount))  
+        return  next(new responseModel(req, res,null,'create bank',200,null,deleteBankAccount))  
 
     }
     async activeBankAccount(req: Request, res: Response, next: NextFunction){

@@ -136,7 +136,7 @@ export class UserController{
       const time= new Date().toLocaleString('fa-IR').split(',')[1]
       const date= new Date().toLocaleString('fa-IR').split(',')[0]
       try{
-        const user=await this.userRepository.findOneOrFail({where:{id:req.user.id},relations:{wallet:true}})
+        const user=await this.userRepository.findOneOrFail({where:{id:req.user.id},relations:{wallet:true,telegram:true}})
         if(!user){
           return  next(new responseModel(req, res,"کاربر وجود ندارد",'profile', 400,"کاربر وجود ندارد",user))
         }

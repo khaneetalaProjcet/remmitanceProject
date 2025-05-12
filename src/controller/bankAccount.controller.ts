@@ -130,7 +130,8 @@ export class bankAccountController {
     async deleteAppBankAccount(req: Request, res: Response, next: NextFunction){
         const id=+req.params.id
         const deleteBankAccount=await this.appBankAccount.findOne({where:{id}})
-        await this.appBankAccount.remove(deleteBankAccount)
+        deleteBankAccount.isDelete=true
+        await this.appBankAccount.save(deleteBankAccount)
           return  next(new responseModel(req, res,null,'create bank',200,null,deleteBankAccount))  
 
     }
@@ -164,7 +165,7 @@ export class bankAccountController {
     }
 
     async getAllBankAccount(req: Request, res: Response, next: NextFunction){
-        const all=await this.appBankAccount.find({where:{type:1}})
+        const all=await this.appBankAccount.find({where:{type:1,isDelete:false}})
         return  next(new responseModel(req, res,"all app Bank",'profile', 200,"all app Bank",all))
     }
 

@@ -31,6 +31,9 @@ export class AppBankAccount {
     
     @OneToMany(()=>OfferInvoice,(invoice)=>invoice.appBankAccount, { onDelete: "CASCADE" })
     offerInvoices: OfferInvoice[];
+
+    @Column({nullable:true,type:"bool",default:false})
+    isDelete:boolean
     
 
     @CreateDateColumn()

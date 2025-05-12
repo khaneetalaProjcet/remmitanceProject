@@ -837,7 +837,6 @@ export class AdminController{
                 date,
                 time,
                 amount:invoice.totalPrice,
-                
             })
             
 
@@ -2060,11 +2059,54 @@ export class AdminController{
 
 
     async approveDeliveryRequest(req: Request, res: Response, next: NextFunction){
+     const id=+req.params.id  
+     const {description}=req.body
      const queryRunner = AppDataSource.createQueryRunner()
      await queryRunner.connect()
      await queryRunner.startTransaction()
+     const time= new Date().toLocaleString('fa-IR').split(',')[1]
+     const date= new Date().toLocaleString('fa-IR').split(',')[0]
       try{
 
+        const delivery=await this.deliveryRepository.findOneOrFail({where:{id},relations:{mainUser:{wallet:true,telegram:true}}})
+
+        if(!delivery){
+            return next(new responseModel(req, res,"درخواست پیدا نشد", 'admin',400,"درخواست پیدا نشد",null)) 
+        }
+
+        delivery.status=2
+        delivery.description=description
+
+        const userGoldWeight=parseFloat(delivery.mainUser.wallet.goldWeight.toString())
+        const deliverAmount=parseFloat(delivery.goldWeight.toString())
+        const goldWalletRemain=userGoldWeight-deliverAmount
+
+        if(goldWalletRemain<0){
+            return  next(new responseModel(req, res,"موجودی طلا کافی نمی باشد",'profile', 400,"موجودی طلا کافی نمی باشد",delivery))
+        }
+
+
+        delivery.mainUser.wallet.goldWeight=goldWalletRemain
+
+       await  queryRunner.manager.save(delivery.mainUser.wallet)
+       await  queryRunner.manager.save(delivery)
+       
+
+       const message=`<b>کاربر گرامی</b>
+        
+       درخواست تحویل طلا شما <b>انجام شد</b>:
+       
+       <b>مشخصات درخواست:</b>
+       * <b> مقدار درخواست:</b> ${deliverAmount} مثقال  
+       * <b>تاریخ و ساعت:</b> ${date} ${time}
+       
+        <b>توضیحات</b>
+         ${description}
+       
+     `
+
+       
+        this.bot.sendMessage(delivery.mainUser.telegram.chatId,message,{parse_mode:"HTML"})
         await queryRunner.commitTransaction()
         return next(new responseModel(req, res,null, 'admin', 200, null, null)) 
       }catch(err){
@@ -2078,10 +2120,44 @@ export class AdminController{
 
 
     async rejectDeliveryRequest(req: Request, res: Response, next: NextFunction){
+        const id=+req.params.id  
+        const {description}=req.body
         const queryRunner = AppDataSource.createQueryRunner()
         await queryRunner.connect()
         await queryRunner.startTransaction()
+        const time= new Date().toLocaleString('fa-IR').split(',')[1]
+        const date= new Date().toLocaleString('fa-IR').split(',')[0]
         try{
+
+            const delivery=await this.deliveryRepository.findOneOrFail({where:{id},relations:{mainUser:{wallet:true,telegram:true}}})
+
+            if(!delivery){
+                return next(new responseModel(req, res,"درخواست پیدا نشد", 'admin',400,"درخواست پیدا نشد",null)) 
+            }
+
+            const deliverAmount=parseFloat(delivery.goldWeight.toString())
+    
+            delivery.status=3
+            delivery.description=description
+
+            await  queryRunner.manager.save(delivery)
+       
+
+       const message=`<b>کاربر گرامی</b>
+        
+       درخواست تحویل طلا شما <b>رد شد</b>:
+       
+       <b>مشخصات درخواست:</b>
+       * <b> مقدار درخواست:</b> ${deliverAmount} مثقال  
+       * <b>تاریخ و ساعت:</b> ${date} ${time}
+       
+           <b>توضیحات</b>
+           ${description}
+       
+     `
+
+       
+         this.bot.sendMessage(delivery.mainUser.telegram.chatId,message,{parse_mode:"HTML"})
 
             await queryRunner.commitTransaction()
             return next(new responseModel(req, res,null, 'admin', 200, null, null)) 

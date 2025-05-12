@@ -533,7 +533,7 @@ export class InvoiceController{
                 await queryRunner.manager.save(transaction)
                 
                 let message
-                if(type==0){
+                if(type==1){
                      message = `
                     <b>کاربر گرامی</b>
                     

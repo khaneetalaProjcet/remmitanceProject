@@ -444,7 +444,7 @@ export const Routes = [
     route: "/setting",
     controller: SettingController,
     action: "getSetting",
-    middlware:[authMiddlewareAdmin]
+    middlware:[]
 },
 {
     method: "get",

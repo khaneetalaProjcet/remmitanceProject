@@ -182,7 +182,7 @@ export class UserController{
 
     async getdeliverRequest(req: Request, res: Response, next: NextFunction){
       try{
-        const deliveries=await this.deliveryRepository.find({where:{type:"3",mainUser:{id:req.user.id}}})
+        const deliveries=await this.deliveryRepository.find({where:{type:"3",mainUser:{id:req.user.id}},order:{id:"desc"}})
         return next(new responseModel(req, res,null, 'user', 200, null, deliveries)) 
       }catch(err){
         console.log("error",err);

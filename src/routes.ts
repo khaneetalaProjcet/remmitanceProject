@@ -100,6 +100,13 @@ export const Routes = [
 },
 {
     method: "get",
+    route: "/user/deliver",
+    controller: UserController,
+    action: "getdeliverRequest",
+    middlware:[authMiddlewareUser]
+},
+{
+    method: "get",
     route: "/user/remove/:phone",
     controller: UserController,
     action: "deleteUser",

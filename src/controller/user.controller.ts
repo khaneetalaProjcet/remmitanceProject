@@ -173,10 +173,20 @@ export class UserController{
       }catch(err){
         await queryRunner.rollbackTransaction()
         console.log("error",err);
-        return next(new responseModel(req, res,"خطای داخلی سیستم",'invoice', 500,"خطای داخلی سیستم",null))
+        return next(new responseModel(req, res,"خطای داخلی سیستم",'user', 500,"خطای داخلی سیستم",null))
       }finally{
         console.log('transaction released')
         await queryRunner.release()
+      }
+    }
+
+    async getdeliverRequest(req: Request, res: Response, next: NextFunction){
+      try{
+        const deliveries=await this.deliveryRepository.find({where:{type:"3",mainUser:{id:req.user.id}}})
+        return next(new responseModel(req, res,null, 'user', 200, null, deliveries)) 
+      }catch(err){
+        console.log("error",err);
+        return next(new responseModel(req, res,"خطای داخلی سیستم",'user', 500,"خطای داخلی سیستم",null))
       }
     }
 

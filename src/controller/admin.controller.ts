@@ -2048,7 +2048,7 @@ export class AdminController{
 
     async getAllDeliveryRequest(req: Request, res: Response, next: NextFunction){
         try{
-            const deliveries=await this.deliveryRepository.find({where:{type:"3"},order:{id:"desc"}})
+            const deliveries=await this.deliveryRepository.find({where:{type:"3"},relations:{mainUser:true},order:{id:"desc"}})
             return next(new responseModel(req, res,null, 'admin', 200, null, deliveries)) 
         }catch(err){
             console.log(err);

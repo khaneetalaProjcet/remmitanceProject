@@ -24,6 +24,8 @@ export class SettingController{
           minSellCoin,
           maxBuyCoin,
           minBuyCoin,
+          haveMaxBuy,
+          haveMaxSell,
           offerTolerance,
           expireTime,
           tradeIsOpen
@@ -49,6 +51,8 @@ export class SettingController{
                 minSellCoin,
                 maxBuyCoin,
                 minBuyCoin,
+                haveMaxBuy,
+                haveMaxSell,
                 offerTolerance,
                 expireTime,
                 tradeIsOpen
@@ -63,7 +67,8 @@ export class SettingController{
             setting.minTradeSell=minTradeSell?formatGoldWeight(minTradeSell):setting.minTradeSell
             setting.maxTradeBuy=maxTradeBuy?formatGoldWeight(maxTradeBuy):setting.maxTradeBuy
             setting.minTradeBuy=minTradeBuy?formatGoldWeight(minTradeBuy):setting.minTradeBuy
-            
+            setting.haveMaxBuy=haveMaxBuy
+            setting.haveMaxSell=haveMaxSell
             setting.expireTime=expireTime?expireTime:setting.expireTime,
             setting.tradeIsOpen=tradeIsOpen
 

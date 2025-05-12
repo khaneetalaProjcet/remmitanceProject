@@ -9,7 +9,7 @@ export class Delivery {
     @PrimaryGeneratedColumn()
     id : number
    
-    @Column({default:"3"}) //! 1 -> noraml    2->transfer
+    @Column({default:"3"}) //! 1 -> noraml    2->transfer //! deliveryRequest
     type : string 
     
     @Column({ type: "numeric", precision: 10, scale: 3, default: 0 ,nullable:true})

@@ -2043,7 +2043,26 @@ export class AdminController{
 
 
 
+    async getAllDeliveryRequest(req: Request, res: Response, next: NextFunction){
+        try{
+            const deliveries=await this.deliveryRepository.find({where:{type:"3"}})
+            return next(new responseModel(req, res,null, 'admin', 200, null, deliveries)) 
+        }catch(err){
+            console.log(err);
+            return next(new responseModel(req, res,"خطای داخلی سیستم",'invoice', 500,"خطای داخلی سیستم",null))
+        }
 
+    }
+
+
+    async approveDeliveryRequest(req: Request, res: Response, next: NextFunction){
+      try{}catch(err){}finally{}
+    }
+
+
+    async rejectDeliveryRequest(req: Request, res: Response, next: NextFunction){
+        try{}catch(err){}finally{}
+    }
 
     
     

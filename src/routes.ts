@@ -10,6 +10,7 @@ import { UserController } from "./controller/user.controller"
 import { InvoiceController } from "./controller/invoice.controller"
 import {invoiceBody} from "./DTO/invoice.dto"
 import {SettingController} from "./controller/setting.controller" 
+import { accessPointController } from "./controller/accessPoint.controller"
 import {CreateAppBankAccount,CreateBankAccount} from "./DTO/bankAccount.dto"
 import { authMiddlewareAdmin, authMiddlewareUser,authMiddlewareUserRefreshToken } from "./middleware/auth"
 import { bankAccountController } from "./controller/bankAccount.controller"
@@ -562,9 +563,38 @@ export const Routes = [
     controller: PricesController,
     action: "getPrices",
     middlware:[]
+},
+
+//? access Point Sectiobn
+
+{
+    method: "post",
+    route: "/access/create",
+    controller: accessPointController,
+    action: "createParnetAccessPoint",
+    middlware:[authMiddlewareAdmin]
+},
+{
+    method: "post",
+    route: "/access/createchild",
+    controller: accessPointController,
+    action: "createChildAccessPoint",
+    middlware:[authMiddlewareAdmin]
+},
+{
+    method: "get",
+    route: "/access/all",
+    controller: accessPointController,
+    action: "getAllAccessPoints",
+    middlware:[authMiddlewareAdmin]
+},
+{
+    method: "post",
+    route: "/access/admin",
+    controller: accessPointController,
+    action: "updateAdminAccessPoint",
+    middlware:[authMiddlewareAdmin]
 }
-
-
 
 
 

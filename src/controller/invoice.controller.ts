@@ -689,7 +689,7 @@ export class InvoiceController{
 
 
                 await queryRunner.commitTransaction()
-                return next(new responseModel(req, res,null,'create Invoice', 200,null,null))
+                return next(new responseModel(req, res,null,'create Invoice', 200,null,transaction))
             }
 
            

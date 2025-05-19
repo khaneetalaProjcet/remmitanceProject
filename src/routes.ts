@@ -257,6 +257,13 @@ export const Routes = [
     middlware:[authMiddlewareAdmin] 
 },
 {
+    method: "get",
+    route: "/admin/invoice/skipa/:id",
+    controller: AdminController,
+    action: "skip",
+    middlware:[authMiddlewareAdmin] 
+},
+{
     method: "post",
     route: "/admin/invoice/sellapprove/:id",
     controller: AdminController,

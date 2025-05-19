@@ -61,6 +61,12 @@ export class User {
     @Column({ default: false })
     isSystemUser : boolean
 
+    @Column({nullable:true,type:"varchar"})
+    province : string
+
+    @Column({nullable:true,type:"varchar"})
+    city : string
+
     @Column({type:"varchar",nullable:true})
     date:string
 

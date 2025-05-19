@@ -451,11 +451,14 @@ export class InvoiceController{
 
             if(prices.type=="0"){
                 console.log("prices",prices);
+
+
             
                 const realGoldprice=(type==0)?+prices.sellPrice:+prices.buyPrice
+
                 const isHave=(type==0)?prices.haveSell:prices.haveBuy
                 
-                const realTotalrice=realGoldprice*(+goldWeight)
+                const realTotalrice=this.calculateGoldPrice(realGoldprice,+goldWeight)
                 if(!isOpen){
                     return next(new responseModel(req, res,"معاملات تا اطلاع ثانوی بسته می باشد",'create Invoice', 400,"معاملات تا اطلاع ثانوی بسته می باشد",null))
                 }
@@ -718,6 +721,13 @@ export class InvoiceController{
             parse_mode: "HTML"
           });
     }
+
+    private  calculateGoldPrice(pricePerMesghal:number, weightInGrams:number) {
+        const gramsPerMesghal = 4.608;
+        const pricePerGram = pricePerMesghal / gramsPerMesghal;
+        const totalPrice = pricePerGram * weightInGrams;
+        return totalPrice;
+     }
 
 
     

@@ -119,7 +119,7 @@ export class AuthController {
 
 
     async approveRequest(req: Request, res: Response, next: NextFunction){
-        const {firstName,lastName}=req.body
+        const {firstName,lastName,province,city}=req.body
         const newUser=await this.userRepository.findOne({where:{phoneNumber:req.user.phoneNumber}})
         
         if(newUser&&newUser.verificationStatus==2){
@@ -145,6 +145,8 @@ export class AuthController {
         newUser.firstName=firstName
         newUser.lastName=lastName
         newUser.wallet=wallet
+        newUser.province=province
+        newUser.city=city
 
 
         await this.userRepository.save(newUser)

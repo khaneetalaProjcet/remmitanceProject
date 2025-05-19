@@ -705,6 +705,32 @@ export class InvoiceController{
         }
     }
 
+    async rejectInTime(req: Request, res: Response, next: NextFunction){
+        const invoiceId=+req.params.id
+        const queryRunner = AppDataSource.createQueryRunner()
+        await queryRunner.connect()
+        await queryRunner.startTransaction()
+        
+        try{
+            const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId},relations:["buyer","seller"] })
+            invoice.status=5
+            invoice.panelTabel=4
+           
+            await queryRunner.manager.save(invoice)
+           
+           await queryRunner.commitTransaction()
+           return next(new responseModel(req, res,null,' user invoice', 200,null,invoice))
+        }catch(err){
+            await queryRunner.rollbackTransaction()
+            console.log("error",err);
+            return next(new responseModel(req, res,"خطای داخلی سیستم",'invoice', 500,"خطای داخلی سیستم",null))
+        }finally{
+            console.log('transaction released')
+            await queryRunner.release()
+        }
+       
+    }
+
     sendMessageWithInline(message : string ,chatId : any ,invoiceId:any){
         console.log(invoiceId);
         console.log(`user-yes:${invoiceId}`);

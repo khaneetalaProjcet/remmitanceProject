@@ -442,6 +442,13 @@ export const Routes = [
     action: "getOneInvoice",
     middlware:[authMiddlewareUser]
 },
+, {
+    method: "get",
+    route: "/invoice/rejecttime/:id",
+    controller: InvoiceController,
+    action: "rejectInTime",
+    middlware:[authMiddlewareUser]
+},
 {
     method: "post",
     route: "/invoice/filter",

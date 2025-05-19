@@ -321,7 +321,7 @@ export class AdminController{
                 درخواست حواله فروش شما <b>تایید شد</b>:
                 
                 <b>مشخصات حواله:</b>
-                * <b>مقدار:</b> ${invoice.goldWeight} مثقال  
+                * <b>مقدار:</b> ${invoice.goldWeight} گرم  
                 * <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
                 * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
                 * <b>تاریخ و ساعت:</b> ${date} ${time}
@@ -403,7 +403,7 @@ export class AdminController{
                 درخواست حواله فروش شما <b>رد شد</b>:
                 
                 <b>مشخصات حواله:</b>
-                * <b>مقدار:</b> ${invoice.goldWeight} مثقال  
+                * <b>مقدار:</b> ${invoice.goldWeight} گرم  
                 * <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
                 * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
                 * <b>تاریخ و ساعت:</b> ${date} ${time}
@@ -512,10 +512,12 @@ export class AdminController{
             
             درخواست حواله خرید شما با مشخصات زیر تایید شد:
             
-            <b>مقدار:</b> ${invoice.goldWeight} مثقال
+            <b>مقدار:</b> ${invoice.goldWeight} گرم
             <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان
             <b>شماره پیگیری:</b> ${invoice.invoiceId}
             <b>تاریخ و ساعت:</b> ${date} - ${time}
+             <b>توضیحات:</b>
+                ${description}
             
             لطفاً مبلغ را به حساب زیر واریز نمایید:
             
@@ -600,7 +602,7 @@ export class AdminController{
            درخواست حواله خرید شما <b>رد شد</b>:
            
            <b>مشخصات حواله:</b>
-           * <b>مقدار:</b> ${invoice.goldWeight} مثقال  
+           * <b>مقدار:</b> ${invoice.goldWeight} گرم  
            * <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
            * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
            * <b>تاریخ و ساعت:</b> ${date} ${time}
@@ -702,7 +704,7 @@ export class AdminController{
         پرداخت حواله خرید شما <b>قبول شد</b>:
         
         <b>مشخصات حواله:</b>
-        * <b>مقدار:</b> ${invoice.goldWeight} مثقال  
+        * <b>مقدار:</b> ${invoice.goldWeight} گرم  
         * <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
         * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
         * <b>تاریخ و ساعت:</b> ${date} ${time}
@@ -889,7 +891,7 @@ export class AdminController{
              و در حال بررسی می‌باشد:
              
              <b>مشخصات پرداخت:</b>
-             • <b>مقدار:</b> ${invoice.goldWeight} مثقال  
+             • <b>مقدار:</b> ${invoice.goldWeight} گرم  
              • <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
              • <b>شماره پیگیری حواله:</b> ${invoice.invoiceId}  
              • <b>تاریخ و ساعت:</b> ${date} ${time}  
@@ -971,7 +973,7 @@ export class AdminController{
                 پرداخت حواله خرید شما <b>رد شد</b>:
                 
                 <b>مشخصات حواله:</b>
-                * <b>مقدار:</b> ${invoice.goldWeight} مثقال  
+                * <b>مقدار:</b> ${invoice.goldWeight} گرم  
                 * <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
                 * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
                 * <b>تاریخ و ساعت:</b> ${date} ${time}
@@ -1084,7 +1086,7 @@ export class AdminController{
                   دریافت اطلاعات بانکی شما <b>انجام شد</b>:
                 
                 <b>مشخصات حواله:</b>
-                * <b>مقدار:</b> ${invoice.goldWeight} مثقال  
+                * <b>مقدار:</b> ${invoice.goldWeight} گرم  
                 * <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
                 * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
                 * <b>تاریخ و ساعت:</b> ${date} ${time}
@@ -1213,7 +1215,7 @@ export class AdminController{
               پرداخت حواله فروش شما <b>انجام شد</b>:
               
               <b>مشخصات حواله:</b>
-              * <b>مقدار:</b> ${invoice.goldWeight} مثقال  
+              * <b>مقدار:</b> ${invoice.goldWeight} گرم  
               * <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
               * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
               * <b>تاریخ و ساعت:</b> ${date} ${time}
@@ -1280,7 +1282,7 @@ export class AdminController{
           پرداخت حواله فروش شما <b>لغو شد</b>:
           
           <b>مشخصات حواله:</b>
-          * <b>مقدار:</b> ${invoice.goldWeight} مثقال  
+          * <b>مقدار:</b> ${invoice.goldWeight} گرم  
           * <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
           * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
           * <b>تاریخ و ساعت:</b> ${date} ${time}
@@ -1433,8 +1435,8 @@ export class AdminController{
         تحویل حواله خرید شما <b>انجام شد</b>:
         
         <b>مشخصات تحویل:</b>
-        * <b> مقدار تحویل داده شده:</b> ${amount} مثقال  
-        * <b>مقدار باقی مانده از این سفارش:</b> ${remain} مثقال  
+        * <b> مقدار تحویل داده شده:</b> ${amount} گرم  
+        * <b>مقدار باقی مانده از این سفارش:</b> ${remain} گرم  
         * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
         * <b>تاریخ و ساعت:</b> ${date} ${time}
         
@@ -1446,9 +1448,9 @@ export class AdminController{
         //         خواندن طلای شما <b>انجام شد</b>:
             
         //      <b>مشخصات تحویل:</b>
-        //     * <b> مقدار تحویل داده شده:</b> ${amount} مثقال  
-        //     * <b>مقدار باقی مانده از این سفارش:</b> ${remain} مثقال  
-        //     * <b> شخص گیرنده:</b> ${destUser.firstName} ${destUser.lastName} مثقال  
+        //     * <b> مقدار تحویل داده شده:</b> ${amount} گرم  
+        //     * <b>مقدار باقی مانده از این سفارش:</b> ${remain} گرم  
+        //     * <b> شخص گیرنده:</b> ${destUser.firstName} ${destUser.lastName} گرم  
         //     * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
         //     * <b>تاریخ و ساعت:</b> ${date} ${time}
             
@@ -1460,8 +1462,8 @@ export class AdminController{
         //      طلای برای شما <b>خوانده شد</b>:
         
         //  <b>مشخصات تحویل:</b>
-        // * <b> مقدار تحویل داده شده:</b> ${amount} مثقال  
-        // * <b> شخص انتقال دهنده:</b> ${invoice.buyer.firstName} ${invoice.buyer.lastName} مثقال  
+        // * <b> مقدار تحویل داده شده:</b> ${amount} گرم  
+        // * <b> شخص انتقال دهنده:</b> ${invoice.buyer.firstName} ${invoice.buyer.lastName} گرم  
         // * <b>تاریخ و ساعت:</b> ${date} ${time}
         
         // <b>توضیحات:</b>
@@ -1577,8 +1579,8 @@ export class AdminController{
        تحویل حواله فروش شما <b>انجام شد</b>:
        
        <b>مشخصات تحویل:</b>
-       * <b> مقدار تحویل داده شده:</b> ${amount} مثقال  
-       * <b>مقدار باقی مانده از این سفارش:</b> ${remain} مثقال  
+       * <b> مقدار تحویل داده شده:</b> ${amount} گرم  
+       * <b>مقدار باقی مانده از این سفارش:</b> ${remain} گرم  
        * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
        * <b>تاریخ و ساعت:</b> ${date} ${time}
        
@@ -1773,8 +1775,8 @@ export class AdminController{
        تحویل حواله خرید شما <b>انجام شد</b>:
        
        <b>مشخصات تحویل:</b>
-       * <b> مقدار تحویل داده شده:</b> ${amount} مثقال  
-       * <b>مقدار باقی مانده از این سفارش:</b> ${remain} مثقال  
+       * <b> مقدار تحویل داده شده:</b> ${amount} گرم  
+       * <b>مقدار باقی مانده از این سفارش:</b> ${remain} گرم  
        * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
        * <b>تاریخ و ساعت:</b> ${date} ${time}
        
@@ -1786,9 +1788,9 @@ export class AdminController{
                خواندن طلای شما <b>انجام شد</b>:
            
             <b>مشخصات تحویل:</b>
-           * <b> مقدار تحویل داده شده:</b> ${amount} مثقال  
-           * <b>مقدار باقی مانده از این سفارش:</b> ${remain} مثقال  
-           * <b> شخص گیرنده:</b> ${destUser.firstName} ${destUser.lastName} مثقال  
+           * <b> مقدار تحویل داده شده:</b> ${amount} گرم  
+           * <b>مقدار باقی مانده از این سفارش:</b> ${remain} گرم  
+           * <b> شخص گیرنده:</b> ${destUser.firstName} ${destUser.lastName} گرم  
            * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
            * <b>تاریخ و ساعت:</b> ${date} ${time}
            
@@ -1800,8 +1802,8 @@ export class AdminController{
     //         طلای برای شما <b>خوانده شد</b>:
        
     //    //  <b>مشخصات تحویل:</b>
-    //    // * <b> مقدار تحویل داده شده:</b> ${amount} مثقال  
-    //    // * <b> شخص انتقال دهنده:</b> ${invoice.buyer.firstName} ${invoice.buyer.lastName} مثقال  
+    //    // * <b> مقدار تحویل داده شده:</b> ${amount} گرم  
+    //    // * <b> شخص انتقال دهنده:</b> ${invoice.buyer.firstName} ${invoice.buyer.lastName} گرم  
     //    // * <b>تاریخ و ساعت:</b> ${date} ${time}
        
     //    // <b>توضیحات:</b>
@@ -1993,8 +1995,8 @@ export class AdminController{
        تحویل حواله خرید شما <b>انجام شد</b>:
        
        <b>مشخصات تحویل:</b>
-       * <b> مقدار تحویل داده شده:</b> ${amount} مثقال  
-       * <b>مقدار باقی مانده از این سفارش:</b> ${remain} مثقال  
+       * <b> مقدار تحویل داده شده:</b> ${amount} گرم  
+       * <b>مقدار باقی مانده از این سفارش:</b> ${remain} گرم  
        * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
        * <b>تاریخ و ساعت:</b> ${date} ${time}
        
@@ -2006,9 +2008,9 @@ export class AdminController{
                خواندن طلای شما <b>انجام شد</b>:
            
             <b>مشخصات تحویل:</b>
-           * <b> مقدار تحویل داده شده:</b> ${amount} مثقال  
-           * <b>مقدار باقی مانده از این سفارش:</b> ${remain} مثقال  
-           * <b> شخص گیرنده:</b> ${destUser.firstName} ${destUser.lastName} مثقال  
+           * <b> مقدار تحویل داده شده:</b> ${amount} گرم  
+           * <b>مقدار باقی مانده از این سفارش:</b> ${remain} گرم  
+           * <b> شخص گیرنده:</b> ${destUser.firstName} ${destUser.lastName} گرم  
            * <b>شماره پیگیری:</b> ${invoice.invoiceId}  
            * <b>تاریخ و ساعت:</b> ${date} ${time}
            
@@ -2020,8 +2022,8 @@ export class AdminController{
     //         طلای برای شما <b>خوانده شد</b>:
        
     //    //  <b>مشخصات تحویل:</b>
-    //    // * <b> مقدار تحویل داده شده:</b> ${amount} مثقال  
-    //    // * <b> شخص انتقال دهنده:</b> ${invoice.buyer.firstName} ${invoice.buyer.lastName} مثقال  
+    //    // * <b> مقدار تحویل داده شده:</b> ${amount} گرم  
+    //    // * <b> شخص انتقال دهنده:</b> ${invoice.buyer.firstName} ${invoice.buyer.lastName} گرم  
     //    // * <b>تاریخ و ساعت:</b> ${date} ${time}
        
     //    // <b>توضیحات:</b>
@@ -2100,7 +2102,7 @@ export class AdminController{
        درخواست تحویل طلا شما <b>انجام شد</b>:
        
        <b>مشخصات درخواست:</b>
-       * <b> مقدار درخواست:</b> ${deliverAmount} مثقال  
+       * <b> مقدار درخواست:</b> ${deliverAmount} گرم  
        * <b>تاریخ و ساعت:</b> ${date} ${time}
        
         <b>توضیحات</b>
@@ -2154,7 +2156,7 @@ export class AdminController{
        درخواست تحویل طلا شما <b>رد شد</b>:
        
        <b>مشخصات درخواست:</b>
-       * <b> مقدار درخواست:</b> ${deliverAmount} مثقال  
+       * <b> مقدار درخواست:</b> ${deliverAmount} گرم  
        * <b>تاریخ و ساعت:</b> ${date} ${time}
        
            <b>توضیحات</b>
@@ -2168,9 +2170,11 @@ export class AdminController{
             await queryRunner.commitTransaction()
             return next(new responseModel(req, res,null, 'admin', 200, null, null)) 
         }catch(err){
-
+            console.log(err);
+            await queryRunner.rollbackTransaction()
         }finally{
-
+            console.log('transaction released')
+            await queryRunner.release()
         }
     }
 

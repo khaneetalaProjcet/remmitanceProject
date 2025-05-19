@@ -321,7 +321,7 @@ export class InvoiceController{
              و در حال بررسی می‌باشد:
              
              <b>مشخصات پرداخت:</b>
-             • <b>مقدار:</b> ${invoice.goldWeight} مثقال  
+             • <b>مقدار:</b> ${invoice.goldWeight} گرم  
              • <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
              • <b>شماره پیگیری حواله:</b> ${invoice.invoiceId}  
              • <b>تاریخ و ساعت:</b> ${date} ${time}  
@@ -383,7 +383,7 @@ export class InvoiceController{
             پرداخت حواله خرید شما توسط شما <b>لغو شد</b>:
             
             <b>مشخصات حواله:</b>
-            • <b>مقدار:</b> ${invoice.goldWeight} مثقال  
+            • <b>مقدار:</b> ${invoice.goldWeight} گرم  
             • <b>مبلغ:</b> ${invoice.totalPrice.toLocaleString()} تومان  
             • <b>شماره پیگیری:</b> ${invoiceId}  
             • <b>تاریخ و ساعت:</b> ${date} ${time}
@@ -543,7 +543,7 @@ export class InvoiceController{
                     درخواست حواله خرید شما <b>ثبت شد</b> و در حال بررسی می‌باشد:
                     
                     <b>مشخصات حواله:</b>
-                    * <b>مقدار:</b> ${goldWeight} مثقال  
+                    * <b>مقدار:</b> ${goldWeight} گرم  
                     * <b>مبلغ:</b> ${totalPrice.toLocaleString()} تومان  
                     * <b>شماره فاکتور:</b> ${invoiceId}  
                     * <b>تاریخ و ساعت:</b> ${date} ${time}
@@ -557,7 +557,7 @@ export class InvoiceController{
     درخواست حواله فروش شما <b>ثبت شد</b> و در حال بررسی می‌باشد:
     
     <b>مشخصات حواله:</b>
-    * <b>مقدار:</b> ${goldWeight} مثقال  
+    * <b>مقدار:</b> ${goldWeight} گرم  
     * <b>مبلغ:</b> ${totalPrice.toLocaleString()} تومان  
     * <b>شماره فاکتور:</b> ${invoiceId}  
     * <b>تاریخ و ساعت:</b> ${date} ${time}

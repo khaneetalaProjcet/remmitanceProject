@@ -184,7 +184,7 @@ export const Routes = [
     route: "/admin/register",
     controller: AdminController,
     action: "registerAdmin",
-    middlware:[registerNewAdmin]
+    middlware:[registerNewAdmin,authMiddlewareAdmin]
 },
 {
     method: "post",

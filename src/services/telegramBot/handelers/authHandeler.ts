@@ -40,7 +40,7 @@ export async function  handleAuth(bot, msg) {
       const user=await userRepository.findOne({where:{phoneNumber:result.phone}})
       
       if(!user){
-        bot.sendMessage(chatId, 'لطفا اول در سایت ثبت نام کنید');
+        bot.sendMessage(chatId, 'لطفا با همان شماره تلفنی که در سایت ثبت نام کرید وارد شوید');
         break;
       }
       if(user.verificationStatus==0){

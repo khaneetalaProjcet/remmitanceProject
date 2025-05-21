@@ -2386,6 +2386,18 @@ export class AdminController{
     }
 
 
+    async invoiceCharts(req: Request, res: Response, next: NextFunction){
+        const {start,end}=req.body
+
+        // const records = await dataSource.getRepository(MyEntity).find({
+        //     where: {
+        //       createdAt: Between(fromDate, toDate),
+        //     },
+        //   });
+        
+    }
+
+
     private  generateOTP(limit) {          
         var digits = '0123456789';
         let OTP = '';
@@ -2412,6 +2424,10 @@ export class AdminController{
             parse_mode:"HTML"
          });
     }
+
+
+
+
 
     
     

@@ -330,7 +330,7 @@ export class InvoiceController{
              با تشکر از شما.
              `;
              
-             this.bot.sendMessage(user.telegram.chatId, message, { parse_mode: 'HTML' });
+            //  this.bot.sendMessage(user.telegram.chatId, message, { parse_mode: 'HTML' });
              await queryRunner.commitTransaction()
              return next(new responseModel(req, res,null,' user invoice', 200,null,invoice))
         }catch(err){
@@ -390,7 +390,7 @@ export class InvoiceController{
             
             در صورت نیاز می‌توانید مجدداً اقدام نمایید.
             `;
-           this.bot.sendMessage(user.telegram.chatId, message, { parse_mode: 'HTML' });
+        //    this.bot.sendMessage(user.telegram.chatId, message, { parse_mode: 'HTML' });
            await queryRunner.commitTransaction()
            return next(new responseModel(req, res,null,' user invoice', 200,null,invoice))
         }catch(err){
@@ -499,7 +499,7 @@ export class InvoiceController{
                     return next(new responseModel(req, res,"کاربر پیدا نشد",'create Invoice', 400,"کاربر پیدا نشد",null))
                 }
                 if(!user.telegram){
-                    return next(new responseModel(req, res,"کاربر در ربات تلگرام پیدا نشد",'create Invoice', 400,"کاربر در ربات تلگرام پیدا نشد",null))
+                    return next(new responseModel(req, res,"لطفا اطلاعات کاربری خود را از بخش پروفایل تکمیل کنید",'create Invoice', 400,"لطفا اطلاعات کاربری خود را از بخش پروفایل تکمیل کنید",null))
                 }
                 // const userBankAccount : BankAccount=await this.bankAccountRepository.findOne({where:{isActive:true,owner:{id:req.user.id}}})
                 // if(!userBankAccount){
@@ -571,7 +571,7 @@ export class InvoiceController{
     
                 // showMainMenu(this.bot,user.telegram.chatId,message)
                 // this.sendMessageWithInline(message,user.telegram.chatId,transaction.id)
-                this.bot.sendMessage(user.telegram.chatId, message, { parse_mode: 'HTML' });
+                // this.bot.sendMessage(user.telegram.chatId, message, { parse_mode: 'HTML' });
 
                 await queryRunner.commitTransaction()
                 return next(new responseModel(req, res,null,'create Invoice', 200,null,transaction))

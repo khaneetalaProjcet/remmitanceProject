@@ -340,7 +340,7 @@ export class AdminController{
             await queryRunner.manager.save(invoice)
             await queryRunner.manager.save(newAction)
             
-            this.bot.sendMessage(telegramUser.chatId,message,{parse_mode:"HTML"})    
+            // this.bot.sendMessage(telegramUser.chatId,message,{parse_mode:"HTML"})    
             await queryRunner.commitTransaction()
             return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
          }catch(err){
@@ -422,7 +422,7 @@ export class AdminController{
            
           
             
-            this.bot.sendMessage(telegramUser.chatId,message,{parse_mode:"HTML"})     
+            // this.bot.sendMessage(telegramUser.chatId,message,{parse_mode:"HTML"})     
             await queryRunner.commitTransaction()            
             return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
          }catch(err){
@@ -534,7 +534,7 @@ export class AdminController{
            }
         
             
-           this.bot.sendMessage(telegramUser.chatId,message,{parse_mode:"HTML"})     
+        //    this.bot.sendMessage(telegramUser.chatId,message,{parse_mode:"HTML"})     
            await queryRunner.commitTransaction()
            return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
 
@@ -703,7 +703,7 @@ export class AdminController{
            
          
            
-           this.bot.sendMessage(telegramUser.chatId,message,{parse_mode:"HTML"})  
+        //    this.bot.sendMessage(telegramUser.chatId,message,{parse_mode:"HTML"})  
            await queryRunner.commitTransaction()  
            return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
         }catch(err){
@@ -2292,10 +2292,10 @@ export class AdminController{
                     newStatus=5
                     panelTable=2     
                     break;
-                // case 4:
-                //     newStatus=5
-                //     panelTable=2    
-                //     break;
+                case 5:
+                    newStatus=7
+                    panelTable=2    
+                    break;
                 // case 2:
                     
                 //     break;    

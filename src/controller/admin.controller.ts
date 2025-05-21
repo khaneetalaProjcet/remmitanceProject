@@ -2308,6 +2308,7 @@ export class AdminController{
               }
            }else{
             switch (currentStatus) {
+
                 case 2:
                 newStatus=4   
                 panelTable=2 
@@ -2317,8 +2318,8 @@ export class AdminController{
                 panelTable=2    
                     break;
                 case 6:
-                newStatus=6
-                panelTable=7  
+                newStatus=7
+                panelTable=  2
                     break;    
               
                 default:

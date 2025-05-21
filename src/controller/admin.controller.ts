@@ -719,6 +719,8 @@ export class AdminController{
 
 
 
+
+
    /**
     * Accounter section
     * @param req 
@@ -2357,6 +2359,29 @@ export class AdminController{
            console.log('transaction released')
            await queryRunner.release()
         }
+    }
+
+
+    async cartChart(req: Request, res: Response, next: NextFunction){
+        try{
+            const usersCount=(await this.userRepository.find()).length
+
+            const sellsCount=(await this.invoiceRepository.find({where:{type:0}})).length
+    
+            const buyCount=(await this.invoiceRepository.find({where:{type:1}})).length
+    
+            const deliveryCount=(await this.deliveryRepository.find({where:{type:"3"}})).length
+
+
+            return next(new responseModel(req, res,null, 'admin', 200, null, {usersCount,sellsCount,buyCount,deliveryCount})) 
+        }catch(error){
+            console.log("error",error);
+            return next(new responseModel(req, res,"خطای داخلی سیستم",'invoice', 500,"خطای داخلی سیستم",null))
+        }
+      
+
+
+
     }
 
 

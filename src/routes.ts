@@ -411,6 +411,14 @@ export const Routes = [
     action: "getAllDeliveryRequest",
     middlware:[authMiddlewareAdmin] 
 },
+{
+    method: "get",
+    route: "/admin/chart/carts",
+    controller: AdminController,
+    action: "cartChart",
+    middlware:[authMiddlewareAdmin] 
+},
+
 
 /**
  * ?? Invoice Routes

@@ -534,7 +534,7 @@ export class AdminController{
            }
         
             
-        //    this.bot.sendMessage(telegramUser.chatId,message,{parse_mode:"HTML"})     
+           this.bot.sendMessage(telegramUser.chatId,message,{parse_mode:"HTML"})     
            await queryRunner.commitTransaction()
            return next(new responseModel(req, res,null, 'admin', 200, null, invoice)) 
 

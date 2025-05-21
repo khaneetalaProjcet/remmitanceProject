@@ -2319,7 +2319,7 @@ export class AdminController{
                     break;
                 case 6:
                 newStatus=7
-                panelTable=  2
+                panelTable= 2
                     break;    
               
                 default:

@@ -712,8 +712,16 @@ export class InvoiceController{
         await queryRunner.startTransaction()
         
         try{
+            let status
             const invoice=await this.invoiceRepository.findOne({where:{id:invoiceId},relations:["buyer","seller"] })
-            invoice.status=5
+
+            if(invoice.type==0){
+                status=8
+            }else{
+                status=5
+            }
+            
+            invoice.status=status
             invoice.panelTabel=4
            
             await queryRunner.manager.save(invoice)

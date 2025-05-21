@@ -260,13 +260,17 @@ export class AdminController{
     }
 
     async getAllInvoiceForAdmin(req: Request, res: Response, next: NextFunction){
-        const invoices=await this.invoiceRepository.find({where:{panelTabel:1}
+        const invoices=await this.invoiceRepository.find({where:[
+            {panelTabel:1},
+            {panelTabel:2},
+            {panelTabel:4}
+        ]
         ,relations:["buyer","bankAccount","appBankAccount","seller","product"],order:{id:"DESC"}})
         return next(new responseModel(req, res,null, 'admin', 200, null, invoices))
     }
 
     async getAllInvoiceForAccounter(req: Request, res: Response, next: NextFunction){
-        const invoices=await this.invoiceRepository.find({where:{panelTabel:2},
+        const invoices=await this.invoiceRepository.find({where:[{panelTabel:2},{panelTabel:4}],
         relations:["buyer","bankAccount","appBankAccount","seller","product"],
         order:{id:"DESC"}
     })
@@ -369,7 +373,7 @@ export class AdminController{
     
             const newAction=this.actionRepository.create({admin,type:2,fromStatus:2,toStatus:5,date,time,invoice})
     
-            invoice.status=5
+            invoice.status=8
             invoice.panelTabel=1
           
             invoice.admins=[admin]

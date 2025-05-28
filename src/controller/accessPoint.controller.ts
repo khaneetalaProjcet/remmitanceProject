@@ -67,17 +67,19 @@ export class accessPointController{
     async updateAdminAccessPoint(req: Request, res: Response, next: NextFunction){
       const {adminId,accessPointId}=req.body
       try{
-        const admin=await this.adminRepository.findOneOrFail({where:{id:adminId}})
+        const accessArray=accessPointId.filter(item=>item.isActive==true)
+        const admin=await this.adminRepository.findOneOrFail({where:{id:adminId},relations:{accessPoints:true}})
         if(!admin){
             return next(new responseModel(req, res,"ادمین پیدا نشد",'accessPoint', 400,"ادمین پیدا نشد",null))
         }
         const accessPointArray=[]
-        for (let index = 0; index < accessPointId.length; index++) {
-            const id = accessPointId[index];
+        for (let index = 0; index < accessArray.length; index++) {
+            const id = accessArray[index];
            const access= await this.accessPointRepository.findOneOrFail({where:{id:id}})
             if(!access){
                 continue ;
             }
+
             accessPointArray.push(access)
             
         }

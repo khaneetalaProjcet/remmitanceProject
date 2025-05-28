@@ -56,9 +56,9 @@ export class accessPointController{
             const accessPoints=await this.accessPointRepository.findTrees();
             console.log(accessPoint);
             
-            if(accessPoint.length==0){
-                await this.initAccessPoints()
-            }
+            // if(accessPoint.length==0){
+            //     await this.initAccessPoints()
+            // }
             return next(new responseModel(req, res,null,'accessPoint', 200,null,accessPoints))
         }catch(err){
             return next(new responseModel(req, res,"خطای داخلی سیستم",'accessPoint', 500,"خطای داخلی سیستم",null))

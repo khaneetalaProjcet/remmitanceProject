@@ -57,7 +57,7 @@ export class accessPointController{
             console.log(accessPoint);
             
           
-                // await this.initAccessPoints()
+                await this.initAccessPoints()
             
             return next(new responseModel(req, res,null,'accessPoint', 200,null,accessPoints))
         }catch(err){
@@ -130,7 +130,7 @@ export class accessPointController{
     
     private async initAccessPoints(){
         
-        const accessPoints=await this.accessPointRepository.findTrees();
+        const accessPoints=await this.accessPointRepository.find();
 
         for (let index = 0; index < accessPoints.length; index++) {
           const element = accessPoints[index];

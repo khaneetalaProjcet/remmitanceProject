@@ -54,6 +54,8 @@ export class accessPointController{
     async getAllAccessPoints(req: Request, res: Response, next: NextFunction){
         try{
             const accessPoints=await this.accessPointRepository.findTrees();
+            console.log();
+            
             if(accessPoint.length==0){
                 await this.initAccessPoints()
             }

@@ -618,6 +618,14 @@ export const Routes = [
     middlware:[authMiddlewareAdmin]
 }
 
+{
+    method: "get",
+    route: "/access/admin/:id",
+    controller: accessPointController,
+    action: "getAdminAccessPoint",
+    middlware:[authMiddlewareAdmin]
+}
+
 
 
 

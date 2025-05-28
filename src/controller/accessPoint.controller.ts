@@ -1,5 +1,5 @@
 import { AppDataSource } from "../data-source";
-import { Request, Response,NextFunction } from "express";
+import e, { Request, Response,NextFunction } from "express";
 import { Admin } from "../entity/Admin";
 import { responseModel } from "../utills/response.model";
 import {settingService} from "../services/setting.service"
@@ -67,9 +67,9 @@ export class accessPointController{
 
     }
     async updateAdminAccessPoint(req: Request, res: Response, next: NextFunction){
-      const {adminId,accessPointId}=req.body
+      const {adminId,accessPoints}=req.body
       try{
-        const accessArray=accessPointId.filter(item=>item.isActive==true)
+        const accessArray=accessPoints.filter(item=>item.isActive==true)
         const admin=await this.adminRepository.findOneOrFail({where:{id:adminId},relations:{accessPoints:true}})
         if(!admin){
             return next(new responseModel(req, res,"ادمین پیدا نشد",'accessPoint', 400,"ادمین پیدا نشد",null))
@@ -99,6 +99,25 @@ export class accessPointController{
       
       
     }
+
+    async getAdminAccessPoint(req: Request, res: Response, next: NextFunction){
+      const adminId=+req.params.id
+      const finalArray=[]
+      const accessPointsAdmin=await this.accessPointRepository.find({relations:{Admin:true}})
+      for (let index = 0; index < accessPointsAdmin.length; index++) {
+        const element = accessPointsAdmin[index];
+        let isAccess=false
+        const indexadmin=element.Admin.findIndex(item=>item.id==adminId)
+        if(indexadmin!==-1){
+            isAccess=true
+        }
+
+        const obj={id:element.id,englishName:element.englishName,persianName:element.persianName,isAccess}
+        finalArray.push(obj)
+        
+      }
+      return next(new responseModel(req, res,null,'accessPoint', 200,null,finalArray))
+    }
     
     private async initAccessPoints(){
         
@@ -125,6 +144,8 @@ export class accessPointController{
 
         await this.accessPointRepository.save(accessPointArray)
     }
+
+
 
 
     

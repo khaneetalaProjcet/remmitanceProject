@@ -54,7 +54,7 @@ export class accessPointController{
     async getAllAccessPoints(req: Request, res: Response, next: NextFunction){
         try{
             const accessPoints=await this.accessPointRepository.findTrees();
-            console.log();
+            console.log(accessPoint);
             
             if(accessPoint.length==0){
                 await this.initAccessPoints()
@@ -101,6 +101,15 @@ export class accessPointController{
     }
     
     private async initAccessPoints(){
+        
+        const accessPoints=await this.accessPointRepository.findTrees();
+
+        for (let index = 0; index < accessPoints.length; index++) {
+          const element = accessPoints[index];
+          this.accessPointRepository.remove(element)
+          
+        }
+
         const accessPointArray=[
             {englishName:"dashbord",persianName:"داشبورد"},
             {englishName:"orders",persianName:"سفارشات"},
@@ -111,6 +120,8 @@ export class accessPointController{
             {englishName:"market control",persianName:"کنترل بازار"},
             
         ]
+
+      
 
         await this.accessPointRepository.save(accessPointArray)
     }

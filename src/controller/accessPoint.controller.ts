@@ -56,9 +56,9 @@ export class accessPointController{
             const accessPoints=await this.accessPointRepository.findTrees();
             console.log(accessPoint);
             
-            // if(accessPoint.length==0){
-            //     await this.initAccessPoints()
-            // }
+            if(accessPoint.length==0){
+                await this.initAccessPoints()
+            }
             return next(new responseModel(req, res,null,'accessPoint', 200,null,accessPoints))
         }catch(err){
             return next(new responseModel(req, res,"خطای داخلی سیستم",'accessPoint', 500,"خطای داخلی سیستم",null))
@@ -107,6 +107,7 @@ export class accessPointController{
       for (let index = 0; index < accessPointsAdmin.length; index++) {
         const element = accessPointsAdmin[index];
         let isAccess=false
+
         const indexadmin=element.Admin.findIndex(item=>item.id==adminId)
         if(indexadmin!==-1){
             isAccess=true
@@ -115,7 +116,12 @@ export class accessPointController{
        
         
 
-        const obj={id:element.id,englishName:element.englishName,persianName:element.persianName,isAccess,parent:element.parent}
+        const obj={id:element.id,
+          englishName:element.englishName,
+          persianName:element.persianName,
+          isAccess,parent:element.parent}
+
+          
         finalArray.push(obj)
         
       }

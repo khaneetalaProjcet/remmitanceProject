@@ -57,7 +57,7 @@ export class accessPointController{
             console.log(accessPoint);
             
           
-                await this.initAccessPoints()
+                // await this.initAccessPoints()
             
             return next(new responseModel(req, res,null,'accessPoint', 200,null,accessPoints))
         }catch(err){

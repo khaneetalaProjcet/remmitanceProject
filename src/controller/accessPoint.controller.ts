@@ -57,7 +57,7 @@ export class accessPointController{
             console.log(accessPoint);
             
           
-                // await this.initAccessPoints()
+              
             
             return next(new responseModel(req, res,null,'accessPoint', 200,null,accessPoints))
         }catch(err){
@@ -101,31 +101,17 @@ export class accessPointController{
     }
 
     async getAdminAccessPoint(req: Request, res: Response, next: NextFunction){
-      const adminId=+req.params.id
-      const finalArray=[]
-      const accessPointsAdmin=await this.accessPointRepository.find({relations:{Admin:true}})
-      for (let index = 0; index < accessPointsAdmin.length; index++) {
-        const element = accessPointsAdmin[index];
-        let isAccess=false
+      try{
+          const adminId=+req.params.id
+      const admin=await this.adminRepository.findOne({where:{id:adminId},relations:{accessPoints:true}})
+      const access=admin.accessPoints
 
-        const indexadmin=element.Admin.findIndex(item=>item.id==adminId)
-        if(indexadmin!==-1){
-            isAccess=true
-        }
-
-       
-        
-
-        const obj={id:element.id,
-          englishName:element.englishName,
-          persianName:element.persianName,
-          isAccess,parent:element.parent}
-
-          
-        finalArray.push(obj)
-        
+      return next(new responseModel(req, res,null,'accessPoint', 200,null,access))
+      }catch(err){
+        return next(new responseModel(req, res,"خطای داخلی سیستم",'accessPoint', 500,"خطای داخلی سیستم",null))
       }
-      return next(new responseModel(req, res,null,'accessPoint', 200,null,finalArray))
+    
+      
     }
     
     private async initAccessPoints(){

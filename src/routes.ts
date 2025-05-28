@@ -608,7 +608,7 @@ export const Routes = [
     route: "/access/all",
     controller: accessPointController,
     action: "getAllAccessPoints",
-    middlware:[authMiddlewareAdmin]
+    middlware:[]
 },
 {
     method: "post",

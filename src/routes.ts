@@ -616,7 +616,7 @@ export const Routes = [
     controller: accessPointController,
     action: "updateAdminAccessPoint",
     middlware:[authMiddlewareAdmin]
-}
+},
 
 {
     method: "get",

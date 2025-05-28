@@ -112,7 +112,10 @@ export class accessPointController{
             isAccess=true
         }
 
-        const obj={id:element.id,englishName:element.englishName,persianName:element.persianName,isAccess}
+       
+        
+
+        const obj={id:element.id,englishName:element.englishName,persianName:element.persianName,isAccess,parent:element.parent}
         finalArray.push(obj)
         
       }
